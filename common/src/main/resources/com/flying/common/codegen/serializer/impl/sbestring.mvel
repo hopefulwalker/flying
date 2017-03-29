@@ -1,0 +1,12 @@
+        public String @{fieldName}() throws UnsupportedEncodingException {
+            final byte[] dst = new byte[@{stringBytes}];
+            CodecUtil.charsGet(buffer, this.offset + @{byteSequence}, dst, 0, dst.length);
+            return new String(dst, "UTF-8").trim();
+        }
+
+        public @{boSBEName} @{fieldName}(final String value) throws UnsupportedEncodingException {
+            if (value == null) return this;
+            byte[] src = value.getBytes("UTF-8");
+            CodecUtil.charsPut(buffer, this.offset + @{byteSequence}, src, 0, @{stringBytes});
+            return this;
+        }

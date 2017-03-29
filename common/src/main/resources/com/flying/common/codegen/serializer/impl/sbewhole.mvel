@@ -1,0 +1,31 @@
+    public static class @{boSBEName} {
+        public static final int BLOCK_LENGTH = @{blockLength};
+        private DirectBuffer buffer;
+        private int offset;
+        private int limit;
+        private int actingBlockLength;
+
+        public @{boSBEName} wrapForEncode(final DirectBuffer buffer, final int offset) {
+            this.buffer = buffer;
+            this.offset = offset;
+            this.actingBlockLength = BLOCK_LENGTH;
+            limit(offset + actingBlockLength);
+            return this;
+        }
+
+        public @{boSBEName} wrapForDecode(final DirectBuffer buffer, final int offset, final int actingBlockLength) {
+            this.buffer = buffer;
+            this.offset = offset;
+            this.actingBlockLength = actingBlockLength;
+            limit(offset + actingBlockLength);
+
+            return this;
+        }
+
+        public void limit(final int limit) {
+            buffer.checkLimit(limit);
+            this.limit = limit;
+        }
+
+        @{sbeGetSetMethods}
+    }

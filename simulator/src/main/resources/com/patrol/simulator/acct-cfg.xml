@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="endpointFactory" class="com.flying.monitor.service.client.MonitorEndpointFactory">
+        <constructor-arg name="service" ref="monitorService"/>
+    </bean>
+    <bean id="accountService" class="com.flying.ams.service.client.AccountClientService" init-method="init" destroy-method="close">
+        <constructor-arg name="region" value="SZ"/>
+        <constructor-arg name="endpointFactory" ref="endpointFactory"/>
+        <constructor-arg name="poolConfig" ref="poolConfig"/>
+        <constructor-arg name="msgConverter" ref="accountMsgConverter"/>
+        <property name="accountCache" ref="accountCache"/>
+    </bean>
+    <bean id="accountMsgConverter" class="com.flying.ams.msg.converter.AccountMsgConverter"/>
+
+    <bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+        <property name="minIdle" value="1"/>
+    </bean>
+
+    <bean id="monitorService" class="com.flying.monitor.service.client.BCMonitorClientService">
+        <constructor-arg name="engine" ref="broadcastEngine"/>
+        <constructor-arg name="msgConverter" ref="monitorMsgBuilder"/>
+    </bean>
+    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.BroadcastClientEngine" init-method="start" destroy-method="stop">
+        <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
+    </bean>
+    <bean id="monitorMsgBuilder" class="com.flying.monitor.msg.converter.MonitorMsgConverter"/>
+    <bean id="broadcastEndpoints" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <bean class="com.flying.framework.messaging.endpoint.Endpoint">
+                    <constructor-arg type="java.lang.String" name="protocol" value="udp"/>
+                    <constructor-arg type="java.lang.String" name="address" value="255.255.255.255"/>
+                    <constructor-arg type="int" name="port" value="51688"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id="accountCache" class="java.util.HashMap"/>
+
+    <bean id="monitorEndpoints" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <bean class="com.flying.framework.messaging.endpoint.Endpoint">
+                    <property name="endpoint" value="tcp://127.0.0.1:16888"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+</beans>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="omsServer" class="com.flying.oms.OrderManageServer">
+        <constructor-arg type="java.lang.String" name="region" value="深圳"/>
+        <constructor-arg type="short" name="type" value="2"/>
+        <constructor-arg type="java.lang.String" name="name" value="OS-Walker"/>
+        <property name="serverEngine" ref="serverEngine"/>
+        <property name="reporter" ref="reporter"/>
+    </bean>
+    <bean id="serverEngine" class="com.flying.framework.messaging.engine.impl.ZMQUCServerEngine">
+        <property name="msgEventListener" ref="omsMsgListener"/>
+        <property name="listenEndpoint" ref="omsListenEndpoint"/>
+    </bean>
+    <bean id="omsMsgListener" class="com.flying.oms.msg.handler.OrderMsgListener"/>
+    <bean id="omsListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint"/>
+
+    <bean id="reporter" class="com.flying.monitor.service.client.ServerReporter">
+        <property name="server" ref="omsServer"/>
+        <property name="endpoints" ref="cntMonitorEndpoints"/>
+        <property name="enginePool" ref="cntMonitorEnginePool"/>
+        <property name="timeout" value="5000"/>
+    </bean>
+    <bean id="cntMonitorEnginePool" class="org.apache.commons.pool2.impl.GenericKeyedObjectPool" destroy-method="close">
+        <constructor-arg name="factory" ref="engineFactory"/>
+        <constructor-arg name="config">
+            <bean class="org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig">
+                <property name="maxTotal" value="2"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+    <bean id="engineFactory" class="com.flying.framework.messaging.engine.impl.KeyedPooledZMQClientEngineFactory"/>
+    <bean id="cntMonitorEndpoints" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <ref bean="monitorListenEndpoint"/>
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="monitorListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint">
+        <property name="endpoint" value="tcp://127.0.0.1:16888"/>
+    </bean>
+</beans>

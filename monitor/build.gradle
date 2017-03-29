@@ -1,0 +1,61 @@
+version = '1.0.0'
+
+dependencies {
+
+    compile project(':util')
+    compile project(':framework')
+    compile project(':common')
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile group: 'uk.co.real-logic', name: 'sbe', version: '1.0.4-RC2-SNAPSHOT', changing: true
+
+    compile group: 'org.apache.commons', name: 'commons-beanutils', version: '1.9.2'
+    compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
+
+    compile group: 'org.springframework', name: 'spring-core', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-expression', version: '4.1.4.RELEASE'
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.7'
+
+    runtime group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.0.1'
+    runtime group: 'org.apache.commons', name: 'commons-lang3', version: '3.3.2'
+    runtime group: 'org.apache.commons', name: 'commons-logging', version: '1.2'
+    runtime group: 'org.skife.jdbi', name: 'jdbi', version: '2.56'
+    runtime group: 'org.zeromq', name: 'jzmq', version: '3.1.1-SNAPSHOT'
+    runtime group: 'com.google.guava', name: 'guava', version: '18.0'
+    runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.1.2'
+    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
+}
+
+task generateMonitorMsgConverter(type: JavaExec) {
+    main = 'com.flying.common.msg.converter.generator.ConverterGenerator'
+    args = ['com.flying.monitor.msg.converter.IMonitorMsgConverter']
+    systemProperties = ['converter.output.dir': 'src/main/java']
+    classpath sourceSets.main.runtimeClasspath
+}
+
+task generateMonitorMsg(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    args = ['src/main/resources/com/flying/monitor/msg/monitor-msg.xml']
+    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/monitor/msg/SimpleBinary1-0.xsd']
+    classpath configurations.compile
+}
+
+compileJava.dependsOn('generateMonitorMsg')
+
+task clientJar(type: Jar) {
+    dependsOn 'classes'
+    baseName = project.name + '-client'
+    from fileTree("${buildDir}/classes/main")
+    include '**/model/**'
+    include '**/msg/**'
+    include '**/service/**'
+    exclude '**/handler/**'
+    exclude '**/server/**'
+}
+
+assemble.dependsOn('clientJar')

@@ -1,0 +1,10 @@
+# ingore directory created by editor and gradle.
+.idea
+.gradle
+# ingore file create by editor
+*.iml
+# ingore the compressed files
+*.zip
+*.rar
+# ignore the distributions we produced.
+build

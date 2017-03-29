@@ -1,0 +1,11 @@
+        // headerClass, varHeader, replyClass, varReply, msgTypeClass, varFields
+        @{headerClass} @{varHeader} = new @{headerClass}();
+        @{replyClass} @{varReply} = new @{replyClass}();
+        byte[] replyBytes = new byte[@{varHeader}.size() + @{varReply}.sbeBlockLength()];
+        DirectBuffer replyBuffer = new DirectBuffer(replyBytes);
+        @{varHeader}.wrap(replyBuffer, 0, @{varReply}.sbeSchemaVersion()).blockLength(reply.sbeBlockLength())
+                .templateId(@{varReply}.sbeTemplateId()).schemaId(@{varReply}.sbeSchemaId()).version(@{varReply}.sbeSchemaVersion())
+                .timestamp(System.currentTimeMillis()).sourceIP(CommUtils.getLocalIp4AddressAsInt())
+                .msgType(@{msgTypeClass}.@{replyClass});
+        @{varReply}.wrapForEncode(replyBuffer, @{varHeader}.size())@{varFields};
+        return replyBytes;

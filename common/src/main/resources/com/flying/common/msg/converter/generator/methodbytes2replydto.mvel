@@ -1,0 +1,20 @@
+        // headerClass, varHeader, varBytes, replyClass, varReply, dtoClass, varDTO, stringContained, varDTOFields, exception
+        @{headerClass} @{varHeader} = new @{headerClass}();
+        DirectBuffer replyBuffer = new DirectBuffer(@{varBytes});
+        @{varHeader}.wrap(replyBuffer, 0, 0);
+        if (@{varHeader}.msgType() != @{msgTypeClass}.@{replyClass}) {
+            throw new @{exception}(@{exception}.MISMATCH_REPLY, "expected:" + @{msgTypeClass}.@{replyClass} + "actual:" + @{varHeader}.msgType());
+        }
+        @{replyClass} @{varReply} = new @{replyClass}();
+        @{varReply}.wrapForDecode(replyBuffer, @{varHeader}.size(), @{varHeader}.blockLength(), @{varHeader}.version());
+        if (@{varReply}.retCode() != IReturnCode.SUCCESS) {
+            throw new @{exception}(@{varReply}.retCode());
+        }
+        // Analyze the reply and build dto.
+        @{dtoClass} @{varDTO} = new @{dtoClass}();
+        @if{stringContained} try { @end{}
+        @{varDTOFields}
+        @if{stringContained}} catch (UnsupportedEncodingException uee) {
+            throw new @{exception}(@{exception}.FAILED_TO_BUILD_REPLY, uee);
+        }@end{}
+        return @{varDTO};

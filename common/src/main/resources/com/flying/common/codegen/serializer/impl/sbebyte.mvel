@@ -1,0 +1,8 @@
+        public byte @{fieldName}() {
+            return CodecUtil.int8Get(buffer, offset + @{byteSequence});
+        }
+
+        public @{boSBEName} @{fieldName}(final byte value) {
+            CodecUtil.int8Put(buffer, offset + @{byteSequence}, value);
+            return this;
+        }

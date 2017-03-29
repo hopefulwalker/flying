@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   package="com.flying.oms.msg.gen" id="1" version="0" semanticVersion="5.2"
+                   description="Schema for high frequency trading system" byteOrder="littleEndian">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+            <type name="timestamp" primitiveType="int64"/>
+            <type name="sourceIP" primitiveType="int32"/>
+            <type name="msgType" primitiveType="int16"/>
+        </composite>
+    </types>
+    <types>
+        <!-- The following are common message definitions -->
+        <type name="RetCode" primitiveType="int32" length="1"/>
+        <!-- The following are common business definitions -->
+        <type name="ShortId" primitiveType="int16" length="1"/>
+        <type name="LongId" primitiveType="int64" length="1"/>
+        <type name="ByteId" primitiveType="int8" length="1"/>
+        <type name="Time" primitiveType="int64" length="1"/>
+        <type name="Date" primitiveType="int32" length="1"/>
+        <type name="Type" primitiveType="int16" length="1"/>
+        <type name="Tag" primitiveType="char" length="64"/>
+        <type name="Price" primitiveType="double" length="1"/>
+        <type name="Amt" primitiveType="double" length="1"/>
+        <type name="Qty" primitiveType="int64" length="1"/>
+        <!-- The following are special fields for business -->
+        <type name="SectCode" primitiveType="char" length="6"/>
+        <type name="CntrNo" primitiveType="char" length="8"/>
+    </types>
+    <sbe:message name="OrderRequest" id="1" description="Description of a order request">
+        <field name="extNo" id="1" type="LongId"/>
+        <field name="acctId" id="2" type="LongId"/>
+        <field name="bsSideId" id="3" type="ByteId"/>
+        <field name="exchId" id="4" type="ShortId"/>
+        <field name="sectCode" id="5" type="SectCode"/>
+        <field name="price" id="6" type="Price"/>
+        <field name="qty" id="7" type="Qty"/>
+    </sbe:message>
+    <sbe:message name="OrderReply" id="2" description="Description of a order reply">
+        <field name="retCode" id="1" type="RetCode"/>
+        <field name="extNo" id="2" type="LongId"/>
+        <field name="oid" id="3" type="LongId"/>
+        <field name="acctId" id="4" type="LongId"/>
+        <field name="exchId" id="5" type="ShortId"/>
+        <field name="sectCode" id="6" type="SectCode"/>
+        <field name="bsSideId" id="7" type="ByteId"/>
+        <field name="price" id="8" type="Price"/>
+        <field name="qty" id="9" type="Qty"/>
+        <field name="cntrNo" id="10" type="CntrNo"/>
+        <field name="bizDate" id="11" type="Date"/>
+        <field name="stateId" id="12" type="ByteId"/>
+        <field name="stateEnteredCode" id="13" type="RetCode"/>
+        <field name="createTime" id="14" type="Time"/>
+        <field name="updateTime" id="15" type="Time"/>
+    </sbe:message>
+</sbe:messageSchema>

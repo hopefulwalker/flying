@@ -1,0 +1,8 @@
+        public short @{fieldName}() {
+            return CodecUtil.int16Get(buffer, offset + @{byteSequence}, java.nio.ByteOrder.LITTLE_ENDIAN);
+        }
+
+        public @{boSBEName} @{fieldName}(final short value) {
+            CodecUtil.int16Put(buffer, offset + @{byteSequence}, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+            return this;
+        }

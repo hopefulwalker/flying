@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="monitorServer" class="com.flying.monitor.MonitorServer">
+        <constructor-arg name="region" value="SZ"/>
+        <constructor-arg name="type" value="1"/>
+        <constructor-arg name="name" value="MonitorServer-Walker"/>
+        <property name="serverEngine" ref="ucMonitorServerEngine"/>
+        <property name="scheduler" ref="scheduler"/>
+    </bean>
+
+    <bean id="scheduler" class="com.flying.util.schedule.Scheduler">
+        <constructor-arg name="tasks">
+            <list>
+                <ref bean="monitorReporter"/>
+                <ref bean="monitorSweeper"/>
+            </list>
+        </constructor-arg>
+        <property name="delay" value="5000"/>
+        <property name="initialDelay" value="3000"/>
+    </bean>
+    <bean id="ucMonitorServerEngine" class="com.flying.framework.messaging.engine.impl.ZMQUCServerEngine">
+        <constructor-arg name="listenEndpoint" ref="monitorListenEndpoint"/>
+        <property name="msgEventListener" ref="monitorMsgListener"/>
+    </bean>
+    <bean id="monitorReporter" class="com.flying.monitor.service.client.ServerReporter">
+        <property name="server" ref="monitorServer"/>
+        <property name="service" ref="ucMonitorClientService"/>
+    </bean>
+    <bean id="monitorSweeper" class="com.flying.monitor.service.server.ServerSweeper">
+        <constructor-arg name="service" ref="monitorServerService"/>
+    </bean>
+
+    <bean id="monitorListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint">
+        <constructor-arg type="java.lang.String" name="endpoint" value="tcp://127.0.0.1:16888"/>
+    </bean>
+    <bean id="monitorMsgListener" class="com.flying.common.msg.handler.ServiceMsgListener">
+        <constructor-arg name="handlers">
+            <!-- Q_REGISTRY = 1; P_REGISTRY = 2; Q_QUERY = 3; P_QUERY = 4-->
+            <map>
+                <entry key="1">
+                    <bean class="com.flying.monitor.msg.handler.ServerRegistryRequestHandler">
+                        <constructor-arg name="service" ref="monitorServerService"/>
+                        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+                    </bean>
+                </entry>
+                <entry key="3">
+                    <bean class="com.flying.monitor.msg.handler.ServerQueryRequestHandler">
+                        <constructor-arg name="service" ref="monitorServerService"/>
+                        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+                    </bean>
+                </entry>
+            </map>
+        </constructor-arg>
+        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+    </bean>
+    <bean id="ucMonitorClientService" class="com.flying.monitor.service.client.UCMonitorClientService" init-method="init" destroy-method="close">
+        <constructor-arg name="region" value="SZ"/>
+        <constructor-arg name="endpointFactory" ref="endpointFactory"/>
+        <constructor-arg name="poolConfig" ref="poolConfig"/>
+        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+    </bean>
+    <bean id="monitorServerService" class="com.flying.monitor.service.server.MonitorServerService"/>
+
+    <bean id="monitorMsgConverter" class="com.flying.monitor.msg.converter.MonitorMsgConverter"/>
+    <bean id="endpointFactory" class="com.flying.common.service.client.FixedEndpointFactory">
+        <constructor-arg name="endpoints">
+            <list>
+                <ref bean="monitorListenEndpoint"/>
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+        <property name="minIdle" value="1"/>
+    </bean>
+</beans>

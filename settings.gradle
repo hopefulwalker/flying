@@ -1,0 +1,20 @@
+rootProject.name = 'flying'
+
+include 'util'
+
+include 'framework'
+
+include 'common'
+
+include 'monitor'
+
+include 'ams'
+
+include 'cms'
+
+include 'oms'
+
+include 'pos'
+
+include 'simulator'
+

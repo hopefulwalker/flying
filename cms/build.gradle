@@ -1,0 +1,38 @@
+version = '1.0.0'
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testRuntime group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
+
+    compile group: 'org.springframework', name: 'spring-core', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version: '4.1.4.RELEASE'
+    compile group: 'org.springframework', name: 'spring-expression', version: '4.1.4.RELEASE'
+
+    compile project(':util')
+    compile project(':framework')
+    compile project(':common')
+    compile project(':monitor')
+}
+
+task generateCustomerMsg(type: JavaExec) {
+    main = 'uk.co.real_logic.sbe.SbeTool'
+    args = ['src/main/resources/com/flying/cms/msg/cms-msg.xml']
+    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/cms/msg/SimpleBinary1-0.xsd']
+    classpath configurations.compile
+}
+
+compileJava.dependsOn(generateCustomerMsg)
+
+task clientJar(type: Jar) {
+    dependsOn classes
+    baseName = project.name + '-client'
+    from fileTree("${buildDir}/classes/main")
+    include '**/client/**'
+    include '**/model/**'
+    include '**/msg/**'
+    exclude '**/handler/**'
+}
+
+assemble.dependsOn(clientJar)

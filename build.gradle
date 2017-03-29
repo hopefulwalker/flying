@@ -1,0 +1,59 @@
+subprojects {
+    apply plugin: 'java'
+
+    def flatDirHome=System.getenv('WORK_HOME')
+
+    repositories {
+        flatDir {
+            // guava
+            dirs "${flatDirHome}/open/guava"
+
+            // apache commons.
+            dirs "${flatDirHome}/open/commons/commons-dbcp2-2.0.1"
+            dirs "${flatDirHome}/open/commons/commons-lang3-3.3.2"
+            dirs "${flatDirHome}/open/commons/commons-logging-1.2"
+            dirs "${flatDirHome}/open/commons/commons-pool2-2.2"
+            dirs "${flatDirHome}/open/commons/commons-beanutils-1.9.2"
+
+            // log
+            dirs "${flatDirHome}/open/slf4j/slf4j-1.7.25"
+            dirs "${flatDirHome}/open/logback/logback-1.1.2"
+
+            // messaging, encoder and decoder.
+            dirs "${flatDirHome}/open/jzmq/jzmq-master/lib"
+            dirs "${flatDirHome}/open/sbe/simple-binary-encoding-master/target/dist"
+
+            // database and helper tools.
+            dirs "${flatDirHome}/open/jdbi"
+            dirs "${flatDirHome}/open/mysql"
+
+            // memory DB and cache
+            dirs "${flatDirHome}/open/hazelcast/hazelcast-3.5/lib"
+
+            // Testing
+            dirs "${flatDirHome}/open/junit"
+
+            // framework.
+            dirs "${flatDirHome}/open/spring"
+
+            // expression language
+            dirs "${flatDirHome}/open/mvel"
+
+            // project related
+            dirs "${flatDirHome}/space/flying/util/build/libs"
+            dirs "${flatDirHome}/space/flying/framework/build/libs"
+            dirs "${flatDirHome}/space/flying/monitor/build/libs"
+            dirs "${flatDirHome}/space/flying/common/build/libs"
+            dirs "${flatDirHome}/space/flying/ams/build/libs"
+            dirs "${flatDirHome}/space/flying/cms/build/libs"
+            dirs "${flatDirHome}/space/flying/oms/build/libs"
+            dirs "${flatDirHome}/space/flying/pos/build/libs"
+        }
+    }
+
+    compileJava {
+        options.compilerArgs = ["-Xlint:unchecked"]
+    }    
+}
+
+version = '0.2.0'

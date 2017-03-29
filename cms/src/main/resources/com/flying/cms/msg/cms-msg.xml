@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
+                   package="com.flying.cms.msg.gen" id="1" version="0" semanticVersion="5.2"
+                   description="Schema for high frequency trading system" byteOrder="littleEndian">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+            <type name="timestamp" primitiveType="int64"/>
+            <type name="sourceIP" primitiveType="int32"/>
+            <type name="msgType" primitiveType="int16"/>
+        </composite>
+    </types>
+    <types>
+        <type name="RequestNo" primitiveType="int64" length="1"/>
+        <type name="RetCode" primitiveType="int32" length="1"/>
+        <type name="AcctId" primitiveType="int64" length="1"/>
+        <type name="ExchId" primitiveType="int16" length="1"/>
+        <type name="SectCode" primitiveType="char" length="6"/>
+        <type name="BsSide" primitiveType="char" length="1"/>
+        <type name="Price" primitiveType="double" length="1"/>
+        <type name="Qty" primitiveType="int64" length="1"/>
+        <type name="BizDate" primitiveType="int32" length="1"/>
+        <type name="CntrNo" primitiveType="char" length="8"/>
+        <type name="State" primitiveType="int8" length="1"/>
+    </types>
+    <sbe:message name="OrderRequest" id="1" description="Description of a order request">
+        <field name="requestNo" id="1" type="RequestNo"/>
+        <field name="acctId" id="2" type="AcctId"/>
+        <field name="bsSide" id="3" type="BsSide"/>
+        <field name="exchId" id="4" type="ExchId"/>
+        <field name="sectCode" id="5" type="SectCode"/>
+        <field name="price" id="6" type="Price"/>
+        <field name="qty" id="7" type="Qty"/>
+        <field name="bizDate" id="8" type="BizDate"/>
+    </sbe:message>
+    <sbe:message name="OrderReply" id="2" description="Description of a order reply">
+        <field name="requestNo" id="1" type="RequestNo"/>
+        <field name="retCode" id="2" type="RetCode"/>
+        <field name="cntrNo" id="3" type="CntrNo"/>
+    </sbe:message>
+</sbe:messageSchema>

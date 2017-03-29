@@ -1,0 +1,8 @@
+        public long @{fieldName}() {
+            return CodecUtil.int64Get(buffer, offset + @{byteSequence}, java.nio.ByteOrder.LITTLE_ENDIAN);
+        }
+
+        public @{boSBEName} @{fieldName}(final long value) {
+            CodecUtil.int64Put(buffer, offset + @{byteSequence}, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+            return this;
+        }

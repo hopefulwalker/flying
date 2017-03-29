@@ -1,0 +1,8 @@
+        public int @{fieldName}() {
+            return CodecUtil.int32Get(buffer, offset + @{byteSequence}, java.nio.ByteOrder.LITTLE_ENDIAN);
+        }
+
+        public @{boSBEName} @{fieldName}(final int value) {
+            CodecUtil.int32Put(buffer, offset + @{byteSequence}, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+            return this;
+        }

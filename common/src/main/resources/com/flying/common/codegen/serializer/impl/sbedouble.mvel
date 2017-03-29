@@ -1,0 +1,8 @@
+        public double @{fieldName}() {
+            return CodecUtil.doubleGet(buffer, offset + @{byteSequence}, java.nio.ByteOrder.LITTLE_ENDIAN);
+        }
+
+        public @{boSBEName} @{fieldName}(final double value) {
+            CodecUtil.doublePut(buffer, offset + @{byteSequence}, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+            return this;
+        }
