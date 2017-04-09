@@ -13,7 +13,7 @@
         <property name="scheduler" ref="scheduler"/>
     </bean>
 
-    <bean id="orderServerEngine" class="com.flying.framework.messaging.engine.impl.ZMQUCServerEngine">
+    <bean id="orderServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine">
         <constructor-arg name="listenEndpoint" ref="omsListenEndpoint"/>
         <property name="msgEventListener" ref="omsMsgListener"/>
         <property name="workers" value="10"/>
@@ -59,7 +59,7 @@
         <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
     </bean>
 
-    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.BroadcastClientEngine" init-method="start" destroy-method="stop">
+    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="broadcastEndpoints" class="java.util.ArrayList">

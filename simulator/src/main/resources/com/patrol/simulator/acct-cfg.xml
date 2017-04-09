@@ -23,7 +23,7 @@
         <constructor-arg name="engine" ref="broadcastEngine"/>
         <constructor-arg name="msgConverter" ref="monitorMsgBuilder"/>
     </bean>
-    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.BroadcastClientEngine" init-method="start" destroy-method="stop">
+    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="monitorMsgBuilder" class="com.flying.monitor.msg.converter.MonitorMsgConverter"/>

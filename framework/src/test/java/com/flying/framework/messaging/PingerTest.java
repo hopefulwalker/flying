@@ -9,8 +9,8 @@ package com.flying.framework.messaging;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IPinger;
 import com.flying.framework.messaging.engine.IServerEngine;
-import com.flying.framework.messaging.engine.impl.ZMQPinger;
-import com.flying.framework.messaging.engine.impl.ZMQUCServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.ZMQPinger;
+import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
 import org.junit.*;
 
 import java.util.concurrent.ExecutorService;

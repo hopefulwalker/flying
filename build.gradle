@@ -21,6 +21,7 @@ subprojects {
 
             // messaging, encoder and decoder.
             dirs "${flatDirHome}/open/jzmq/jzmq-master/lib"
+            dirs "${flatDirHome}/open/netty/netty-4.1.9.Final/jar/all-in-one"
             dirs "${flatDirHome}/open/sbe/simple-binary-encoding-master/target/dist"
 
             // database and helper tools.
