@@ -6,7 +6,7 @@
  */
 package com.flying.framework.messaging;
 
-import com.flying.framework.messaging.endpoint.Endpoint;
+import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IPinger;
 import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.engine.impl.ZMQPinger;

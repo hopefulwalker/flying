@@ -19,7 +19,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.Collection;
 import java.util.List;
 
 public class BroadcastClientEngine implements IClientEngine {
@@ -57,7 +56,7 @@ public class BroadcastClientEngine implements IClientEngine {
                 packet.setPort(endpoint.getPort());
                 clientSocket.send(packet);
             } catch (IOException ioe) {
-                logger.error("Failed to broadcast message to" + endpoint.getEndpoint(), ioe);
+                logger.error("Failed to broadcast message to" + endpoint.asString(), ioe);
             }
         }
     }
@@ -84,7 +83,7 @@ public class BroadcastClientEngine implements IClientEngine {
         try {
             clientSocket = new DatagramSocket();
             StringBuilder sb = new StringBuilder();
-            for (IEndpoint endpoint : endpoints) sb.append(endpoint.getEndpoint());
+            for (IEndpoint endpoint : endpoints) sb.append(endpoint.asString());
             logger.debug("BroadcastClientEngine: endpoints=" + sb.toString());
         } catch (Exception e) {
             logger.error("Exception occurs in starting engine...", e);

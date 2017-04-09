@@ -6,6 +6,7 @@
  */
 package com.flying.framework.messaging.endpoint;
 
+import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import org.junit.*;
 
 import static org.junit.Assert.assertFalse;
@@ -31,7 +32,7 @@ public class EndPointTest {
     @Test
     public void testEquals() {
         Endpoint pointA = new Endpoint();
-        String endpointString = pointA.getEndpoint();
+        String endpointString = pointA.asString();
         Endpoint pointB = new Endpoint(endpointString);
         assertTrue(pointA.equals(pointB));
         assertFalse(pointA.equals(null));

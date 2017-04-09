@@ -34,7 +34,7 @@
         <constructor-arg name="service" ref="monitorServerService"/>
     </bean>
 
-    <bean id="monitorListenEndPoint" class="com.flying.framework.messaging.endpoint.Endpoint">
+    <bean id="monitorListenEndPoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint">
         <constructor-arg type="java.lang.String" name="protocol" value="udp"/>
         <constructor-arg type="java.lang.String" name="address" value="*"/>
         <constructor-arg type="int" name="port" value="51688"/>
@@ -73,7 +73,7 @@
     <bean id="broadcastEndpoints" class="java.util.ArrayList">
         <constructor-arg>
             <list>
-                <bean class="com.flying.framework.messaging.endpoint.Endpoint">
+                <bean class="com.flying.framework.messaging.endpoint.impl.Endpoint">
                     <constructor-arg type="java.lang.String" name="protocol" value="udp"/>
                     <constructor-arg type="java.lang.String" name="address" value="255.255.255.255"/>
                     <constructor-arg type="int" name="port" value="51688"/>

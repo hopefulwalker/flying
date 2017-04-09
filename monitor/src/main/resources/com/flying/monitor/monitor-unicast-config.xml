@@ -34,7 +34,7 @@
         <constructor-arg name="service" ref="monitorServerService"/>
     </bean>
 
-    <bean id="monitorListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint">
+    <bean id="monitorListenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint">
         <constructor-arg type="java.lang.String" name="endpoint" value="tcp://127.0.0.1:16888"/>
     </bean>
     <bean id="monitorMsgListener" class="com.flying.common.msg.handler.ServiceMsgListener">

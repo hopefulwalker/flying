@@ -27,7 +27,7 @@ public class OrderManageServer implements IServer {
 
     public void setServerEngine(IServerEngine serverEngine) {
         this.serverEngine = serverEngine;
-        this.serverBO.setEndpoint(serverEngine.getListenEndpoint().getEndpoint());
+        this.serverBO.setEndpoint(serverEngine.getListenEndpoint().asString());
         this.serverBO.setWorkers(serverEngine.getWorkers());
     }
 

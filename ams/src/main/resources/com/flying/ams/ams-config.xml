@@ -15,7 +15,7 @@
         <constructor-arg name="listenEndpoint" ref="listenEndpoint"/>
         <property name="msgEventListener" ref="amsMsgListener"/>
         <property name="listenEndpoint">
-            <bean class="com.flying.framework.messaging.endpoint.Endpoint"/>
+            <bean class="com.flying.framework.messaging.endpoint.impl.Endpoint"/>
         </property>
         <property name="workers" value="5"/>
     </bean>
@@ -33,7 +33,7 @@
         <property name="initialDelay" value="3000"/>
     </bean>
 
-    <bean id="listenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint"/>
+    <bean id="listenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint"/>
     <bean id="amsMsgListener" class="com.flying.common.msg.handler.ServiceMsgListener">
         <constructor-arg name="handlers">
             <!--  Q_GET_ACCOUNT_BY_ID = 1; P_GET_ACCOUNT_BY_ID = 2;-->
@@ -70,7 +70,7 @@
     <!--<bean id="cntMonitorEndpoints" class="java.util.ArrayList">-->
     <!--<constructor-arg>-->
     <!--<list>-->
-    <!--<bean class="com.flying.framework.messaging.endpoint.Endpoint">-->
+    <!--<bean class="com.flying.framework.messaging.endpoint.impl.Endpoint">-->
     <!--<property name="endpoint" value="tcp://127.0.0.1:16888"/>-->
     <!--</bean>-->
     <!--</list>-->
@@ -86,7 +86,7 @@
     <bean id="broadcastEndpoints" class="java.util.ArrayList">
         <constructor-arg>
             <list>
-                <bean class="com.flying.framework.messaging.endpoint.Endpoint">
+                <bean class="com.flying.framework.messaging.endpoint.impl.Endpoint">
                     <constructor-arg type="java.lang.String" name="protocol" value="udp"/>
                     <constructor-arg type="java.lang.String" name="address" value="255.255.255.255"/>
                     <constructor-arg type="int" name="port" value="51688"/>

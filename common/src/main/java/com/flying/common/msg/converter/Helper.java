@@ -63,7 +63,7 @@ public class Helper {
     private static String buildExceptionMessage(IClientEngine engine, int timeout, IMsgEvent replyEvent) {
         StringBuilder stringBuilder = new StringBuilder("Endpoints:");
         for (IEndpoint endpoint : engine.getEndpoints()) {
-            stringBuilder.append("[").append(endpoint.getEndpoint()).append("]");
+            stringBuilder.append("[").append(endpoint.asString()).append("]");
         }
         stringBuilder.append("Timeout:").append("[").append(timeout).append("]");
         stringBuilder.append("EventId:").append("[").append(replyEvent.getId()).append("]");

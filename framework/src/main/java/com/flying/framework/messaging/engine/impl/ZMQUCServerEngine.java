@@ -25,15 +25,15 @@ public class ZMQUCServerEngine extends AbstractZMQServerEngine {
             // charset == UTF-8
             // client side should also using UTF-8, currently ClientEngine using ZFrame to build message, and
             // ZFrame using UTF-8 as default charset for string.
-            frontend.setIdentity(getListenEndpoint().getEndpoint().getBytes("UTF-8"));
-            frontend.bind(getListenEndpoint().getEndpoint());
+            frontend.setIdentity(getListenEndpoint().asString().getBytes("UTF-8"));
+            frontend.bind(getListenEndpoint().asString());
             ZMQ.Socket backend = getContext().createSocket(ZMQ.DEALER);
             backend.bind(getWorkerURL());
             for (int i = 0; i < getWorkers(); i++) {
                 getThreadPool().submit(new ZMQWorker(this));
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("ZMQ Service is started, listening to: " + getListenEndpoint().getEndpoint());
+                logger.debug("ZMQ Service is started, listening to: " + getListenEndpoint().asString());
             }
             ZMQ.proxy(frontend, backend, null);
         } catch (Exception e) {

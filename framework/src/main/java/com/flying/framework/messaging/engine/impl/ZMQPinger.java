@@ -50,16 +50,16 @@ public class ZMQPinger implements IPinger {
      */
     @Override
     public boolean ping(IEndpoint endpoint, int timeout) {
-        if (sockets.containsKey(endpoint.getEndpoint())) {
-            ZMQ.Socket socket = sockets.get(endpoint.getEndpoint());
+        if (sockets.containsKey(endpoint.asString())) {
+            ZMQ.Socket socket = sockets.get(endpoint.asString());
             synchronized (socket) {
                 return ping(socket, timeout);
             }
         } else {
             ZMQ.Socket socket = context.createSocket(ZMQ.DEALER);
-            socket.connect(endpoint.getEndpoint());
+            socket.connect(endpoint.asString());
             synchronized (socket) {
-                sockets.put(endpoint.getEndpoint(), socket);
+                sockets.put(endpoint.asString(), socket);
                 return ping(socket, timeout);
             }
         }

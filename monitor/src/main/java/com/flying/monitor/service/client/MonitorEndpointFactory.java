@@ -7,7 +7,7 @@
 package com.flying.monitor.service.client;
 
 import com.flying.common.service.IEndpointFactory;
-import com.flying.framework.messaging.endpoint.Endpoint;
+import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.monitor.model.ServerBO;
 import com.flying.monitor.service.IMonitorService;

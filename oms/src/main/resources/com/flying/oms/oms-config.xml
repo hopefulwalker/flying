@@ -29,7 +29,7 @@
         <property name="initialDelay" value="3000"/>
     </bean>
 
-    <bean id="omsListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint"/>
+    <bean id="omsListenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint"/>
     <bean id="omsMsgListener" class="com.flying.common.msg.handler.ServiceMsgListener">
         <constructor-arg>
             <!--  Q_PLACE_ORDER = 1; P_PLACE_ORDER = 2;-->
@@ -65,7 +65,7 @@
     <bean id="broadcastEndpoints" class="java.util.ArrayList">
         <constructor-arg>
             <list>
-                <bean class="com.flying.framework.messaging.endpoint.Endpoint">
+                <bean class="com.flying.framework.messaging.endpoint.impl.Endpoint">
                     <constructor-arg type="java.lang.String" name="protocol" value="udp"/>
                     <constructor-arg type="java.lang.String" name="address" value="255.255.255.255"/>
                     <constructor-arg type="int" name="port" value="51688"/>

@@ -266,7 +266,7 @@ public class ZMQUCClientEngine implements IClientEngine {
     private void connect(IEndpoint endpoint) {
         ZMsg msg = new ZMsg();
         msg.add(Ints.toByteArray(IMsgEvent.ID_CONNECT));
-        msg.add(endpoint.getEndpoint());
+        msg.add(endpoint.asString());
         msg.send(pipe);
         msg.destroy();
     }

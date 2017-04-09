@@ -7,7 +7,7 @@
 package com.patrol.simulator;
 
 
-import com.flying.framework.messaging.endpoint.Endpoint;
+import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IPinger;
 import com.flying.framework.messaging.engine.impl.ZMQPinger;

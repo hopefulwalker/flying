@@ -89,7 +89,7 @@ public class MonitorMsgConverter implements IMonitorMsgConverter {
                             //.putRegion(serverBO.getRegion())
                             //.serviceType(serverBO.getServiceType())
                             //.putName(serverBO.getName())
-                            //.putEndpoint(serverBO.getEndpoint())
+                            //.putEndpoint(serverBO.asString())
                             //.reportTime(serverBO.getReportTime());
                 }
             } catch (UnsupportedEncodingException uee) {

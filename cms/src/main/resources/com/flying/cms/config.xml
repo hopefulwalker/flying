@@ -15,7 +15,7 @@
         <property name="listenEndpoint" ref="omsListenEndpoint"/>
     </bean>
     <bean id="omsMsgListener" class="com.flying.oms.msg.handler.OrderMsgListener"/>
-    <bean id="omsListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint"/>
+    <bean id="omsListenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint"/>
 
     <bean id="reporter" class="com.flying.monitor.service.client.ServerReporter">
         <property name="server" ref="omsServer"/>
@@ -39,7 +39,7 @@
             </list>
         </constructor-arg>
     </bean>
-    <bean id="monitorListenEndpoint" class="com.flying.framework.messaging.endpoint.Endpoint">
+    <bean id="monitorListenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint">
         <property name="endpoint" value="tcp://127.0.0.1:16888"/>
     </bean>
 </beans>
