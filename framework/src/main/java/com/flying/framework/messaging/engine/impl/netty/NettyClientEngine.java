@@ -12,6 +12,8 @@ import com.flying.framework.messaging.engine.IAsyncClientEngine;
 import com.flying.framework.messaging.engine.IAsyncClientEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -22,17 +24,18 @@ import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.FutureListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class NettyClientEngine implements IAsyncClientEngine {
+    private static final Logger logger = LoggerFactory.getLogger(NettyClientEngine.class);
+    private ChannelPoolMap<IEndpoint, FixedChannelPool> poolMap;
     private IAsyncClientEngineConfig config;
     private EventLoopGroup eventLoopGroup;
-    ChannelPoolMap<IEndpoint, FixedChannelPool> poolMap;
 
-    public void setConfig(IAsyncClientEngineConfig config) {
+    public NettyClientEngine(IAsyncClientEngineConfig config) {
         this.config = config;
     }
 
@@ -55,7 +58,7 @@ public class NettyClientEngine implements IAsyncClientEngine {
 
                     @Override
                     public void channelCreated(Channel ch) throws Exception {
-                        ch.pipeline().addLast();
+                        ch.pipeline().addLast(new ClientHandler());
                     }
                 }, 5);
             }
@@ -72,23 +75,24 @@ public class NettyClientEngine implements IAsyncClientEngine {
         return config;
     }
 
+    public void setConfig(IAsyncClientEngineConfig config) {
+        this.config = config;
+    }
+
     @Override
     public void sendMsg(IMsgEvent msgEvent) {
         int randomIndex = ThreadLocalRandom.current().nextInt(0, config.getEndpoints().size());
         FixedChannelPool pool = poolMap.get(config.getEndpoints().get(randomIndex));
-        Future<Channel> f = pool.acquire();
-        f.addListener(new FutureListener<Channel>() {
-            @Override
-            public void operationComplete(Future<Channel> f) {
-                if (f.isSuccess()) {
-                    Channel ch = f.getNow();
-                    // Do somethings
-                    // ...
-                    // ...
-
-                    // Release back to pool
-                    pool.release(ch);
-                }
+        Future<Channel> future = pool.acquire();
+        future.addListener((FutureListener<Channel>) f -> {
+            if (f.isSuccess()) {
+                Channel ch = f.getNow();
+                // Do somethings
+                ByteBuf msg = Unpooled.buffer(msgEvent.getEventInfo().getByteArray().length);
+                msg.writeBytes(msgEvent.getEventInfo().getByteArray());
+                ch.writeAndFlush(msg);
+                // Release back to pool
+                pool.release(ch);
             }
         });
     }
