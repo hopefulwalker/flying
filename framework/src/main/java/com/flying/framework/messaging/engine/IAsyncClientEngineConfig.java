@@ -2,7 +2,7 @@
  Created by Walker on 2017/4/9.
  Revision History:
  Date          Who              Version      What
- 2017/4/9      Walker           0.1.0        Created. 
+ 2017/4/9      Walker           0.3.0        Created.
 */
 package com.flying.framework.messaging.engine;
 
@@ -14,8 +14,6 @@ import java.util.concurrent.Executor;
 
 public interface IAsyncClientEngineConfig {
     List<IEndpoint> getEndpoints();
-
-    void setEndpoints(List<IEndpoint> endpoints);
 
     Executor getExecutor();
 

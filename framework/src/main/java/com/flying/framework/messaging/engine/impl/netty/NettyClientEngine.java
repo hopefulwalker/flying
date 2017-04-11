@@ -2,7 +2,7 @@
  Created by Walker on 2017/4/9.
  Revision History:
  Date          Who              Version      What
- 2017/4/9      Walker           0.1.0        Created.
+ 2017/4/9      Walker           0.3.0        Created.
                                              Refactor to support multi-communication library, such as netty.
 */
 package com.flying.framework.messaging.engine.impl.netty;
@@ -17,8 +17,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.pool.AbstractChannelPoolHandler;
 import io.netty.channel.pool.AbstractChannelPoolMap;
-import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -44,21 +44,14 @@ public class NettyClientEngine implements IAsyncClientEngine {
         eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class);
+        IAsyncClientEngine self = this;
         poolMap = new AbstractChannelPoolMap<IEndpoint, FixedChannelPool>() {
             @Override
             protected FixedChannelPool newPool(IEndpoint key) {
-                return new FixedChannelPool(bootstrap.remoteAddress(key.getAddress(), key.getPort()), new ChannelPoolHandler() {
-                    @Override
-                    public void channelReleased(Channel ch) throws Exception {
-                    }
-
-                    @Override
-                    public void channelAcquired(Channel ch) throws Exception {
-                    }
-
+                return new FixedChannelPool(bootstrap.remoteAddress(key.getAddress(), key.getPort()), new AbstractChannelPoolHandler() {
                     @Override
                     public void channelCreated(Channel ch) throws Exception {
-                        ch.pipeline().addLast(new ClientHandler());
+                        ch.pipeline().addLast(new ClientHandler(self));
                     }
                 }, 5);
             }
@@ -73,10 +66,6 @@ public class NettyClientEngine implements IAsyncClientEngine {
     @Override
     public IAsyncClientEngineConfig getConfig() {
         return config;
-    }
-
-    public void setConfig(IAsyncClientEngineConfig config) {
-        this.config = config;
     }
 
     @Override

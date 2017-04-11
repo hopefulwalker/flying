@@ -2,7 +2,7 @@
  Created by Walker on 2017/4/10.
  Revision History:
  Date          Who              Version      What
- 2017/4/10      Walker           0.1.0        Created.
+ 2017/4/10     Walker           0.3.0        Created.
 */
 package com.flying.framework.messaging.engine.impl.netty;
 
@@ -17,15 +17,20 @@ import org.junit.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 public class NettyClientEngineTest {
     private static IAsyncClientEngine clientEngine;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         List<IEndpoint> endpoints = new ArrayList<>();
-        endpoints.add(new Endpoint("tcp", "127.0.0.1", 8181));
-        IAsyncClientEngineConfig config = new NettyClientEngineConfig();
-        config.setEndpoints(endpoints);
+        endpoints.add(new Endpoint("tcp", "192.168.6.210", 8181));
+        IAsyncClientEngineConfig config = new NettyClientEngineConfig(endpoints);
+        config.setMsgEventListener(event -> {
+            assertEquals(66, event.getEventInfo().getByteArray()[0]);
+            return null;
+        });
         clientEngine = new NettyClientEngine(config);
     }
 
@@ -52,7 +57,7 @@ public class NettyClientEngineTest {
         });
         clientEngine.sendMsg(request);
         try {
-            Thread.sleep(1000); // wait for the server to stop.
+            Thread.sleep(5000); // wait for the server to stop.
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
