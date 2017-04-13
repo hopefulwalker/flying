@@ -12,7 +12,7 @@ import com.flying.framework.messaging.event.IMsgEventListener;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public interface IAsyncClientEngineConfig {
+public interface IEngineConfig {
     List<IEndpoint> getEndpoints();
 
     Executor getExecutor();

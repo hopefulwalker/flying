@@ -9,7 +9,7 @@ package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IAsyncClientEngine;
-import com.flying.framework.messaging.engine.IAsyncClientEngineConfig;
+import com.flying.framework.messaging.engine.IEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -32,10 +32,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class NettyClientEngine implements IAsyncClientEngine {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientEngine.class);
     private ChannelPoolMap<IEndpoint, FixedChannelPool> poolMap;
-    private IAsyncClientEngineConfig config;
+    private IEngineConfig config;
     private EventLoopGroup eventLoopGroup;
 
-    public NettyClientEngine(IAsyncClientEngineConfig config) {
+    public NettyClientEngine(IEngineConfig config) {
         this.config = config;
     }
 
@@ -64,7 +64,7 @@ public class NettyClientEngine implements IAsyncClientEngine {
     }
 
     @Override
-    public IAsyncClientEngineConfig getConfig() {
+    public IEngineConfig getConfig() {
         return config;
     }
 

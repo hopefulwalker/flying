@@ -17,7 +17,7 @@ public interface IAsyncClientEngine extends IEngine {
     /**
      * @return the config information.
      */
-    IAsyncClientEngineConfig getConfig();
+    IEngineConfig getConfig();
 
     /**
      * Send message in asynchronous mode.

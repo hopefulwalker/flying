@@ -8,18 +8,18 @@
 package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IAsyncClientEngineConfig;
+import com.flying.framework.messaging.engine.IEngineConfig;
 import com.flying.framework.messaging.event.IMsgEventListener;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class NettyClientEngineConfig implements IAsyncClientEngineConfig {
+public class NettyEngineConfig implements IEngineConfig {
     private List<IEndpoint> endpoints;
     private Executor executor;
     private IMsgEventListener msgEventListener;
 
-    public NettyClientEngineConfig(List<IEndpoint> endpoints) {
+    public NettyEngineConfig(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 
