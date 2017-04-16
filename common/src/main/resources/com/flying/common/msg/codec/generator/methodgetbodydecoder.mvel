@@ -1,0 +1,7 @@
+        // headerDecoderClass, varHeaderDecoder, varMsg, bodyDecoderClass, varBodyDecoder
+        @{headerDecoderClass} @{varHeaderDecoder} = new @{headerDecoderClass}();
+        UnsafeBuffer buffer = new UnsafeBuffer(@{varMsg});
+        @{varHeaderDecoder}.wrap(buffer, 0);
+        @{bodyDecoderClass} @{varBodyDecoder} = new @{bodyDecoderClass}();
+        @{varBodyDecoder}.wrap(buffer, @{varHeaderDecoder}.encodedLength(), @{varHeaderDecoder}.blockLength(), @{varHeaderDecoder}.version());
+        return @{varBodyDecoder};

@@ -15,7 +15,7 @@
     <bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
         <property name="minIdle" value="1"/>
     </bean>
-    <bean id="orderMsgConverter" class="com.flying.oms.msg.converter.OrderMsgConverter"/>
+    <bean id="orderMsgConverter" class="com.flying.oms.msg.converter.OrderMsgCodec"/>
 
 
     <bean id="monitorService" class="com.flying.monitor.service.client.BCMonitorClientService">
@@ -25,7 +25,7 @@
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
-    <bean id="monitorMsgBuilder" class="com.flying.monitor.msg.converter.MonitorMsgConverter"/>
+    <bean id="monitorMsgBuilder" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
     <bean id="broadcastEndpoints" class="java.util.ArrayList">
         <constructor-arg>
             <list>

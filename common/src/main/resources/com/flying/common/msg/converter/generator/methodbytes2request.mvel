@@ -1,7 +1,0 @@
-        // headerClass, varHeader, varBytes, requestClass, varRequest
-        @{headerClass} @{varHeader} = new @{headerClass}();
-        DirectBuffer requestBuffer = new DirectBuffer(@{varBytes});
-        @{varHeader}.wrap(requestBuffer, 0, 0);
-        @{requestClass} @{varRequest} = new @{requestClass}();
-        @{varRequest}.wrapForDecode(requestBuffer, @{varHeader}.size(), @{varHeader}.blockLength(), @{varHeader}.version());
-        return @{varRequest};

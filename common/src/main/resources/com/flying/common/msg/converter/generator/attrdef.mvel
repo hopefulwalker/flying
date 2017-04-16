@@ -1,1 +1,0 @@
-    private static Logger logger = LoggerFactory.getLogger(@{className}.class);

@@ -1,5 +1,0 @@
-        // headerClass, varHeader, varBytes, varFields
-        @{headerClass} @{varHeader} = new @{headerClass}();
-        DirectBuffer buffer = new DirectBuffer(@{varBytes});
-        @{varHeader}.wrap(buffer, 0, 0);
-        return @{varHeader}.@{varFields}();

@@ -6,13 +6,13 @@
  */
 package com.flying.monitor.service.client;
 
-import com.flying.common.msg.converter.Helper;
+import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.monitor.model.ServerBO;
-import com.flying.monitor.msg.converter.IMonitorMsgConverter;
+import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.MonitorServiceException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -23,14 +23,14 @@ import java.util.List;
 
 public class UCMonitorClientService extends BaseUCClientService implements IMonitorService {
     private static final Logger logger = LoggerFactory.getLogger(UCMonitorClientService.class);
-    private IMonitorMsgConverter msgConverter = null;
+    private IMonitorMsgCodec msgConverter = null;
 
-    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IMonitorMsgConverter msgConverter) {
+    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IMonitorMsgCodec msgConverter) {
         super(region, IServiceType.MONITOR, endpointFactory, poolConfig);
         this.msgConverter = msgConverter;
     }
 
-    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IMonitorMsgConverter msgConverter) {
+    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IMonitorMsgCodec msgConverter) {
         super(region, IServiceType.MONITOR, endpointFactory, poolConfig, timeout);
         this.msgConverter = msgConverter;
     }

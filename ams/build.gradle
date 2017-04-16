@@ -18,9 +18,9 @@ dependencies {
 }
 
 task generateAccountMsgConverter(type: JavaExec) {
-    main = 'com.flying.common.msg.converter.generator.ConverterGenerator'
-    args = ['com.flying.ams.msg.converter.IAccountMsgConverter']
-    systemProperties = ['converter.output.dir': 'src/main/java']
+    main = 'com.flying.common.msg.codec.generator.ConverterGenerator'
+    args = ['com.flying.ams.msg.codec.IAccountMsgConverter']
+    systemProperties = ['codec.output.dir': 'src/main/java']
     classpath sourceSets.main.runtimeClasspath
 }
 

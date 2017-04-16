@@ -65,7 +65,7 @@
     </bean>
     <bean id="monitorServerService" class="com.flying.monitor.service.server.MonitorServerService"/>
 
-    <bean id="monitorMsgConverter" class="com.flying.monitor.msg.converter.MonitorMsgConverter"/>
+    <bean id="monitorMsgConverter" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
     <bean id="endpointFactory" class="com.flying.common.service.client.FixedEndpointFactory">
         <constructor-arg name="endpoints">
             <list>

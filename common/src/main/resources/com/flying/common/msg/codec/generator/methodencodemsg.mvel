@@ -1,0 +1,27 @@
+        // headerEncoderClass, varHeaderEncoder, bodyEncoderClass, varBodyEncoder, msgTypeClass, bodyClass, varFields
+        // elementExists, elementEncoderClass, varElementEncoder, elementClass, varElements, varElement, varElementFields
+        @{headerEncoderClass} @{varHeaderEncoder} = new @{headerEncoderClass}();
+        @{bodyEncoderClass} @{varBodyEncoder} = new @{bodyEncoderClass}();
+        @if{!elementExists}
+        byte[] replyBytes = new byte[@{varHeaderEncoder}.encodedLength() + @{varBodyEncoder}.sbeBlockLength()];
+        @else{}
+        int numInGroup = (@{varElements} == null) ? 0 : @{varElements}.size();
+        byte[] replyBytes = new byte[@{varHeaderEncoder}.encodedLength() + @{varBodyEncoder}.sbeBlockLength() +
+                @{bodyEncoderClass}.@{elementEncoderClass}.sbeHeaderSize() + @{bodyEncoderClass}.@{elementEncoderClass}.sbeBlockLength() * numInGroup];
+        @end{}
+        UnsafeBuffer buffer = new UnsafeBuffer(replyBytes);
+        // Build the encoded message, header first and then body.
+        @{varHeaderEncoder}.wrap(buffer, 0).blockLength(@{varBodyEncoder}.sbeBlockLength())
+                .templateId(@{varBodyEncoder}.sbeTemplateId()).schemaId(@{varBodyEncoder}.sbeSchemaId()).version(@{varBodyEncoder}.sbeSchemaVersion())
+                .sourceIP(CommUtils.getLocalIp4AddressAsInt()).timestamp(System.currentTimeMillis())
+                .msgType(@{msgTypeClass}.@{bodyClass});
+        @{varBodyEncoder}.wrap(buffer, @{varHeaderEncoder}.encodedLength())@{varFields};
+        @if{elementExists}
+        if (numInGroup > 0) {
+            @{bodyEncoderClass}.@{elementEncoderClass} @{varElementEncoder} = @{varBodyEncoder}.@{varElements}Count(numInGroup);
+            for (@{elementClass} @{varElement} : @{varElements}) {
+                @{varElementEncoder}.next()@{varElementFields};
+            }
+        }
+        @end{}
+        return replyBytes;

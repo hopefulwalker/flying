@@ -11,7 +11,7 @@ import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderState;
-import com.flying.oms.msg.converter.IOrderMsgConverter;
+import com.flying.oms.msg.converter.IOrderMsgCodec;
 import com.flying.oms.msg.gen.OrderRequest;
 import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.service.server.OrderServerService;
@@ -26,9 +26,9 @@ import java.io.UnsupportedEncodingException;
 public class OrderRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(OrderRequestHandler.class);
     private OrderServerService service;
-    private IOrderMsgConverter msgConverter;
+    private IOrderMsgCodec msgConverter;
 
-    public OrderRequestHandler(OrderServerService service, IOrderMsgConverter msgConverter) {
+    public OrderRequestHandler(OrderServerService service, IOrderMsgCodec msgConverter) {
         this.service = service;
         this.msgConverter = msgConverter;
     }

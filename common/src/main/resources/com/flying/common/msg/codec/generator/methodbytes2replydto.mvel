@@ -1,0 +1,10 @@
+        // headerDecoderClass, varHeaderDecoder, varMsg, bodyDecoderClass, varBodyDecoder, elementClass, varElement, varElementFields, exception
+        @{headerDecoderClass} @{varHeaderDecoder} = new @{headerDecoderClass}();
+        UnsafeBuffer buffer = new UnsafeBuffer(@{varMsg});
+        @{varHeaderDecoder}.wrap(buffer, 0);
+        @{bodyDecoderClass} @{varBodyDecoder} = new @{bodyDecoderClass}();
+        @{varBodyDecoder}.wrapForDecode(buffer, @{varHeaderDecoder}.size(), @{varHeaderDecoder}.blockLength(), @{varHeaderDecoder}.version());
+        // Analyze the reply and build dto.
+        @{elementClass} @{varElement} = new @{elementClass}();
+        @{varElementFields}
+        return @{varElement};

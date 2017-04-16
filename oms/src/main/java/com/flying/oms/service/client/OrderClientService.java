@@ -6,13 +6,13 @@
  */
 package com.flying.oms.service.client;
 
-import com.flying.common.msg.converter.Helper;
+import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.msg.converter.IOrderMsgConverter;
+import com.flying.oms.msg.converter.IOrderMsgCodec;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
 
 public class OrderClientService extends BaseUCClientService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderClientService.class);
-    private IOrderMsgConverter msgConverter;
+    private IOrderMsgCodec msgConverter;
 
-    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IOrderMsgConverter msgConverter) {
+    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IOrderMsgCodec msgConverter) {
         super(region, IServiceType.ORDER, endpointFactory, poolConfig);
         this.msgConverter = msgConverter;
     }
 
-    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IOrderMsgConverter msgConverter) {
+    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IOrderMsgCodec msgConverter) {
         super(region, IServiceType.ORDER, endpointFactory, poolConfig, timeout);
         this.msgConverter = msgConverter;
     }

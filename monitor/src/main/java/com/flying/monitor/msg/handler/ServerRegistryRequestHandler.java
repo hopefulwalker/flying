@@ -8,8 +8,8 @@ package com.flying.monitor.msg.handler;
 
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.monitor.model.ServerBO;
-import com.flying.monitor.msg.converter.IMonitorMsgConverter;
-import com.flying.monitor.msg.gen.ServerRegistryRequest;
+import com.flying.monitor.msg.codec.IMonitorMsgCodec;
+import com.flying.monitor.msg.gen.ServerRegistryRequestDecoder;
 import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.MonitorServiceException;
 import org.slf4j.Logger;
@@ -20,22 +20,20 @@ import java.io.UnsupportedEncodingException;
 public class ServerRegistryRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(ServerRegistryRequestHandler.class);
     private IMonitorService service;
-    private IMonitorMsgConverter msgConverter;
+    private IMonitorMsgCodec msgConverter;
 
-    public ServerRegistryRequestHandler(IMonitorService service, IMonitorMsgConverter msgConverter) {
+    public ServerRegistryRequestHandler(IMonitorService service, IMonitorMsgCodec msgConverter) {
         this.service = service;
         this.msgConverter = msgConverter;
     }
 
     public byte[] handle(byte[] msg) {
         try {
-            ServerRegistryRequest request = msgConverter.getServerRegistryRequest(msg);
-            ServerBO serviceBO = new ServerBO(request.getUuid(), request.getRegion(),
-                    request.serviceType(), request.getName(), request.getEndpoint(),
+            ServerRegistryRequestDecoder request = msgConverter.getServerRegistryRequest(msg);
+            ServerBO serviceBO = new ServerBO(request.uuid(), request.region(),
+                    request.serviceType(), request.name(), request.endpoint(),
                     request.workers(), request.stateId(), request.reportTime());
             service.register(serviceBO);
-        } catch (UnsupportedEncodingException uee) {
-            logger.error("Error in handling requestClass", uee);
         } catch (MonitorServiceException mse) {
             logger.error(mse.toString(), mse);
         }

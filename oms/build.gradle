@@ -31,9 +31,9 @@ dependencies {
 }
 
 task generateOrderMsgConverter(type: JavaExec) {
-    main = 'com.flying.common.msg.converter.generator.ConverterGenerator'
-    args = ['com.flying.oms.msg.converter.IOrderMsgConverter']
-    systemProperties = ['converter.output.dir': 'src/main/java']
+    main = 'com.flying.common.msg.codec.generator.ConverterGenerator'
+    args = ['com.flying.oms.msg.codec.IOrderMsgConverter']
+    systemProperties = ['codec.output.dir': 'src/main/java']
     classpath sourceSets.main.runtimeClasspath
 }
 
