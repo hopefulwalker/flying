@@ -11,7 +11,7 @@ import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderState;
-import com.flying.oms.msg.converter.IOrderMsgCodec;
+import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.msg.gen.OrderRequest;
 import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.service.server.OrderServerService;

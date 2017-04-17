@@ -16,7 +16,6 @@ import com.flying.monitor.service.IMonitorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class ServerQueryRequestHandler implements IMsgHandler {
@@ -39,6 +38,6 @@ public class ServerQueryRequestHandler implements IMsgHandler {
             logger.error("Error in finding serverBO", se);
             retCode = se.getCode();
         }
-        return msgCodec.getServerQueryReplyMsg(retCode, serverBOs);
+        return msgCodec.encodeServerQueryReply(retCode, serverBOs);
     }
 }

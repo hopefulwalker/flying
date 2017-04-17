@@ -12,7 +12,7 @@ import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.msg.converter.IOrderMsgCodec;
+import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;

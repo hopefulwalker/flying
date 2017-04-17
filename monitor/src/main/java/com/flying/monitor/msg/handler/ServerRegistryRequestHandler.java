@@ -15,21 +15,19 @@ import com.flying.monitor.service.MonitorServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-
 public class ServerRegistryRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(ServerRegistryRequestHandler.class);
     private IMonitorService service;
-    private IMonitorMsgCodec msgConverter;
+    private IMonitorMsgCodec msgCodec;
 
-    public ServerRegistryRequestHandler(IMonitorService service, IMonitorMsgCodec msgConverter) {
+    public ServerRegistryRequestHandler(IMonitorService service, IMonitorMsgCodec msgCodec) {
         this.service = service;
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     public byte[] handle(byte[] msg) {
         try {
-            ServerRegistryRequestDecoder request = msgConverter.getServerRegistryRequest(msg);
+            ServerRegistryRequestDecoder request = msgCodec.getServerRegistryRequestDecoder(msg);
             ServerBO serviceBO = new ServerBO(request.uuid(), request.region(),
                     request.serviceType(), request.name(), request.endpoint(),
                     request.workers(), request.stateId(), request.reportTime());

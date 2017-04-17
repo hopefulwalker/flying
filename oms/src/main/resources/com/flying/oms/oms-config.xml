@@ -75,8 +75,8 @@
     </bean>
 
     <bean id="monitorMsgConverter" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
-    <bean id="orderMsgConverter" class="com.flying.oms.msg.converter.OrderMsgCodec"/>
-    <bean id="accountMsgConverter" class="com.flying.ams.msg.converter.AccountMsgCodec"/>
+    <bean id="orderMsgConverter" class="com.flying.oms.msg.codec.OrderMsgCodec"/>
+    <bean id="accountMsgConverter" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
 
     <bean id="orderCache" class="java.util.HashMap"/>
     <bean id="orderStateMachine" class="com.flying.framework.fsm.impl.DefaultStateMachine"/>

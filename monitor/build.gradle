@@ -33,32 +33,18 @@ dependencies {
     runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
 }
 
-task generateMonitorMsgConverter(type: JavaExec) {
-    main = 'com.flying.common.msg.codec.generator.ConverterGenerator'
-    args = ['com.flying.monitor.msg.codec.IMonitorMsgConverter']
-    systemProperties = ['codec.output.dir': 'src/main/java']
-    classpath sourceSets.main.runtimeClasspath
-}
-
 task generateMonitorMsg(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     args = ['src/main/resources/com/flying/monitor/msg/monitor-msg.xml']
-    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/monitor/msg/SimpleBinary1-0.xsd']
-    classpath configurations.compile
-}
-
-task generateMonitorMsgConverter2(type: JavaExec) {
-    main = 'com.flying.common.msg.codec.generator.CodecGenerator'
-    args = ['com.flying.monitor.msg.codec.IMonitorMsgCodec2']
-    systemProperties = ['codec.output.dir': 'src/main/java']
-    classpath sourceSets.main.runtimeClasspath
-}
-
-task generateMonitorMsg2(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
-    args = ['src/main/resources/com/flying/monitor/msg/monitor-msg2.xml']
     systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/monitor/msg/sbe.xsd']
     classpath configurations.compile
+}
+
+task generateMonitorMsgCodec(type: JavaExec) {
+    main = 'com.flying.common.msg.codec.generator.CodecGenerator'
+    args = ['com.flying.monitor.msg.codec.IMonitorMsgCodec']
+    systemProperties = ['codec.output.dir': 'src/main/java']
+    classpath sourceSets.main.runtimeClasspath
 }
 
 compileJava.dependsOn('generateMonitorMsg')

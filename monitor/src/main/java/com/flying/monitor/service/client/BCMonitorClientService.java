@@ -22,16 +22,16 @@ import java.util.List;
 public class BCMonitorClientService implements IMonitorService {
     private static final int DEFAULT_TIMEOUT = 1000;
     private IClientEngine engine;
-    private IMonitorMsgCodec msgConverter;
+    private IMonitorMsgCodec msgCodec;
 
-    public BCMonitorClientService(IClientEngine engine, IMonitorMsgCodec msgConverter) {
+    public BCMonitorClientService(IClientEngine engine, IMonitorMsgCodec msgCodec) {
         this.engine = engine;
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     @Override
     public void register(ServerBO serverBO) throws MonitorServiceException {
-        byte[] requestBytes = msgConverter.getServerRegistryRequestMsg(serverBO);
+        byte[] requestBytes = msgCodec.encodeServerRegistryRequest(serverBO);
         IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(requestBytes));
         engine.sendMsg(requestEvent);
     }
@@ -43,7 +43,7 @@ public class BCMonitorClientService implements IMonitorService {
 
     @Override
     public List<ServerBO> find(String region, short type) throws MonitorServiceException {
-        byte[] requestBytes = msgConverter.getServerQueryRequestMsg(region, type);
+        byte[] requestBytes = msgCodec.encodeServerQueryRequest(region, type);
         IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(requestBytes));
         engine.sendMsg(requestEvent);
         IMsgEvent replyEvent = engine.recvMsg(DEFAULT_TIMEOUT);
@@ -54,7 +54,7 @@ public class BCMonitorClientService implements IMonitorService {
         } catch (ServiceException se) {
             throw new MonitorServiceException(se.getCode(), se.getMessage());
         }
-        return msgConverter.getServerQueryReply(replyBytes);
+        return msgCodec.getServerQueryReply(replyBytes);
     }
 
     @Override

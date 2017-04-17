@@ -7,8 +7,8 @@
 package com.flying.ams.msg.handler;
 
 import com.flying.ams.model.AccountBO;
-import com.flying.ams.msg.converter.IAccountMsgCodec;
-import com.flying.ams.msg.gen.GetAccountByIdRequest;
+import com.flying.ams.msg.codec.IAccountMsgCodec;
+import com.flying.ams.msg.gen.GetAccountByIdRequestDecoder;
 import com.flying.ams.service.IAccountService;
 import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
 public class GetAcctByIdHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(GetAcctByIdHandler.class);
     private IAccountService service;
-    private IAccountMsgCodec msgConverter;
+    private IAccountMsgCodec msgCodec;
 
-    public GetAcctByIdHandler(IAccountService service, IAccountMsgCodec msgConverter) {
+    public GetAcctByIdHandler(IAccountService service, IAccountMsgCodec msgCodec) {
         this.service = service;
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     @Override
     public byte[] handle(byte[] msg) {
-        GetAccountByIdRequest request = msgConverter.getGetAccountByIdRequest(msg);
+        GetAccountByIdRequestDecoder request = msgCodec.getGetAccountByIdRequest(msg);
         int retCode = IReturnCode.SUCCESS;
         AccountBO acctBO = null;
         try {
@@ -37,7 +37,7 @@ public class GetAcctByIdHandler implements IMsgHandler {
             logger.error("Exception in getting account bo", se);
             retCode = se.getCode();
         }
-        return msgConverter.getGetAccountByIdReplyMsg(retCode, acctBO);
+        return msgCodec.encodeGetAccountByIdReply(retCode, acctBO);
     }
 
 }

@@ -62,7 +62,7 @@
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="monitorMsgConverter" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
-    <bean id="accountMsgConverter" class="com.flying.ams.msg.converter.AccountMsgCodec"/>
+    <bean id="accountMsgConverter" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
     <bean id="accountServerService" class="com.flying.ams.service.server.AccountServerService">
         <constructor-arg name="accountCache" ref="accountCache"/>
         <constructor-arg name="loader" ref="loader"/>

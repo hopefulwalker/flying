@@ -13,7 +13,7 @@
         <constructor-arg name="msgConverter" ref="accountMsgConverter"/>
         <property name="accountCache" ref="accountCache"/>
     </bean>
-    <bean id="accountMsgConverter" class="com.flying.ams.msg.converter.AccountMsgCodec"/>
+    <bean id="accountMsgConverter" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
 
     <bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
         <property name="minIdle" value="1"/>

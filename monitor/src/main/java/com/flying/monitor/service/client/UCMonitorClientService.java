@@ -23,16 +23,16 @@ import java.util.List;
 
 public class UCMonitorClientService extends BaseUCClientService implements IMonitorService {
     private static final Logger logger = LoggerFactory.getLogger(UCMonitorClientService.class);
-    private IMonitorMsgCodec msgConverter = null;
+    private IMonitorMsgCodec msgCodec = null;
 
     public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IMonitorMsgCodec msgConverter) {
         super(region, IServiceType.MONITOR, endpointFactory, poolConfig);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgConverter;
     }
 
     public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IMonitorMsgCodec msgConverter) {
         super(region, IServiceType.MONITOR, endpointFactory, poolConfig, timeout);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgConverter;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class UCMonitorClientService extends BaseUCClientService implements IMoni
         // send register message to monitor server.
         try {
             engine = borrowEngine();
-            Helper.sendMsg(engine, msgConverter.getServerRegistryRequestMsg(serverBO));
+            Helper.sendMsg(engine, msgCodec.encodeServerRegistryRequest(serverBO));
         } catch (MonitorServiceException mse) {
             throw mse;
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class UCMonitorClientService extends BaseUCClientService implements IMoni
         // send find message to account server.
         try {
             engine = borrowEngine();
-            serverBOs = msgConverter.getServerQueryReply(Helper.request(engine, getTimeout(), msgConverter.getServerQueryRequestMsg(region, type)));
+            serverBOs = msgCodec.getServerQueryReply(Helper.request(engine, getTimeout(), msgCodec.encodeServerQueryRequest(region, type)));
         } catch (MonitorServiceException mse) {
             throw mse;
         } catch (Exception e) {

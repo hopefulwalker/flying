@@ -7,8 +7,8 @@
 package com.flying.common.msg.codec.generator;
 
 import com.flying.common.msg.codec.anno.CnvInfo;
-import com.flying.common.msg.codec.anno.Name;
 import com.flying.common.msg.codec.anno.Fields;
+import com.flying.common.msg.codec.anno.Name;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mvel2.templates.TemplateRuntime;
@@ -31,79 +31,62 @@ public class CodeGenerator2 {
     private static final String MVEL_GET_HEADER_INFO = "com.flying.common.msg.codec.generator.methodgetheaderinfo";
     private static final String MVEL_ENCODE_MSG = "com.flying.common.msg.codec.generator.methodencodemsg";
     private static final String MVEL_GET_BODY_DECODER = "com.flying.common.msg.codec.generator.methodgetbodydecoder";
+    private static final String MVEL_DECODE_MSG = "com.flying.common.msg.codec.generator.methoddecodemsg";
+
+    private static final String KEY_CLASS_NAME = "className";
+    private static final String KEY_NOW = "now";
+    private static final String KEY_PKG_NAME = "pkgName";
+    private static final String KEY_EXCEPTION = "exception";
 
     private static final String KEY_HEADER_DECODER_CLASS_NAME = "headerDecoderClass";
     private static final String KEY_VAR_HEADER_DECODER = "varHeaderDecoder";
-    private static final String VAR_HEADER_DECODER = "headerDecoder";
+    private static final String VALUE_HEADER_DECODER = "headerDecoder";
 
     private static final String KEY_HEADER_ENCODER_CLASS_NAME = "headerEncoderClass";
     private static final String KEY_VAR_HEADER_ENCODER = "varHeaderEncoder";
-    private static final String VAR_HEADER_ENCODER = "headerEncoder";
+    private static final String VALUE_HEADER_ENCODER = "headerEncoder";
 
     private static final String KEY_BODY_DECODER_CLASS_NAME = "bodyDecoderClass";
     private static final String KEY_VAR_BODY_DECODER = "varBodyDecoder";
-    private static final String VAR_BODY_DECODER = "bodyDecoder";
+    private static final String VALUE_BODY_DECODER = "bodyDecoder";
 
     private static final String KEY_BODY_ENCODER_CLASS_NAME = "bodyEncoderClass";
     private static final String KEY_VAR_BODY_ENCODER = "varBodyEncoder";
-    private static final String VAR_BODY_ENCODER = "bodyEncoder";
+    private static final String VALUE_BODY_ENCODER = "bodyEncoder";
     private static final String KEY_BODY_CLASS_NAME = "bodyClass";
     // Element related keys.
     private static final String KEY_ELEMENT_EXISTS = "elementExists";
     private static final String KEY_ELEMENT_ENCODER_CLASS_NAME = "elementEncoderClass";
+    private static final String KEY_ELEMENT_DECODER_CLASS_NAME = "elementDecoderClass";
     private static final String KEY_VAR_ELEMENT_ENCODER = "varElementEncoder";
+    private static final String KEY_VAR_ELEMENT_DECODER = "varElementDecoder";
     private static final String KEY_ELEMENT_CLASS_NAME = "elementClass";
+    private static final String KEY_ELEMENT_CLASS = "elementClassObject";
     private static final String KEY_VAR_ELEMENT_FIELDS = "varElementFields";
     private static final String KEY_VAR_ELEMENTS = "varElements";
     private static final String KEY_VAR_ELEMENT = "varElement";
 
+    // method return related constants
+    private static final String KEY_RETURN_TYPE = "retType";
+    private static final String VALUE_RETURN_TYPE_PRIMITIVE = "primitive";
+    private static final String VALUE_RETURN_TYPE_ARRAY = "array";
+    private static final String VALUE_RETURN_TYPE_STRING = "String";
+    private static final String VALUE_RETURN_TYPE_COLLECTION = "collection";
+    private static final String VALUE_RETURN_TYPE_VALUE_OBJECT = "valueObject";
+    private static final String KEY_RETURN_TYPE_STRING = "retTypeString";
+
     private static final String KEY_MSGTYPE_CLASS_NAME = "msgTypeClass";
 
-    private static final String KEY_NOW = "now";
-    private static final String KEY_PKG_NAME = "pkgName";
 
-    private static final String STRING_ENCODER = "Encoder";
-    private static final String STRING_DECODER = "Decoder";
+    private static final String SBE_STRING_ENCODER = "Encoder";
+    private static final String SBE_STRING_DECODER = "Decoder";
 
     private static final String KEY_VAR_MSG = "varMsg";
-
-    private static final String RETURN_KIND_VOID = "void";
-    private static final String RETURN_KIND_PRIMITIVE = "primitive";
-    private static final String RETURN_KIND_ARRAY = "array";
-    private static final String RETURN_KIND_STRING = "String";
-    private static final String RETURN_KIND_COLLECTION = "collection";
-    private static final String RETURN_KIND_OBJECT = "object";
-    private static final String KEY_RETURN_OBJECT_CLASS = "ReturnObjectClass";
 
     private static final String KEY_VAR_FIELDS = "varFields";
     private static final String KEY_VAR_FIELD = "varField";
     private static final String INDENT = "    ";
-
     ////// End of refactor constances.
-    private static final short CNV_BYTES_2_REPLY = 202;
-
-    private static final String BYTES_2_REPLY_COLLECTION = "com.flying.common.msg.codec.generator.methodbytes2replycollection";
-    private static final String BYTES_2_REPLY_DTO = "com.flying.common.msg.codec.generator.methodbytes2replydto";
-
-    private static final String KEY_CLASS_NAME = "className";
-    private static final String KEY_RETURN_KIND = "retKind";
-    private static final String KEY_RETURN_KIND_NAME = "retKindName";
-    private static final String KEY_DTO_CLASS = "ClassObject_DTO";
-    private static final String KEY_EXCEPTION = "exception";
-
-    private static final String KEY_REPLY_CLASS_NAME = "replyClass";
-    private static final String KEY_VAR_REPLY = "varReply";
-
-    private static final String KEY_VAR_DTOS = "varDTOs";
-    private static final String KEY_MSGDTO_CLASS_NAME = "msgDTOClass";
-    private static final String KEY_VAR_MSGDTO = "varMsgDTO";
-    private static final String KEY_VAR_DTO = "varDTO";
-    private static final String KEY_DTO_CLASS_NAME = "dtoClass";
-    private static final String KEY_VAR_DTOFIELDS = "varDTOFields";
-
-    private static final String RETURN_KIND_DTO = "dto";
-    private static final String RETURN_KIND_DECODER = "object";
-
     private Set<String> imports = new HashSet<>();
 
     public void generateImplClass(String outputDirName, Class clazz) throws Exception {
@@ -133,15 +116,10 @@ public class CodeGenerator2 {
         return getMvelEvalResult(MVEL_PACKAGE_TEMPLATE, vars);
     }
 
-    private String getMvelEvalResult(String template, Map<String, Object> vars) {
-        URL url = getUrl(template);
-        String contents = null;
-        try (InputStream inStream = url.openStream()) {
-            contents = (String) TemplateRuntime.eval(inStream, null, vars);
-        } catch (IOException ioe) {
-            logger.error("Error in eval mvel template!", ioe);
-        }
-        return contents;
+    private String generateClassDeclaration(final String className) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put(KEY_CLASS_NAME, className);
+        return getMvelEvalResult(MVEL_CLASS_TEMPLATE, vars);
     }
 
     private String generateImports() {
@@ -152,44 +130,12 @@ public class CodeGenerator2 {
         return sb.toString();
     }
 
-    private String generateClassDeclaration(final String className) {
-        Map<String, Object> vars = new HashMap<>();
-        vars.put(KEY_CLASS_NAME, className);
-        return getMvelEvalResult(MVEL_CLASS_TEMPLATE, vars);
-    }
-
     private String generateMethod(Method method) {
-        Map<String, Object> vars = new HashMap<>();
-        String retKind = RETURN_KIND_VOID;
         StringBuilder sb = new StringBuilder();
         sb.append(INDENT).append(Modifier.toString(method.getModifiers()).replaceAll("abstract", ""));
-        String retKindName = method.getReturnType().getSimpleName();
-        Class returnClass = method.getReturnType();
-        if (returnClass.isPrimitive()) {
-            if (!returnClass.getName().equals(RETURN_KIND_VOID)) retKind = RETURN_KIND_PRIMITIVE;
-        } else if (returnClass.isArray()) {
-            retKind = RETURN_KIND_ARRAY;
-        } else if (returnClass.getName().equals("java.lang.String")) {
-            retKind = RETURN_KIND_STRING;
-        } else {
-            retKind = RETURN_KIND_OBJECT;
-            addImports(returnClass);
-            Type retType = method.getGenericReturnType();
-            if (retType instanceof ParameterizedType) {
-                retKind = RETURN_KIND_COLLECTION;
-                try {
-                    returnClass = Class.forName(((ParameterizedType) retType).getActualTypeArguments()[0].getTypeName());
-                    retKindName = retKindName + "<" + returnClass.getSimpleName() + ">";
-                    addImports(returnClass);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            vars.put(KEY_RETURN_OBJECT_CLASS, returnClass);
-        }
-        sb.append(retKindName);
-        vars.put(KEY_RETURN_KIND_NAME, retKindName);
-        vars.put(KEY_RETURN_KIND, retKind);
+
+        Map<String, Object> vars = new HashMap<>();
+        sb.append(prepareReturnType(method, vars));
         sb.append(" ").append(method.getName()).append("(");
         Parameter[] parameter = method.getParameters();
         for (int i = 0; i < parameter.length; i++) {
@@ -209,36 +155,67 @@ public class CodeGenerator2 {
         return sb.toString();
     }
 
+    private String prepareReturnType(Method method, Map<String, Object> vars) {
+        String retType;
+        Class returnClazz = method.getReturnType();
+        String retTypeString = returnClazz.getSimpleName();
+        if (returnClazz.isPrimitive()) {
+            retType = VALUE_RETURN_TYPE_PRIMITIVE;
+        } else if (returnClazz.isArray()) {
+            retType = VALUE_RETURN_TYPE_ARRAY;
+        } else if (returnClazz.getName().equals(String.class.getName())) {
+            retType = VALUE_RETURN_TYPE_STRING;
+        } else {
+            addImports(returnClazz);
+            Type retJDKType = method.getGenericReturnType();
+            if (retJDKType instanceof Class) {
+                retType = VALUE_RETURN_TYPE_VALUE_OBJECT;
+                vars.put(KEY_ELEMENT_CLASS, returnClazz);
+                vars.put(KEY_ELEMENT_CLASS_NAME, returnClazz.getSimpleName());
+            } else if (retJDKType instanceof ParameterizedType) {
+                retType = VALUE_RETURN_TYPE_COLLECTION;
+                try {
+                    returnClazz = Class.forName(((ParameterizedType) retJDKType).getActualTypeArguments()[0].getTypeName());
+                    vars.put(KEY_ELEMENT_CLASS, returnClazz);
+                    vars.put(KEY_ELEMENT_CLASS_NAME, returnClazz.getSimpleName());
+                    retTypeString = retTypeString + "<" + returnClazz.getSimpleName() + ">";
+                    addImports(returnClazz);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                retType = VALUE_RETURN_TYPE_VALUE_OBJECT;
+                logger.error("Unsupported return type of method!, return VALUE_RETURN_TYPE_VALUE_OBJECT" + method.getName());
+            }
+        }
+        vars.put(KEY_RETURN_TYPE_STRING, retTypeString);
+        vars.put(KEY_RETURN_TYPE, retType);
+        return retTypeString;
+    }
+
     private String generateMethodBody(Method method, Map<String, Object> vars) {
         CnvInfo cnvInfo = (CnvInfo) method.getAnnotations()[0];
+        prepareHeaderCodec(cnvInfo, vars);
         switch (cnvInfo.type()) {
-            case CnvInfo.GET_HEADER_INFO:
-                prepareHeaderCodec(cnvInfo, vars);
-                if (!cnvInfo.fields().isEmpty()) {
-                    vars.put(KEY_VAR_FIELD, cnvInfo.fields());
-                }
-                prepareMsg(method, vars);
-                return getMvelEvalResult(MVEL_GET_HEADER_INFO, vars);
             case CnvInfo.ENCODE_MSG:
-                prepareHeaderCodec(cnvInfo, vars);
-                prepareBodyCodec(cnvInfo, vars);
                 prepareMsgType(cnvInfo, vars);
-                prepareFields(method, vars);
+                prepareBodyCodec(cnvInfo, vars);
+                prepareEncodeFields(method, vars);
                 return getMvelEvalResult(MVEL_ENCODE_MSG, vars);
+            case CnvInfo.GET_HEADER_INFO:
+                prepareMsg(method, vars);
+                prepareDecodeField(cnvInfo, vars);
+                return getMvelEvalResult(MVEL_GET_HEADER_INFO, vars);
             case CnvInfo.GET_BODY_DECODER:
-                prepareHeaderCodec(cnvInfo, vars);
                 prepareMsg(method, vars);
                 prepareBodyCodec(cnvInfo, vars);
                 return getMvelEvalResult(MVEL_GET_BODY_DECODER, vars);
-            case CNV_BYTES_2_REPLY:
-                prepareHeaderCodec(cnvInfo, vars);
+            case CnvInfo.DECODE_MSG_COLLECTION:
                 prepareMsg(method, vars);
-                prepareReply(cnvInfo, vars);
-                prepareMsgType(cnvInfo, vars);
-                if (vars.get(KEY_RETURN_KIND).equals(RETURN_KIND_DTO)) return generateBytes2ReplyDTO(method, vars);
-                if (vars.get(KEY_RETURN_KIND).equals(RETURN_KIND_COLLECTION))
-                    return generateBytes2ReplyCollection(method, vars);
-                break;
+                prepareBodyCodec(cnvInfo, vars);
+                prepareDecodeFields(cnvInfo, vars);
+                return getMvelEvalResult(MVEL_DECODE_MSG, vars);
+//                    return generateBytes2ReplyDTO(method, vars);
         }
         return null;
     }
@@ -258,13 +235,13 @@ public class CodeGenerator2 {
                 decoder = Class.forName(annotation.headerDecoderClass());
                 addImports(decoder);
                 vars.put(KEY_HEADER_DECODER_CLASS_NAME, decoder.getSimpleName());
-                vars.put(KEY_VAR_HEADER_DECODER, VAR_HEADER_DECODER);
+                vars.put(KEY_VAR_HEADER_DECODER, VALUE_HEADER_DECODER);
             }
             if (!annotation.headerEncoderClass().isEmpty()) {
                 encoder = Class.forName(annotation.headerEncoderClass());
                 addImports(encoder);
                 vars.put(KEY_HEADER_ENCODER_CLASS_NAME, encoder.getSimpleName());
-                vars.put(KEY_VAR_HEADER_ENCODER, VAR_HEADER_ENCODER);
+                vars.put(KEY_VAR_HEADER_ENCODER, VALUE_HEADER_ENCODER);
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -278,29 +255,16 @@ public class CodeGenerator2 {
                 decoder = Class.forName(annotation.bodyDecoderClass());
                 addImports(decoder);
                 vars.put(KEY_BODY_DECODER_CLASS_NAME, decoder.getSimpleName());
-                vars.put(KEY_VAR_BODY_DECODER, VAR_BODY_DECODER);
-                vars.put(KEY_BODY_CLASS_NAME, StringUtils.removeEnd(decoder.getSimpleName(), STRING_DECODER));
+                vars.put(KEY_VAR_BODY_DECODER, VALUE_BODY_DECODER);
+                vars.put(KEY_BODY_CLASS_NAME, StringUtils.removeEnd(decoder.getSimpleName(), SBE_STRING_DECODER));
             }
             if (!annotation.bodyEncoderClass().isEmpty()) {
                 encoder = Class.forName(annotation.bodyEncoderClass());
                 addImports(encoder);
                 vars.put(KEY_BODY_ENCODER_CLASS_NAME, encoder.getSimpleName());
-                vars.put(KEY_VAR_BODY_ENCODER, VAR_BODY_ENCODER);
-                vars.put(KEY_BODY_CLASS_NAME, StringUtils.removeEnd(encoder.getSimpleName(), STRING_ENCODER));
+                vars.put(KEY_VAR_BODY_ENCODER, VALUE_BODY_ENCODER);
+                vars.put(KEY_BODY_CLASS_NAME, StringUtils.removeEnd(encoder.getSimpleName(), SBE_STRING_ENCODER));
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void prepareReply(CnvInfo annotation, Map<String, Object> vars) {
-        try {
-            Class reply;
-            reply = Class.forName(annotation.replyClass());
-            assert reply != null;
-            addImports(reply);
-            vars.put(KEY_REPLY_CLASS_NAME, reply.getSimpleName());
-            vars.put(KEY_VAR_REPLY, "reply");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -318,7 +282,13 @@ public class CodeGenerator2 {
         }
     }
 
-    private void prepareFields(Method method, Map<String, Object> vars) {
+    private void prepareDecodeField(CnvInfo cnvInfo, Map<String, Object> vars) {
+        if (!cnvInfo.fields().isEmpty()) {
+            vars.put(KEY_VAR_FIELD, cnvInfo.fields());
+        }
+    }
+
+    private void prepareEncodeFields(Method method, Map<String, Object> vars) {
         vars.put(KEY_ELEMENT_EXISTS, false);
         StringBuilder varFields = new StringBuilder();
         Parameter[] parameters = method.getParameters();
@@ -328,7 +298,7 @@ public class CodeGenerator2 {
             String paraName = para.getAnnotation(Name.class).value();
             Class clazz = para.getType();
             // field directly, primitives or string
-            if (clazz.isPrimitive() || clazz.getName().equals("java.lang.String")) {
+            if (clazz.isPrimitive() || clazz.getName().equals(String.class.getName())) {
                 // If the fields contains nothing or more than 1 field, using @Name
                 String fieldName = fieldsAnnotation.value().trim();
                 if (fieldName.isEmpty() || fieldName.contains(Fields.SPLIT_CHAR)) {
@@ -343,7 +313,6 @@ public class CodeGenerator2 {
                     // elementEncoderClass, varElementEncoder, elementClass, varElements, varElement
                     vars.put(KEY_ELEMENT_ENCODER_CLASS_NAME, StringUtils.capitalize(fieldsAnnotation.elementEncoderClass()));
                     vars.put(KEY_VAR_ELEMENT_ENCODER, StringUtils.uncapitalize(fieldsAnnotation.elementEncoderClass()));
-                    String elementEncoderClass = vars.get(KEY_BODY_ENCODER_CLASS_NAME) + fieldsAnnotation.elementEncoderClass();
                     Class elementClazz = Class.forName(((ParameterizedType) para.getParameterizedType()).getActualTypeArguments()[0].getTypeName());
                     addImports(elementClazz);
                     vars.put(KEY_ELEMENT_CLASS_NAME, elementClazz.getSimpleName());
@@ -353,7 +322,7 @@ public class CodeGenerator2 {
                     StringBuilder varElementFields = new StringBuilder();
                     String[] fieldNames = new String[0];
                     if (!fieldsAnnotation.value().trim().isEmpty()) {
-                        fieldNames = StringUtils.split(fieldsAnnotation.value().trim(), Fields.SPLIT_CHAR);
+                        fieldNames = StringUtils.split(fieldsAnnotation.value().replaceAll(" ", ""), Fields.SPLIT_CHAR);
                     }
                     for (Field field : elementClazz.getDeclaredFields()) {
                         if (fieldsAnnotation.value().trim().isEmpty() || ArrayUtils.contains(fieldNames, field.getName())) {
@@ -373,7 +342,7 @@ public class CodeGenerator2 {
             // bean
             String[] fieldNames = new String[0];
             if (!fieldsAnnotation.value().trim().isEmpty()) {
-                fieldNames = StringUtils.split(fieldsAnnotation.value().trim(), Fields.SPLIT_CHAR);
+                fieldNames = StringUtils.split(fieldsAnnotation.value().replaceAll(" ", ""), Fields.SPLIT_CHAR);
             }
             for (Field field : clazz.getDeclaredFields()) {
                 if (fieldsAnnotation.value().trim().isEmpty() || ArrayUtils.contains(fieldNames, field.getName())) {
@@ -388,98 +357,72 @@ public class CodeGenerator2 {
         vars.put(KEY_VAR_FIELDS, varFields.toString());
     }
 
-    private String generateBytes2ReplyCollection(Method method, Map<String, Object> vars) {
-        // varBytes, exception, msgDTOClass, varMsgDTO, dtoClass, stringContained, varDTOFields, varDTOs
-        CnvInfo annotation = (CnvInfo) method.getAnnotations()[0];
-        String msgDTOClass = StringUtils.substringAfterLast(annotation.msgDTOClass(), ".");
-        String varMsgDTO = StringUtils.uncapitalize(msgDTOClass);
-        Class dtoClassObject = (Class) vars.get(KEY_DTO_CLASS);
-        String dtoClass = dtoClassObject.getSimpleName();
-        String varDTO = StringUtils.uncapitalize(dtoClass);
-        String varDTOs = StringUtils.uncapitalize(dtoClass) + "s";
-        boolean stringContained = false;
-        StringBuilder varDTOFields = new StringBuilder();
-        String[] fields = annotation.dtoFields().split(",");
-        for (String field : fields) {
-            String fieldName = field.trim();
-            Field dtoField = null;
-            try {
-                dtoField = dtoClassObject.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            assert (dtoField != null);
-            varDTOFields.append("                ");
-            if (dtoField.getType().getName().equals("java.lang.String")) {
-                stringContained = true;
-                varDTOFields.append(varDTO).append(".set").append(StringUtils.capitalize(fieldName))
-                        .append("(").append(varMsgDTO).append(".get").append(StringUtils.capitalize(fieldName)).append("());");
-            } else {
-                varDTOFields.append(varDTO).append(".set").append(StringUtils.capitalize(fieldName))
-                        .append("(").append(varMsgDTO).append(".").append(fieldName).append("());");
-            }
-            varDTOFields.append("\n");
+//    private String generateBytes2ReplyDTO(Method method, Map<String, Object> vars) {
+//        //elementClass, varElement, varElementFields
+//        // dtoClass, varDTO, stringContained, varDTOFields, exception
+//        CnvInfo annotation = (CnvInfo) method.getAnnotations()[0];
+//        Class dtoClassObject = (Class) vars.get(KEY_DTO_CLASS);
+//        String dtoClass = dtoClassObject.getSimpleName();
+//        String varDTO = StringUtils.uncapitalize(dtoClassObject.getSimpleName());
+//        boolean containString = false;
+//        StringBuilder varDTOFields = new StringBuilder();
+//        String[] fields = annotation.dtoFields().split(",");
+//        for (String field : fields) {
+//            String fieldName = field.trim();
+//            Field dtoField = null;
+//            try {
+//                dtoField = dtoClassObject.getDeclaredField(fieldName);
+//            } catch (NoSuchFieldException e) {
+//                e.printStackTrace();
+//            }
+//            assert (dtoField != null);
+//            varDTOFields.append("        ");
+//            if (dtoField.getType().getName().equals(String.class.getName())) {
+//                containString = true;
+//                varDTOFields.append(varDTO).append(".set").append(StringUtils.capitalize(fieldName))
+//                        .append("(").append(vars.get(KEY_VAR_REPLY)).append(".get").append(StringUtils.capitalize(fieldName)).append("());");
+//            } else {
+//                varDTOFields.append(varDTO).append(".set").append(StringUtils.capitalize(fieldName))
+//                        .append("(").append(vars.get(KEY_VAR_REPLY)).append(".").append(fieldName).append("());");
+//            }
+//            varDTOFields.append("\n");
+//        }
+//        vars.put(KEY_DTO_CLASS_NAME, dtoClass);
+//        vars.put(KEY_VAR_DTO, varDTO);
+//        vars.put(KEY_VAR_DTOFIELDS, varDTOFields);
+//        URL url = getUrl(BYTES_2_REPLY_DTO);
+//        String retSegments = null;
+//        try (InputStream inStream = url.openStream()) {
+//            //dtoClass, varDTO, stringContained, varDTOFields, exception
+//            retSegments = (String) TemplateRuntime.eval(inStream, null, vars);
+//        } catch (IOException e) {
+//            logger.error("Error in generate method return body!", e);
+//        }
+//        return retSegments;
+//    }
+
+    private void prepareDecodeFields(CnvInfo cnfInfo, Map<String, Object> vars) {
+        // elementDecoderClass, varElementDecoder, elementClass, varElements, varElement, retTypeString, varElementFields
+        vars.put(KEY_ELEMENT_DECODER_CLASS_NAME, cnfInfo.elementDecoderClass());
+        String varElementDecoder = StringUtils.uncapitalize(cnfInfo.elementDecoderClass());
+        vars.put(KEY_VAR_ELEMENT_DECODER, varElementDecoder);
+        vars.put(KEY_VAR_ELEMENTS, StringUtils.uncapitalize((String) vars.get(KEY_ELEMENT_CLASS_NAME)) + "s");
+        String varElement = StringUtils.uncapitalize((String) vars.get(KEY_ELEMENT_CLASS_NAME));
+        vars.put(KEY_VAR_ELEMENT, varElement);
+        StringBuilder varElementFields = new StringBuilder();
+        String[] fieldNames = new String[0];
+        if (!cnfInfo.fields().trim().isEmpty()) {
+            fieldNames = StringUtils.split(cnfInfo.fields().replaceAll(" ", ""), Fields.SPLIT_CHAR);
         }
-        vars.put(KEY_MSGDTO_CLASS_NAME, msgDTOClass);
-        vars.put(KEY_VAR_MSGDTO, varMsgDTO);
-        vars.put(KEY_DTO_CLASS_NAME, dtoClass);
-        vars.put(KEY_VAR_DTO, varDTO);
-        vars.put(KEY_VAR_DTOS, varDTOs);
-        vars.put(KEY_VAR_DTOFIELDS, varDTOFields);
-        URL url = getUrl(BYTES_2_REPLY_COLLECTION);
-        String retSegments = null;
-        try (InputStream inStream = url.openStream()) {
-            retSegments = (String) TemplateRuntime.eval(inStream, null, vars);
-        } catch (IOException e) {
-            logger.error("Error in generate method return body!", e);
+        Class elementClazz = (Class) vars.get(KEY_ELEMENT_CLASS);
+        for (Field field : elementClazz.getDeclaredFields()) {
+            if (cnfInfo.fields().trim().isEmpty() || ArrayUtils.contains(fieldNames, field.getName())) {
+                varElementFields.append(varElement).append(".set").append(StringUtils.capitalize(field.getName()))
+                        .append("(").append(varElementDecoder).append(".").append(field.getName()).append("());");
+            }
         }
-        return retSegments;
+        vars.put(KEY_VAR_ELEMENT_FIELDS, varElementFields.toString());
     }
-
-    private String generateBytes2ReplyDTO(Method method, Map<String, Object> vars) {
-        // dtoClass, varDTO, stringContained, varDTOFields, exception
-        CnvInfo annotation = (CnvInfo) method.getAnnotations()[0];
-        Class dtoClassObject = (Class) vars.get(KEY_DTO_CLASS);
-        String dtoClass = dtoClassObject.getSimpleName();
-        String varDTO = StringUtils.uncapitalize(dtoClassObject.getSimpleName());
-        boolean containString = false;
-        StringBuilder varDTOFields = new StringBuilder();
-        String[] fields = annotation.dtoFields().split(",");
-        for (String field : fields) {
-            String fieldName = field.trim();
-            Field dtoField = null;
-            try {
-                dtoField = dtoClassObject.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            assert (dtoField != null);
-            varDTOFields.append("        ");
-            if (dtoField.getType().getName().equals("java.lang.String")) {
-                containString = true;
-                varDTOFields.append(varDTO).append(".set").append(StringUtils.capitalize(fieldName))
-                        .append("(").append(vars.get(KEY_VAR_REPLY)).append(".get").append(StringUtils.capitalize(fieldName)).append("());");
-            } else {
-                varDTOFields.append(varDTO).append(".set").append(StringUtils.capitalize(fieldName))
-                        .append("(").append(vars.get(KEY_VAR_REPLY)).append(".").append(fieldName).append("());");
-            }
-            varDTOFields.append("\n");
-        }
-        vars.put(KEY_DTO_CLASS_NAME, dtoClass);
-        vars.put(KEY_VAR_DTO, varDTO);
-        vars.put(KEY_VAR_DTOFIELDS, varDTOFields);
-        URL url = getUrl(BYTES_2_REPLY_DTO);
-        String retSegments = null;
-        try (InputStream inStream = url.openStream()) {
-            //dtoClass, varDTO, stringContained, varDTOFields, exception
-            retSegments = (String) TemplateRuntime.eval(inStream, null, vars);
-        } catch (IOException e) {
-            logger.error("Error in generate method return body!", e);
-        }
-        return retSegments;
-    }
-
-
 
     private String generateException(Class clazz) {
         addImports(clazz);
@@ -521,5 +464,16 @@ public class CodeGenerator2 {
         if (!clazz.isPrimitive() && !clazz.isArray() && !clazz.getName().startsWith("java.lang")) {
             imports.add(clazz.getName());
         }
+    }
+
+    private String getMvelEvalResult(String template, Map<String, Object> vars) {
+        URL url = getUrl(template);
+        String contents = null;
+        try (InputStream inStream = url.openStream()) {
+            contents = (String) TemplateRuntime.eval(inStream, null, vars);
+        } catch (IOException ioe) {
+            logger.error("Error in eval mvel template!", ioe);
+        }
+        return contents;
     }
 }

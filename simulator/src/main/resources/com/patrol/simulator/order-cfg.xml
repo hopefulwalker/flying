@@ -15,7 +15,7 @@
     <bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
         <property name="minIdle" value="1"/>
     </bean>
-    <bean id="orderMsgConverter" class="com.flying.oms.msg.converter.OrderMsgCodec"/>
+    <bean id="orderMsgConverter" class="com.flying.oms.msg.codec.OrderMsgCodec"/>
 
 
     <bean id="monitorService" class="com.flying.monitor.service.client.BCMonitorClientService">

@@ -1,0 +1,28 @@
+        // varMsg, headerDecoderClass, varHeaderDecoder, bodyDecoderClass, varBodyDecoder
+        @{headerDecoderClass} @{varHeaderDecoder} = new @{headerDecoderClass}();
+        UnsafeBuffer buffer = new UnsafeBuffer(@{varMsg});
+        @{varHeaderDecoder}.wrap(buffer, 0);
+        @{bodyDecoderClass} @{varBodyDecoder} = new @{bodyDecoderClass}();
+        @{varBodyDecoder}.wrap(buffer, @{varHeaderDecoder}.encodedLength(), @{varHeaderDecoder}.blockLength(), @{varHeaderDecoder}.version());
+        @if{retType=="collection"}
+        // elementDecoderClass, varElementDecoder, elementClass, varElementFields, varElements, varElement, retTypeString
+        // Analyze the reply and build the list of server bos.
+        @{bodyDecoderClass}.@{elementDecoderClass} @{varElementDecoder} = @{varBodyDecoder}.@{varElements}();
+        if (@{varElementDecoder}.count() <= 0) return null;
+        @{retTypeString} @{varElements} = new ArrayList<>();
+        @{elementClass} @{varElement};
+        while (@{varElementDecoder}.hasNext()) {
+            @{varElementDecoder}.next();
+            @{varElement} = new @{elementClass}();
+            @{varElementFields}
+            @{varElements}.add(@{varElement});
+        }
+        return @{varElements};
+        @end{}
+        @if{retType=="valueObject"}
+        // elementClass, varElementFields, varElement
+        // Analyze the reply and build dto.
+        @{elementClass} @{varElement} = new @{elementClass}();
+        @{varElementFields}
+        return @{varElement};
+        @end{}

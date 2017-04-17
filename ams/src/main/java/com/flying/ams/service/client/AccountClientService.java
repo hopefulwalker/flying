@@ -9,7 +9,7 @@ package com.flying.ams.service.client;
 
 import com.flying.ams.model.AccountBO;
 import com.flying.ams.model.IAcctStatusId;
-import com.flying.ams.msg.converter.IAccountMsgCodec;
+import com.flying.ams.msg.codec.IAccountMsgCodec;
 import com.flying.ams.service.AccountServiceException;
 import com.flying.ams.service.IAccountService;
 import com.flying.common.msg.codec.Helper;
@@ -26,20 +26,20 @@ import java.util.Map;
 public class AccountClientService extends BaseUCClientService implements IAccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountClientService.class);
     private Map<Long, AccountBO> accountCache = null;
-    private IAccountMsgCodec msgConverter;
+    private IAccountMsgCodec msgCodec;
 
-    public AccountClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IAccountMsgCodec msgConverter) {
+    public AccountClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IAccountMsgCodec msgCodec) {
         super(region, IServiceType.ACCOUNT, endpointFactory, poolConfig);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
-    public AccountClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IAccountMsgCodec msgConverter) {
+    public AccountClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IAccountMsgCodec msgCodec) {
         super(region, IServiceType.ACCOUNT, endpointFactory, poolConfig, timeout);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     public void setMsgConverter(IAccountMsgCodec msgConverter) {
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     public void setAccountCache(Map<Long, AccountBO> accountCache) {
@@ -61,7 +61,7 @@ public class AccountClientService extends BaseUCClientService implements IAccoun
         IClientEngine engine = null;
         try {
             engine = borrowEngine();
-            accountBO = msgConverter.getGetAccountByIdReply(Helper.request(engine, getTimeout(), msgConverter.getGetAccountByIdRequestMsg(id)));
+            accountBO = msgCodec.getGetAccountByIdReply(Helper.request(engine, getTimeout(), msgCodec.encodeGetAccountByIdRequest(id)));
         } catch (AccountServiceException ase) {
             throw ase;
         } catch (Exception e) {

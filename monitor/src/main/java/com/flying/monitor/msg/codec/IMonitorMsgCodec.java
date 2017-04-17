@@ -8,60 +8,57 @@ package com.flying.monitor.msg.codec;
 
 import com.flying.common.msg.codec.IMsgCodec;
 import com.flying.common.msg.codec.anno.CnvInfo;
-import com.flying.common.msg.codec.anno.Name;
-import com.flying.common.msg.codec.anno.ReplyFields;
 import com.flying.common.msg.codec.anno.Fields;
+import com.flying.common.msg.codec.anno.Name;
 import com.flying.monitor.model.ServerBO;
 import com.flying.monitor.msg.gen.ServerQueryRequestDecoder;
 import com.flying.monitor.msg.gen.ServerRegistryRequestDecoder;
-import com.flying.monitor.service.MonitorServiceException;
 
 import java.util.List;
 
 public interface IMonitorMsgCodec extends IMsgCodec {
     @Override
-    @CnvInfo(type = 1,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            dtoFields = "msgType")
+    @CnvInfo(type = CnvInfo.GET_HEADER_INFO,
+            headerDecoderClass = "com.flying.monitor.msg.gen.MessageHeaderDecoder",
+            fields = "msgType")
     short getMsgType(@Name("msg") byte[] msg);
 
-    @CnvInfo(type = 101,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            requestClass = "com.flying.monitor.msg.gen.ServerRegistryRequest",
+    @CnvInfo(type = CnvInfo.ENCODE_MSG,
+            headerEncoderClass = "com.flying.monitor.msg.gen.MessageHeaderEncoder",
+            bodyEncoderClass = "com.flying.monitor.msg.gen.ServerRegistryRequestEncoder",
             msgTypeClass = "com.flying.monitor.msg.IServerMsgType")
-    public byte[] getServerRegistryRequestMsg(@Name("serverBO") @Fields("uuid, region, serviceType, name, endpoint, workers, stateId, reportTime") ServerBO serverBO) throws MonitorServiceException;
+    byte[] encodeServerRegistryRequest(@Name("serverBO") @Fields ServerBO serverBO);
 
-    @CnvInfo(type = 102,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            requestClass = "com.flying.monitor.msg.gen.ServerRegistryRequest",
+    @CnvInfo(type = CnvInfo.ENCODE_MSG,
+            headerEncoderClass = "com.flying.monitor.msg.gen.MessageHeaderEncoder",
+            bodyEncoderClass = "com.flying.monitor.msg.gen.ServerQueryRequestEncoder",
             msgTypeClass = "com.flying.monitor.msg.IServerMsgType")
-    public ServerRegistryRequestDecoder getServerRegistryRequest(@Name("msg") byte[] msg) throws MonitorServiceException;
+    byte[] encodeServerQueryRequest(@Name("region") @Fields String region, @Name("serviceType") @Fields short serviceType);
 
-    @CnvInfo(type = 101,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            requestClass = "com.flying.monitor.msg.gen.ServerQueryRequest",
+    @CnvInfo(type = CnvInfo.ENCODE_MSG,
+            headerEncoderClass = "com.flying.monitor.msg.gen.MessageHeaderEncoder",
+            bodyEncoderClass = "com.flying.monitor.msg.gen.ServerQueryReplyEncoder",
             msgTypeClass = "com.flying.monitor.msg.IServerMsgType")
-    public byte[] getServerQueryRequestMsg(@Name("region") @Fields("region") String region, @Name("serviceType") @Fields("serviceType") short serviceType) throws MonitorServiceException;
+    byte[] encodeServerQueryReply(@Name("retCode") @Fields int retCode,
+                                  @Name("serverBOs")
+                                  @Fields(elementEncoderClass = "ServerBOsEncoder") List<ServerBO> serverBOs);
 
-    @CnvInfo(type = 102,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            requestClass = "com.flying.monitor.msg.gen.ServerQueryRequest",
+    @CnvInfo(type = CnvInfo.GET_BODY_DECODER,
+            headerDecoderClass = "com.flying.monitor.msg.gen.MessageHeaderDecoder",
+            bodyDecoderClass = "com.flying.monitor.msg.gen.ServerRegistryRequestDecoder",
             msgTypeClass = "com.flying.monitor.msg.IServerMsgType")
-    public ServerQueryRequestDecoder getServerQueryRequest(@Name("msg") byte[] msg);
+    ServerRegistryRequestDecoder getServerRegistryRequestDecoder(@Name("msg") byte[] msg);
 
-    @CnvInfo(type = 201,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            replyClass = "com.flying.monitor.msg.gen.ServerQueryReply",
+    @CnvInfo(type = CnvInfo.GET_BODY_DECODER,
+            headerDecoderClass = "com.flying.monitor.msg.gen.MessageHeaderDecoder",
+            bodyDecoderClass = "com.flying.monitor.msg.gen.ServerQueryRequestDecoder",
             msgTypeClass = "com.flying.monitor.msg.IServerMsgType")
-    public byte[] getServerQueryReplyMsg(@Name("retCode") @ReplyFields("retCode") int retCode,
-                                         @ReplyFields(value = "uuid, region, serviceType, name, endpoint, workers, stateId, reportTime",
-                                                 msgDTOClass = "com.flying.monitor.msg.gen.ServerQueryReply.Servers") @Name("serverBOs") List<ServerBO> serverBOs);
+    ServerQueryRequestDecoder getServerQueryRequest(@Name("msg") byte[] msg);
 
-    @CnvInfo(type = 202,
-            headerClass = "com.flying.monitor.msg.gen.MessageHeader",
-            replyClass = "com.flying.monitor.msg.gen.ServerQueryReply",
+    @CnvInfo(type = CnvInfo.DECODE_MSG_COLLECTION,
+            headerDecoderClass = "com.flying.monitor.msg.gen.MessageHeaderDecoder",
+            bodyDecoderClass = "com.flying.monitor.msg.gen.ServerQueryReplyDecoder",
             msgTypeClass = "com.flying.monitor.msg.IServerMsgType",
-            dtoFields = "uuid, region, serviceType, name, endpoint, workers, stateId, reportTime",
-            msgDTOClass = "com.flying.monitor.msg.gen.ServerQueryReply.Servers")
-    public List<ServerBO> getServerQueryReply(@Name("bytes") byte[] bytes) throws MonitorServiceException;
+            elementDecoderClass = "ServerBOsDecoder")
+    public List<ServerBO> getServerQueryReply(@Name("bytes") byte[] bytes);
 }

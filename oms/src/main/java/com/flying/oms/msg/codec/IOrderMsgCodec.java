@@ -4,13 +4,13 @@
  * Date          Who              Version      What
  * 2015/5/28     Walker.Zhang     0.1.0        Created.
  */
-package com.flying.oms.msg.converter;
+package com.flying.oms.msg.codec;
 
 import com.flying.common.msg.codec.IMsgCodec;
 import com.flying.common.msg.codec.anno.CnvInfo;
+import com.flying.common.msg.codec.anno.Fields;
 import com.flying.common.msg.codec.anno.Name;
 import com.flying.common.msg.codec.anno.ReplyFields;
-import com.flying.common.msg.codec.anno.Fields;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.msg.gen.OrderRequest;
 import com.flying.oms.service.OrderServiceException;
