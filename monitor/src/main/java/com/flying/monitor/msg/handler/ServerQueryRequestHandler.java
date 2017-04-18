@@ -29,7 +29,7 @@ public class ServerQueryRequestHandler implements IMsgHandler {
     }
 
     public byte[] handle(byte[] msg) {
-        ServerQueryRequestDecoder request = msgCodec.getServerQueryRequest(msg);
+        ServerQueryRequestDecoder request = msgCodec.getServerQueryRequestDecoder(msg);
         int retCode = IReturnCode.SUCCESS;
         List<ServerBO> serverBOs = null;
         try {

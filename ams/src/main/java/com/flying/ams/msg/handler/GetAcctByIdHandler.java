@@ -28,7 +28,7 @@ public class GetAcctByIdHandler implements IMsgHandler {
 
     @Override
     public byte[] handle(byte[] msg) {
-        GetAccountByIdRequestDecoder request = msgCodec.getGetAccountByIdRequest(msg);
+        GetAccountByIdRequestDecoder request = msgCodec.getGetAccountByIdRequestDecoder(msg);
         int retCode = IReturnCode.SUCCESS;
         AccountBO acctBO = null;
         try {

@@ -1,9 +1,10 @@
-/**
- * Created by Walker.Zhang on 2015/3/31.
- * Revision History:
- * Date          Who              Version      What
- * 2015/3/31     Walker.Zhang     0.1.0        Created.
- */
+/*
+ Created by Walker.Zhang on 2015/3/31.
+ Revision History:
+ Date          Who              Version      What
+ 2015/3/31     Walker.Zhang     0.1.0        Created.
+ 2017/4/14     Walker.Zhang     0.3.2        Refactor to rebuild the codec system.*
+*/
 package com.flying.common.msg.codec;
 
 import com.flying.common.IReturnCode;

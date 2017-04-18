@@ -2,7 +2,7 @@
  Created by Walker on 2017/4/14.
  Revision History:
  Date          Who              Version      What
- 2017/4/14      Walker           0.1.0        Created. 
+ 2017/4/14     Walker           0.3.2        Created to support SBE 1.6.2.
 */
 package com.flying.common.msg.codec.generator;
 
@@ -11,7 +11,7 @@ public class CodecGenerator {
 
     public static void main(String args[]) {
         if (args.length == 0) {
-            System.err.format("Usage: %s <filenames>...\n", ConverterGenerator.class.getName());
+            System.err.format("Usage: %s <filenames>...\n", CodecGenerator.class.getName());
             System.exit(-1);
         }
         for (final String fullInterfaceName : args) {
@@ -27,7 +27,7 @@ public class CodecGenerator {
                 System.exit(-1);
             }
             try {
-                CodeGenerator2 generator = new CodeGenerator2();
+                CodeGenerator generator = new CodeGenerator();
                 generator.generateImplClass(System.getProperty(OUTPUT_DIR, "."), clazz);
             } catch (Exception e) {
                 System.err.format("Exception occurs when generating %s implementation class ...\n", fullInterfaceName);

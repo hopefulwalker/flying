@@ -21,16 +21,16 @@ import org.slf4j.LoggerFactory;
 
 public class OrderClientService extends BaseUCClientService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderClientService.class);
-    private IOrderMsgCodec msgConverter;
+    private IOrderMsgCodec msgCodec;
 
-    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IOrderMsgCodec msgConverter) {
+    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IOrderMsgCodec msgCodec) {
         super(region, IServiceType.ORDER, endpointFactory, poolConfig);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
-    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IOrderMsgCodec msgConverter) {
+    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IOrderMsgCodec msgCodec) {
         super(region, IServiceType.ORDER, endpointFactory, poolConfig, timeout);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
         OrderBO replyOrder;
         try {
             engine = borrowEngine();
-            replyOrder = msgConverter.getOrderReply(Helper.request(engine, getTimeout(), msgConverter.getOrderRequestMsg(orderBO)));
+            replyOrder = msgCodec.getOrderReply(Helper.request(engine, getTimeout(), msgCodec.encodeOrderRequest(orderBO)));
         } catch (OrderServiceException ose) {
             throw ose;
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
         OrderBO replyOrder;
         try {
             engine = borrowEngine();
-            Helper.sendMsg(engine, msgConverter.getOrderRequestMsg(orderBO));
+            Helper.sendMsg(engine, msgCodec.encodeOrderRequest(orderBO));
         } catch (OrderServiceException ose) {
             throw ose;
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
         OrderBO replyOrder = null;
         try {
             engine = borrowEngine();
-            return msgConverter.getOrderReply(Helper.recvMsg(engine, timeout));
+            return msgCodec.getOrderReply(Helper.recvMsg(engine, timeout));
         } catch (OrderServiceException ose) {
             throw ose;
         } catch (Exception e) {

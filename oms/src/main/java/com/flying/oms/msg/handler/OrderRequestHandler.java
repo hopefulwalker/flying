@@ -12,7 +12,7 @@ import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderState;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
-import com.flying.oms.msg.gen.OrderRequest;
+import com.flying.oms.msg.gen.OrderRequestDecoder;
 import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.service.server.OrderServerService;
 import com.flying.util.math.IntegerUtils;
@@ -26,20 +26,20 @@ import java.io.UnsupportedEncodingException;
 public class OrderRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(OrderRequestHandler.class);
     private OrderServerService service;
-    private IOrderMsgCodec msgConverter;
+    private IOrderMsgCodec msgCodec;
 
-    public OrderRequestHandler(OrderServerService service, IOrderMsgCodec msgConverter) {
+    public OrderRequestHandler(OrderServerService service, IOrderMsgCodec msgCodec) {
         this.service = service;
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     @Override
     public byte[] handle(byte[] msg) {
-        OrderRequest request = msgConverter.getOrderRequest(msg);
+        OrderRequestDecoder requestDecoder = msgCodec.getOrderRequestDecoder(msg);
         int retCode = IReturnCode.SUCCESS;
         OrderBO orderBO = null;
         try {
-            orderBO = buildOrderBO(request);
+            orderBO = buildOrderBO(requestDecoder);
             orderBO = service.placeOrder(orderBO);
         } catch (UnsupportedEncodingException uee) {
             logger.error("Error in handling requestClass", uee);
@@ -50,19 +50,19 @@ public class OrderRequestHandler implements IMsgHandler {
         }
         if (retCode == IReturnCode.SUCCESS) retCode = orderBO.getStateEnteredCode();
         // end of to do
-        return msgConverter.getOrderReplyMsg(retCode, orderBO);
+        return msgCodec.encodeOrderReply(retCode, orderBO);
     }
 
-    private OrderBO buildOrderBO(OrderRequest request) throws UnsupportedEncodingException {
+    private OrderBO buildOrderBO(OrderRequestDecoder requestDecoder) throws UnsupportedEncodingException {
         OrderBO orderBO = new OrderBO();
         // from request.
-        orderBO.setExtNo(request.extNo());
-        orderBO.setAcctId(request.acctId());
-        orderBO.setExchId(request.exchId());
-        orderBO.setSectCode(request.getSectCode());
-        orderBO.setBsSideId(request.bsSideId());
-        orderBO.setPrice(request.price());
-        orderBO.setQty(request.qty());
+        orderBO.setExtNo(requestDecoder.extNo());
+        orderBO.setAcctId(requestDecoder.acctId());
+        orderBO.setExchId(requestDecoder.exchId());
+        orderBO.setSectCode(requestDecoder.sectCode());
+        orderBO.setBsSideId(requestDecoder.bsSideId());
+        orderBO.setPrice(requestDecoder.price());
+        orderBO.setQty(requestDecoder.qty());
         // set by handlers;
         orderBO.setOid(UKGeneratorFactory.getUKGenerator().generate(OrderBO.class.getName()));
         orderBO.setBizDate(IntegerUtils.getDate(System.currentTimeMillis()));

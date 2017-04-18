@@ -43,7 +43,7 @@
                 <xs:element ref="sbe:message" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="package" type="xs:string"/>
-            <!-- New schemas should assign a unique ID. Defaults to zero to maintain compatibility with RC1 -->
+            <!-- New schemas should assign a unique ID. DefaultInfo to zero to maintain compatibility with RC1 -->
             <xs:attribute name="id" type="xs:unsignedShort" default="0"/>
             <xs:attribute name="version" type="xs:nonNegativeInteger" use="required"/>
             <!-- May map to FIX version, such as 'FIX.5.0_SP' -->

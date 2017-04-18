@@ -1,9 +1,10 @@
-/**
- * Created by Walker.Zhang on 2015/4/14.
- * Revision History:
- * Date          Who              Version      What
- * 2015/4/14     Walker.Zhang     0.1.0        Created.
- */
+/*
+ Created by Walker.Zhang on 2015/4/14.
+ Revision History:
+ Date          Who              Version      What
+ 2015/4/14     Walker.Zhang     0.1.0        Created.
+ 2017/4/14     Walker.Zhang     0.3.2        Refactor to support SBE 1.6.2.
+*/
 package com.flying.common.msg.codec.generator;
 
 import com.flying.util.common.ObjectUtils;
@@ -14,7 +15,7 @@ public class OutputManager {
     private final File outputDir;
 
     /**
-     * Create a new {@link uk.co.real_logic.sbe.generation.OutputManager} for generating Java source files into a given package.
+     * Create a new OutputManager for generating Java source files into a given package.
      *
      * @param baseDirectoryName for the generated source code.
      * @param packageName       for the generated source code relative to the baseDirectoryName.

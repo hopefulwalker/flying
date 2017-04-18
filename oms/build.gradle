@@ -33,7 +33,7 @@ dependencies {
 
 task generateOrderMsgCodec(type: JavaExec) {
     main = 'com.flying.common.msg.codec.generator.CodecGenerator'
-    args = ['com.flying.oms.msg.codec.IOrderMsgConverter']
+    args = ['com.flying.oms.msg.codec.IOrderMsgCodec']
     systemProperties = ['codec.output.dir': 'src/main/java']
     classpath sourceSets.main.runtimeClasspath
 }

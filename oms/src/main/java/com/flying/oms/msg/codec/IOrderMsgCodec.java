@@ -7,43 +7,38 @@
 package com.flying.oms.msg.codec;
 
 import com.flying.common.msg.codec.IMsgCodec;
-import com.flying.common.msg.codec.anno.CnvInfo;
+import com.flying.common.msg.codec.anno.CodecInfo;
+import com.flying.common.msg.codec.anno.DefaultInfo;
 import com.flying.common.msg.codec.anno.Fields;
 import com.flying.common.msg.codec.anno.Name;
-import com.flying.common.msg.codec.anno.ReplyFields;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.msg.gen.OrderRequest;
-import com.flying.oms.service.OrderServiceException;
+import com.flying.oms.msg.gen.OrderRequestDecoder;
 
+@DefaultInfo(headerDecoderClass = "com.flying.oms.msg.gen.MessageHeaderDecoder",
+        headerEncoderClass = "com.flying.oms.msg.gen.MessageHeaderEncoder",
+        msgTypeClass = "com.flying.ams.oms.IOrderMsgType",
+        headerCodecPackage = "com.flying.oms.msg.gen",
+        bodyCodecPackage = "com.flying.oms.msg.gen",
+        msgTypePackage = "com.flying.oms.msg")
 public interface IOrderMsgCodec extends IMsgCodec {
     @Override
-    @CnvInfo(type = 1,
-            headerClass = "com.flying.oms.msg.gen.MessageHeader",
-            dtoFields = "msgType")
-    public short getMsgType(@Name("msg") byte[] msg);
+    @CodecInfo(type = CodecInfo.GET_HEADER_INFO,
+            fields = "msgType")
+    short getMsgType(@Name("msg") byte[] msg);
 
-    @CnvInfo(type = 101,
-            headerClass = "com.flying.oms.msg.gen.MessageHeader",
-            requestClass = "com.flying.oms.msg.gen.OrderRequest",
-            msgTypeClass = "com.flying.oms.msg.IOrderMsgType")
-    public byte[] getOrderRequestMsg(@Name("orderBO") @Fields("extNo,acctId,bsSideId,exchId,sectCode,price,qty") OrderBO orderBO) throws OrderServiceException;
+    @CodecInfo(type = CodecInfo.ENCODE_MSG,
+            bodyEncoderClass = "OrderRequestEncoder")
+    byte[] encodeOrderRequest(@Name("orderBO") @Fields OrderBO orderBO);
 
-    @CnvInfo(type = 102,
-            headerClass = "com.flying.oms.msg.gen.MessageHeader",
-            requestClass = "com.flying.oms.msg.gen.OrderRequest",
-            msgTypeClass = "com.flying.oms.msg.IOrderMsgType")
-    public OrderRequest getOrderRequest(@Name("msg") byte[] msg);
+    @CodecInfo(type = CodecInfo.DECODE_MSG,
+            bodyDecoderClass = "OrderRequestDecoder")
+    OrderRequestDecoder getOrderRequestDecoder(@Name("msg") byte[] msg);
 
-    @CnvInfo(type = 201,
-            headerClass = "com.flying.oms.msg.gen.MessageHeader",
-            replyClass = "com.flying.oms.msg.gen.OrderReply",
-            msgTypeClass = "com.flying.oms.msg.IOrderMsgType")
-    public byte[] getOrderReplyMsg(@Name("retCode") @ReplyFields("retCode") int retCode, @ReplyFields(value = "oid,extNo,acctId,exchId,sectCode,bsSideId,price,qty,cntrNo,bizDate,stateId,stateEnteredCode,createTime,updateTime") @Name("orderBO") OrderBO orderBO);
+    @CodecInfo(type = CodecInfo.ENCODE_MSG,
+            bodyEncoderClass = "OrderReplyEncoder")
+    public byte[] encodeOrderReply(@Name("retCode") @Fields int retCode, @Name("orderBO") @Fields OrderBO orderBO);
 
-    @CnvInfo(type = 202,
-            headerClass = "com.flying.oms.msg.gen.MessageHeader",
-            replyClass = "com.flying.oms.msg.gen.OrderReply",
-            msgTypeClass = "com.flying.oms.msg.IOrderMsgType",
-            dtoFields = "oid,extNo,acctId,exchId,sectCode,bsSideId,price,qty,cntrNo,bizDate,stateId,stateEnteredCode,createTime,updateTime")
-    public OrderBO getOrderReply(@Name("bytes") byte[] bytes) throws OrderServiceException;
+    @CodecInfo(type = CodecInfo.DECODE_MSG,
+            bodyDecoderClass = "OrderReply")
+    OrderBO getOrderReply(@Name("bytes") byte[] bytes);
 }

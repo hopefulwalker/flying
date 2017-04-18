@@ -9,7 +9,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compile group: 'org.mvel', name:'mvel2', version: '2.2.4.Final'
-//    compile group: 'uk.co.real-logic', name: 'sbe', version: '1.0.4-RC2-SNAPSHOT', changing: true
+
     compile group: 'uk.co.real-logic', name: 'sbe-tool', version: '1.6.2'
     compile group: 'org.agrona', name: 'agrona', version: '0.9.5'
 

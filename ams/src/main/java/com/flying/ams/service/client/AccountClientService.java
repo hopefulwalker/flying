@@ -38,7 +38,7 @@ public class AccountClientService extends BaseUCClientService implements IAccoun
         this.msgCodec = msgCodec;
     }
 
-    public void setMsgConverter(IAccountMsgCodec msgConverter) {
+    public void setMsgConverter(IAccountMsgCodec msgCodec) {
         this.msgCodec = msgCodec;
     }
 
