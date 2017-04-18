@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sbe:messageSchema xmlns:sbe="http://www.fixprotocol.org/ns/simple/1.0"
-                   package="com.flying.monitor.msg.gen" id="1" version="0" semanticVersion="5.2"
-                   description="Schema for high frequency trading system" byteOrder="littleEndian">
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   package="com.flying.monitor.msg.gen"
+                   id="1"
+                   version="0"
+                   semanticVersion="5.2"
+                   description="Schema for high frequency trading system"
+                   byteOrder="littleEndian">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
@@ -57,7 +61,7 @@
     </sbe:message>
     <sbe:message name="ServerQueryReply" id="4" description="Description of a server query reply">
         <field name="retCode" id="1" type="RetCode"/>
-        <group name="servers" id="2" dimensionType="groupSizeEncoding">
+        <group name="serverBOs" id="2" dimensionType="groupSizeEncoding">
             <field name="uuid" id="3" type="Uuid"/>
             <field name="region" id="4" type="Region"/>
             <field name="serviceType" id="5" type="Type"/>

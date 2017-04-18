@@ -13,8 +13,8 @@ import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.engine.impl.ZMQUCClientEngine;
-import com.flying.framework.messaging.engine.impl.ZMQUCServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.ZMQUCClientEngine;
+import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
 import org.junit.*;
 
 import java.util.ArrayList;

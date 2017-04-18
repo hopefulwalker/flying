@@ -6,13 +6,13 @@
  */
 package com.flying.oms.service.client;
 
-import com.flying.common.msg.converter.Helper;
+import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.msg.converter.IOrderMsgConverter;
+import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -21,16 +21,16 @@ import org.slf4j.LoggerFactory;
 
 public class OrderClientService extends BaseUCClientService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderClientService.class);
-    private IOrderMsgConverter msgConverter;
+    private IOrderMsgCodec msgCodec;
 
-    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IOrderMsgConverter msgConverter) {
+    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IOrderMsgCodec msgCodec) {
         super(region, IServiceType.ORDER, endpointFactory, poolConfig);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
-    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IOrderMsgConverter msgConverter) {
+    public OrderClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IOrderMsgCodec msgCodec) {
         super(region, IServiceType.ORDER, endpointFactory, poolConfig, timeout);
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
         OrderBO replyOrder;
         try {
             engine = borrowEngine();
-            replyOrder = msgConverter.getOrderReply(Helper.request(engine, getTimeout(), msgConverter.getOrderRequestMsg(orderBO)));
+            replyOrder = msgCodec.getOrderReply(Helper.request(engine, getTimeout(), msgCodec.encodeOrderRequest(orderBO)));
         } catch (OrderServiceException ose) {
             throw ose;
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
         OrderBO replyOrder;
         try {
             engine = borrowEngine();
-            Helper.sendMsg(engine, msgConverter.getOrderRequestMsg(orderBO));
+            Helper.sendMsg(engine, msgCodec.encodeOrderRequest(orderBO));
         } catch (OrderServiceException ose) {
             throw ose;
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
         OrderBO replyOrder = null;
         try {
             engine = borrowEngine();
-            return msgConverter.getOrderReply(Helper.recvMsg(engine, timeout));
+            return msgCodec.getOrderReply(Helper.recvMsg(engine, timeout));
         } catch (OrderServiceException ose) {
             throw ose;
         } catch (Exception e) {

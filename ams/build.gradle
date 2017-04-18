@@ -17,17 +17,17 @@ dependencies {
     testRuntime group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
 }
 
-task generateAccountMsgConverter(type: JavaExec) {
-    main = 'com.flying.common.msg.converter.generator.ConverterGenerator'
-    args = ['com.flying.ams.msg.converter.IAccountMsgConverter']
-    systemProperties = ['converter.output.dir': 'src/main/java']
+task generateAccountMsgCodec(type: JavaExec) {
+    main = 'com.flying.common.msg.codec.generator.CodecGenerator'
+    args = ['com.flying.ams.msg.codec.IAccountMsgCodec']
+    systemProperties = ['codec.output.dir': 'src/main/java']
     classpath sourceSets.main.runtimeClasspath
 }
 
 task generateAccountMsg(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     args = ['src/main/resources/com/flying/ams/msg/ams-msg.xml']
-    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/ams/msg/SimpleBinary1-0.xsd']
+    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/ams/msg/sbe.xsd']
     classpath configurations.compile
 }
 

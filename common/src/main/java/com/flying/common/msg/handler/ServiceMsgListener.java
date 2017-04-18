@@ -6,7 +6,7 @@
  */
 package com.flying.common.msg.handler;
 
-import com.flying.common.msg.converter.IMsgConverter;
+import com.flying.common.msg.codec.IMsgCodec;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
@@ -16,9 +16,9 @@ import java.util.Map;
 
 public class ServiceMsgListener implements IMsgEventListener {
     private Map<Short, IMsgHandler> handlers;
-    private IMsgConverter msgConverter;
+    private IMsgCodec msgConverter;
 
-    public ServiceMsgListener(Map<Short, IMsgHandler> handlers, IMsgConverter msgConverter) {
+    public ServiceMsgListener(Map<Short, IMsgHandler> handlers, IMsgCodec msgConverter) {
         this.handlers = handlers;
         this.msgConverter = msgConverter;
     }

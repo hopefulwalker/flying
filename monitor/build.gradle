@@ -8,7 +8,8 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    compile group: 'uk.co.real-logic', name: 'sbe', version: '1.0.4-RC2-SNAPSHOT', changing: true
+    compile group: 'uk.co.real-logic', name: 'sbe-tool', version: '1.6.2'
+    compile group: 'org.agrona', name: 'agrona', version: '0.9.5'
 
     compile group: 'org.apache.commons', name: 'commons-beanutils', version: '1.9.2'
     compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
@@ -31,18 +32,18 @@ dependencies {
     runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
 }
 
-task generateMonitorMsgConverter(type: JavaExec) {
-    main = 'com.flying.common.msg.converter.generator.ConverterGenerator'
-    args = ['com.flying.monitor.msg.converter.IMonitorMsgConverter']
-    systemProperties = ['converter.output.dir': 'src/main/java']
-    classpath sourceSets.main.runtimeClasspath
-}
-
 task generateMonitorMsg(type: JavaExec) {
     main = 'uk.co.real_logic.sbe.SbeTool'
     args = ['src/main/resources/com/flying/monitor/msg/monitor-msg.xml']
-    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/monitor/msg/SimpleBinary1-0.xsd']
+    systemProperties = ['sbe.output.dir': 'src/main/java', 'sbe.target.language': 'Java', 'sbe.validation.stop.on.error': 'true', 'sbe.validation.xsd': 'src/main/resources/com/flying/monitor/msg/sbe.xsd']
     classpath configurations.compile
+}
+
+task generateMonitorMsgCodec(type: JavaExec) {
+    main = 'com.flying.common.msg.codec.generator.CodecGenerator'
+    args = ['com.flying.monitor.msg.codec.IMonitorMsgCodec']
+    systemProperties = ['codec.output.dir': 'src/main/java']
+    classpath sourceSets.main.runtimeClasspath
 }
 
 compileJava.dependsOn('generateMonitorMsg')

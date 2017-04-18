@@ -1,0 +1,5 @@
+        // headerDecoderClass, varHeaderDecoder, varMsg, varField
+        @{headerDecoderClass} @{varHeaderDecoder} = new @{headerDecoderClass}();
+        UnsafeBuffer buffer = new UnsafeBuffer(@{varMsg});
+        @{varHeaderDecoder}.wrap(buffer, 0);
+        return @{varHeaderDecoder}.@{varField}();

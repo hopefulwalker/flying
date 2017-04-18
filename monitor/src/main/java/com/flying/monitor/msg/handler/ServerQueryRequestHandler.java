@@ -10,38 +10,34 @@ import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.service.ServiceException;
 import com.flying.monitor.model.ServerBO;
-import com.flying.monitor.msg.converter.IMonitorMsgConverter;
-import com.flying.monitor.msg.gen.ServerQueryRequest;
+import com.flying.monitor.msg.codec.IMonitorMsgCodec;
+import com.flying.monitor.msg.gen.ServerQueryRequestDecoder;
 import com.flying.monitor.service.IMonitorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class ServerQueryRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(ServerQueryRequestHandler.class);
     private IMonitorService service;
-    private IMonitorMsgConverter msgConverter;
+    private IMonitorMsgCodec msgCodec;
 
-    public ServerQueryRequestHandler(IMonitorService service, IMonitorMsgConverter msgConverter) {
+    public ServerQueryRequestHandler(IMonitorService service, IMonitorMsgCodec msgCodec) {
         this.service = service;
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     public byte[] handle(byte[] msg) {
-        ServerQueryRequest request = msgConverter.getServerQueryRequest(msg);
+        ServerQueryRequestDecoder request = msgCodec.getServerQueryRequestDecoder(msg);
         int retCode = IReturnCode.SUCCESS;
         List<ServerBO> serverBOs = null;
         try {
-            serverBOs = service.find(request.getRegion(), request.serviceType());
-        } catch (UnsupportedEncodingException uee) {
-            logger.error("Error in finding serverBO", uee);
-            retCode = IReturnCode.UNSUPPORTED_ENCODING;
+            serverBOs = service.find(request.region(), request.serviceType());
         } catch (ServiceException se) {
             logger.error("Error in finding serverBO", se);
             retCode = se.getCode();
         }
-        return msgConverter.getServerQueryReplyMsg(retCode, serverBOs);
+        return msgCodec.encodeServerQueryReply(retCode, serverBOs);
     }
 }

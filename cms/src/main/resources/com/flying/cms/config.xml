@@ -10,7 +10,7 @@
         <property name="serverEngine" ref="serverEngine"/>
         <property name="reporter" ref="reporter"/>
     </bean>
-    <bean id="serverEngine" class="com.flying.framework.messaging.engine.impl.ZMQUCServerEngine">
+    <bean id="serverEngine" class="com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine">
         <property name="msgEventListener" ref="omsMsgListener"/>
         <property name="listenEndpoint" ref="omsListenEndpoint"/>
     </bean>

@@ -11,7 +11,7 @@ import com.flying.common.service.IServiceType;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
-import com.flying.framework.messaging.engine.impl.PooledZMQClientEngineFactory;
+import com.flying.framework.messaging.engine.impl.zmq.PooledZMQClientEngineFactory;
 import com.flying.util.common.Dictionary;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;

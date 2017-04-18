@@ -241,7 +241,7 @@
     <serialization>
         <portable-version>0</portable-version>
 		<serializers>
-			<serializer type-class="com.flying.oms.model.OrderBO" class-name="com.flying.oms.model.OrderBOBAS"/>
+			<!--<serializer type-class="com.flying.oms.model.OrderBO" class-name="com.flying.oms.model.OrderBOBAS"/>-->
 		</serializers>
     </serialization>
 
