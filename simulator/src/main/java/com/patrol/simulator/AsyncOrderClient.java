@@ -89,7 +89,7 @@ public class AsyncOrderClient {
                 }
             }
             try {
-                if (rvn % 1000000 == 1) {
+                if (rvn % 100000 == 1) {
                     long totaltime = (System.currentTimeMillis() - startTime);
                     System.out.println("send:"+i);
                     System.out.println("rvn:" + rvn);

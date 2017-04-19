@@ -46,29 +46,29 @@
                 <entry key="1">
                     <bean class="com.flying.monitor.msg.handler.ServerRegistryRequestHandler">
                         <constructor-arg name="service" ref="monitorServerService"/>
-                        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+                        <constructor-arg name="msgCodec" ref="monitorMsgCodec"/>
                     </bean>
                 </entry>
                 <entry key="3">
                     <bean class="com.flying.monitor.msg.handler.ServerQueryRequestHandler">
                         <constructor-arg name="service" ref="monitorServerService"/>
-                        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+                        <constructor-arg name="msgCodec" ref="monitorMsgCodec"/>
                     </bean>
                 </entry>
             </map>
         </constructor-arg>
-        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+        <constructor-arg name="msgConverter" ref="monitorMsgCodec"/>
     </bean>
     <bean id="bcMonitorClientService" class="com.flying.monitor.service.client.BCMonitorClientService">
         <constructor-arg name="engine" ref="broadcastEngine"/>
-        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+        <constructor-arg name="msgCodec" ref="monitorMsgCodec"/>
     </bean>
     <bean id="monitorServerService" class="com.flying.monitor.service.server.MonitorServerService"/>
 
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
-    <bean id="monitorMsgConverter" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
+    <bean id="monitorMsgCodec" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
 
     <bean id="broadcastEndpoints" class="java.util.ArrayList">
         <constructor-arg>

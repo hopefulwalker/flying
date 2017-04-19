@@ -41,16 +41,16 @@
                 <entry key="1">
                     <bean class="com.flying.ams.msg.handler.GetAcctByIdHandler">
                         <constructor-arg name="service" ref="accountServerService"/>
-                        <constructor-arg name="msgConverter" ref="accountMsgConverter"/>
+                        <constructor-arg name="msgCodec" ref="accountMsgCodec"/>
                     </bean>
                 </entry>
             </map>
         </constructor-arg>
-        <constructor-arg name="msgConverter" ref="accountMsgConverter"/>
+        <constructor-arg name="msgConverter" ref="accountMsgCodec"/>
     </bean>
     <bean id="bcMonitorClientService" class="com.flying.monitor.service.client.BCMonitorClientService">
         <constructor-arg name="engine" ref="broadcastEngine"/>
-        <constructor-arg name="msgConverter" ref="monitorMsgConverter"/>
+        <constructor-arg name="msgCodec" ref="monitorMsgCodec"/>
     </bean>
     <!--<bean id="ucMonitorClientService" class="com.flying.monitor.service.client.UCMonitorClientService" init-method="init">-->
     <!--<constructor-arg name="endpoints" ref="cntMonitorEndpoints"/>-->
@@ -61,8 +61,8 @@
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
-    <bean id="monitorMsgConverter" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
-    <bean id="accountMsgConverter" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
+    <bean id="monitorMsgCodec" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
+    <bean id="accountMsgCodec" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
     <bean id="accountServerService" class="com.flying.ams.service.server.AccountServerService">
         <constructor-arg name="accountCache" ref="accountCache"/>
         <constructor-arg name="loader" ref="loader"/>
