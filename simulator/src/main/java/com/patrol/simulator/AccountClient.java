@@ -32,7 +32,7 @@ public class AccountClient {
         for (long i = 0; i < NUMBER_OF_REQUEST; i++) {
             try {
                 accountBO = accountClientService.getAccountBO(10000L);
-                if (i % 10000000 == 0) System.out.println(BeanUtils.describe(accountBO));
+                if (i % 1000 == 0) System.out.println(BeanUtils.describe(accountBO));
             } catch (Exception ope) {
                 logger.error(ope.toString(), ope);
             }

@@ -28,7 +28,7 @@ public interface IOrderMsgCodec extends IMsgCodec {
 
     @CodecInfo(type = CodecInfo.ENCODE_MSG,
             bodyEncoderClass = "OrderRequestEncoder")
-    byte[] encodeOrderRequest(@Name("orderBO") @Fields("extNo, acctId, bsSideId, exchId, sectCode, price, qty") OrderBO orderBO);
+   byte[] encodeOrderRequest(@Name("orderBO") @Fields("extNo, acctId, bsSideId, exchId, sectCode, price, qty") OrderBO orderBO);
 
     @CodecInfo(type = CodecInfo.GET_BODY_DECODER,
             bodyDecoderClass = "OrderRequestDecoder")

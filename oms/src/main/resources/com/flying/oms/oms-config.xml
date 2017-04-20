@@ -56,7 +56,7 @@
     </bean>
     <bean id="bcMonitorClientService" class="com.flying.monitor.service.client.BCMonitorClientService">
         <constructor-arg name="engine" ref="broadcastEngine"/>
-        <constructor-arg name="msgCodec" ref="monitorMsgConverter"/>
+        <constructor-arg name="msgCodec" ref="monitorMsgCodec"/>
     </bean>
 
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
@@ -74,9 +74,9 @@
         </constructor-arg>
     </bean>
 
-    <bean id="monitorMsgConverter" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
+    <bean id="monitorMsgCodec" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>
     <bean id="orderMsgCodec" class="com.flying.oms.msg.codec.OrderMsgCodec"/>
-    <bean id="accountMsgConverter" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
+    <bean id="accountMsgCodec" class="com.flying.ams.msg.codec.AccountMsgCodec"/>
 
     <bean id="orderCache" class="java.util.HashMap"/>
     <bean id="orderStateMachine" class="com.flying.framework.fsm.impl.DefaultStateMachine"/>
