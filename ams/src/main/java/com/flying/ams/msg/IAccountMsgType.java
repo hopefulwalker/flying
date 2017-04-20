@@ -7,8 +7,6 @@
 package com.flying.ams.msg;
 
 public interface IAccountMsgType {
-    public final static short Q_GET_ACCOUNT_BY_ID = 1;
-    public final static short P_GET_ACCOUNT_BY_ID = 2;
     public final static short GetAccountByIdRequest = 1;
     public final static short GetAccountByIdReply = 2;
 }

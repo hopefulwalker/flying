@@ -21,7 +21,7 @@ public class DefaultStateMachineTest {
         IEventListener<IStateEvent, IState> listener = new IEventListener<IStateEvent, IState>() {
             @Override
             public IState onEvent(IStateEvent event) {
-                event.getEventInfo().setStateId((byte)2);
+                event.getInfo().setStateId((byte)2);
                 return factory.getState((byte) 2);
             }
         };

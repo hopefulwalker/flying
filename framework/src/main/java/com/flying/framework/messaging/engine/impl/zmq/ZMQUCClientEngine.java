@@ -86,7 +86,7 @@ public class ZMQUCClientEngine implements IClientEngine {
 //        reqMsg.add(IMsgEvent.NAME_REQUEST);
 //        long msgNO = ++sequence;
 //        reqMsg.add(Longs.toByteArray(msgNO));
-//        reqMsg.add(msgEvent.getEventInfo().getByteArray());
+//        reqMsg.add(msgEvent.getInfo().getByteArray());
 //        reqMsg.send(pipe);
 //        reqMsg.destroy();
 //        // receive reply.
@@ -142,7 +142,7 @@ public class ZMQUCClientEngine implements IClientEngine {
         reqMsg.add(Ints.toByteArray(IMsgEvent.ID_REQUEST));
         long msgNO = ++sequence;
         reqMsg.add(Longs.toByteArray(msgNO));
-        reqMsg.add(msgEvent.getEventInfo().getByteArray());
+        reqMsg.add(msgEvent.getInfo().getByteArray());
         reqMsg.send(pipe);
         reqMsg.destroy();
         // receive reply.
@@ -190,7 +190,7 @@ public class ZMQUCClientEngine implements IClientEngine {
         ZMsg reqMsg = new ZMsg();
         reqMsg.add(Ints.toByteArray(IMsgEvent.ID_REQUEST));
         reqMsg.add(Longs.toByteArray(++sequence));
-        reqMsg.add(msgEvent.getEventInfo().getByteArray());
+        reqMsg.add(msgEvent.getInfo().getByteArray());
         assert (pipe != null);
         reqMsg.send(pipe);
         reqMsg.destroy();

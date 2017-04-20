@@ -36,8 +36,8 @@ public class DefaultStateMachine implements IStateMachine {
 
     @Override
     public IState onEvent(IStateEvent event) {
-        IStateEventInfo info = event.getEventInfo();
-        IState from = event.getEventSource();
+        IStateEventInfo info = event.getInfo();
+        IState from = event.getSource();
         IStateChangeEvent sce = null;
         IState to = from.onEvent(event);
         if (from != to) {

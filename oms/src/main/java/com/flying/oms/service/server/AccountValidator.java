@@ -13,8 +13,6 @@ import com.flying.framework.fsm.IState;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderState;
 
-import java.util.Date;
-
 public class AccountValidator extends AbstractOrderEventListener {
     private IAccountService accountService;
 
@@ -24,10 +22,10 @@ public class AccountValidator extends AbstractOrderEventListener {
 
     @Override
     public IState onEvent(OrderEvent event) {
-        OrderBO orderBO = event.getEventInfo();
+        OrderBO orderBO = event.getInfo();
         try {
             if (accountService.isAccountNormal(orderBO.getAcctId()))
-                return event.getEventSource();
+                return event.getSource();
             else {
                 orderBO.setStateId(OrderState.REJECTED);
                 orderBO.setStateEnteredCode(AccountServiceException.ACCOUNT_NOT_NORMAL);

@@ -99,7 +99,7 @@ public class EngineTest {
         clientEngine.sendMsg(request);
         IMsgEvent reply = clientEngine.recvMsg(100);
         assertEquals(IMsgEvent.ID_REPLY_SUCCEED, reply.getId());
-        assertEquals(66, reply.getEventInfo().getByteArray()[0]);
+        assertEquals(66, reply.getInfo().getByteArray()[0]);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class EngineTest {
         }
         IMsgEvent reply = clientEngine.request(request, 100);
         assertEquals(IMsgEvent.ID_REPLY_SUCCEED, reply.getId());
-        assertEquals(66, reply.getEventInfo().getByteArray()[0]);
+        assertEquals(66, reply.getInfo().getByteArray()[0]);
     }
 
     @Test

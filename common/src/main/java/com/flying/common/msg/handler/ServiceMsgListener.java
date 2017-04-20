@@ -30,7 +30,7 @@ public class ServiceMsgListener implements IMsgEventListener {
     @Override
     public IMsgEventResult onEvent(IMsgEvent event) {
         IMsgEventResult result = null;
-        byte[] msg = event.getEventInfo().getByteArray();
+        byte[] msg = event.getInfo().getByteArray();
         IMsgHandler handler = getHandler(msgConverter.getMsgType(msg));
         if (handler != null) {
             result = new MsgEventResult(handler.handle(msg));

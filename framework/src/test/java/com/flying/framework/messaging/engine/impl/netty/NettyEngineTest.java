@@ -31,7 +31,7 @@ public class NettyEngineTest {
         endpoints.add(new Endpoint("tcp", "127.0.0.1", 8181));
         IEngineConfig clientConfig = new NettyEngineConfig(endpoints);
         clientConfig.setMsgEventListener(event -> {
-            assertEquals(66, event.getEventInfo().getByteArray()[0]);
+            assertEquals(66, event.getInfo().getByteArray()[0]);
             return null;
         });
         clientEngine = new NettyClientEngine(clientConfig);

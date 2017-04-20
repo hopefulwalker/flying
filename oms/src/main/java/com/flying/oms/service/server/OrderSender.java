@@ -7,9 +7,9 @@ import com.flying.oms.model.OrderState;
 public class OrderSender extends AbstractOrderEventListener {
     @Override
     public IState onEvent(OrderEvent event) {
-        OrderBO orderBO = event.getEventInfo();
+        OrderBO orderBO = event.getInfo();
         if (event.getId() == OrderEvent.ID_INITIALIZE) {
-            orderBO = event.getEventInfo();
+            orderBO = event.getInfo();
             orderBO.setCntrNo("CH100001");
             orderBO.setStateId(OrderState.SENT);
         }

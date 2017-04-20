@@ -49,7 +49,7 @@ public class BroadcastClientEngine implements IClientEngine {
 
     @Override
     public void sendMsg(IMsgEvent msgEvent) {
-        DatagramPacket packet = new DatagramPacket(msgEvent.getEventInfo().getByteArray(), msgEvent.getEventInfo().getByteArray().length);
+        DatagramPacket packet = new DatagramPacket(msgEvent.getInfo().getByteArray(), msgEvent.getInfo().getByteArray().length);
         for (IEndpoint endpoint : endpoints) {
             try {
                 packet.setAddress(InetAddress.getByName(endpoint.getAddress()));

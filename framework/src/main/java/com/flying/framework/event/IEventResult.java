@@ -1,4 +1,4 @@
-/**
+/*
  Created by Walker.Zhang on 2015/2/5.
  Revision History:
  Date          Who              Version      What
