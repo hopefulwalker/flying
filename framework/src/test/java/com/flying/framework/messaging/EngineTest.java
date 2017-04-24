@@ -6,15 +6,15 @@
  */
 package com.flying.framework.messaging;
 
-import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.endpoint.IEndpoint;
+import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.engine.IServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.ZMQUCClientEngine;
+import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.engine.impl.zmq.ZMQUCClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
 import org.junit.*;
 
 import java.util.ArrayList;
@@ -135,13 +135,17 @@ public class EngineTest {
         long startMillis = System.currentTimeMillis();
         long replyCnt = total;
         IMsgEvent reply;
-        for (int requestCnt = 0; requestCnt < total || replyCnt > 0; requestCnt++) {
-            clientEngine.sendMsg(request);
+        int requestCnt = 0;
+        while (requestCnt < total || replyCnt > 0) {
+            if (requestCnt < total) {
+                clientEngine.sendMsg(request);
+                requestCnt++;
+            }
             reply = clientEngine.recvMsg(0);
             if (reply.getId() == IMsgEvent.ID_REPLY_SUCCEED) replyCnt--;
         }
         long period = System.currentTimeMillis() - startMillis;
-        System.out.println("Message processed:" + total + " Time used in millis:" + period);
+        System.out.println("Message processed:" + requestCnt + " Time used in millis:" + period);
     }
 
     private static class MockMsgEventResult implements IMsgEventResult {
