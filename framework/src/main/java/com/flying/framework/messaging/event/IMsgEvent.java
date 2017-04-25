@@ -27,4 +27,6 @@ public interface IMsgEvent extends IEvent<IEngine, IMsgEventInfo> {
     int ID_REPLY_TIMEOUT = 6;           // timeout reply
     int ID_REPLY_UNSUPPORTED = 7;       // unsupported reply
     int ID_REPLY_FAILED = 8;            // failed reply
+
+    int ID_MESSAGE = 9;                 // common type.
 }
