@@ -33,15 +33,39 @@ public class Dispatcher implements Runnable {
     private Map<List<IEndpoint>, List<Server>> activeServers;
     private long sequence = 0L;
 
-    public Dispatcher(AsyncClientEngine engine) {
+    Dispatcher(AsyncClientEngine engine) {
         this.engine = engine;
         this.reactor = new ZLoop();
         this.sockets = new HashMap<>();
         this.activeServers = new HashMap<>();
     }
 
-    public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
-        ZMsg msg = new ZMsg();
+    int addZLoopHandler(List<IEndpoint> endpoints, ZLoop.IZLoopHandler handler, int socketType) {
+        ZMQ.Socket socket = engine.getContext().createSocket(socketType);
+        List<Server> servers = new ArrayList<>();
+        for (IEndpoint endpoint : endpoints) {
+            socket.connect(endpoint.asString());
+            servers.add(new Server(endpoint.asString()));
+        }
+        ZMQ.PollItem pollInput = new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN);
+        sockets.put(endpoints, socket);
+        activeServers.put(endpoints, servers);
+
+        return reactor.addPoller(pollInput, handler, this);
+    }
+
+    public int addMsgEventListener(List<IEndpoint> endpoints, IMsgEventListener listener) {
+        ZLoop.IZLoopHandler handler = new ZLoop.IZLoopHandler() {
+            @Override
+            public int handle(ZLoop loop, ZMQ.PollItem item, Object arg) {
+                listener.onEvent(new MsgEvent(IMsgEvent.ID_REPLY, engine, new MsgEventInfo(new byte[0])));
+                return 0;
+            }
+        };
+        return addZLoopHandler(endpoints, handler, ZMQ.ROUTER);
+    }
+
+    public void sendMsg(List<IEndpoint> endpoints, ZMsg msg) {
         boolean reqSent = false;
         ZMQ.Socket socket = sockets.get(endpoints);
         List<Server> servers = activeServers.get(endpoints);
@@ -52,12 +76,8 @@ public class Dispatcher implements Runnable {
                 servers.remove(randomIndex);
                 logger.info("ZMQUCClientEngine: remove expired server:" + server.endpoint);
             } else {
-                msg.push(msgEvent.getInfo().getByteArray());
-                msg.push(Longs.toByteArray(++sequence));
-                msg.push(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
                 msg.push(server.endpoint);
                 msg.send(socket);
-                msg.destroy();
                 reqSent = true;
                 break;
             }
@@ -67,25 +87,13 @@ public class Dispatcher implements Runnable {
         }
     }
 
-    public int addMsgEventListener(List<IEndpoint> endpoints, IMsgEventListener listener) {
-        ZLoop.IZLoopHandler socketEvent = new ZLoop.IZLoopHandler() {
-            @Override
-            public int handle(ZLoop loop, ZMQ.PollItem item, Object arg) {
-                listener.onEvent(new MsgEvent(IMsgEvent.ID_REPLY, engine, new MsgEventInfo(new byte[0])));
-                return 0;
-            }
-        };
-        ZMQ.Socket socket = engine.getContext().createSocket(ZMQ.ROUTER);
-        List<Server> servers = new ArrayList<>();
-        for (IEndpoint endpoint : endpoints) {
-            socket.connect(endpoint.asString());
-            servers.add(new Server(endpoint.asString()));
-        }
-        ZMQ.PollItem pollInput = new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN);
-        sockets.put(endpoints, socket);
-        activeServers.put(endpoints, servers);
-
-        return reactor.addPoller(pollInput, socketEvent, this);
+    public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
+        ZMsg msg = new ZMsg();
+        msg.push(msgEvent.getInfo().getByteArray());
+        msg.push(Longs.toByteArray(++sequence));
+        msg.push(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
+        sendMsg(endpoints, msg);
+        msg.destroy();
     }
 
     @Override
