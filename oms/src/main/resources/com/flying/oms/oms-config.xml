@@ -81,13 +81,13 @@
     <bean id="orderCache" class="java.util.HashMap"/>
     <bean id="orderStateMachine" class="com.flying.framework.fsm.impl.DefaultStateMachine"/>
 
-    <bean id="accountService" class="com.flying.ams.service.client.AccountClientService" init-method="init" destroy-method="close">
-        <constructor-arg name="region" value="SZ"/>
-        <constructor-arg name="endpointFactory" ref="endpointFactory"/>
-        <constructor-arg name="poolConfig" ref="poolConfig"/>
-        <constructor-arg name="msgCodec" ref="accountMsgCodec"/>
-        <!--<property name="accountCache" ref="accountCache"/>-->
-    </bean>
+    <!--<bean id="accountService" class="com.flying.ams.service.client.AccountClientService" init-method="init" destroy-method="close">-->
+        <!--<constructor-arg name="region" value="SZ"/>-->
+        <!--<constructor-arg name="endpointFactory" ref="endpointFactory"/>-->
+        <!--<constructor-arg name="poolConfig" ref="poolConfig"/>-->
+        <!--<constructor-arg name="msgCodec" ref="accountMsgCodec"/>-->
+        <!--&lt;!&ndash;<property name="accountCache" ref="accountCache"/>&ndash;&gt;-->
+    <!--</bean>-->
     <bean id="endpointFactory" class="com.flying.monitor.service.client.MonitorEndpointFactory">
         <constructor-arg name="service" ref="bcMonitorClientService"/>
     </bean>
@@ -95,10 +95,10 @@
         <property name="minIdle" value="1"/>
     </bean>
 
-    <!--<bean id="accountService" class="com.flying.ams.service.server.AccountServerService">-->
-        <!--<constructor-arg name="loader" ref="accountDBLoader"/>-->
-        <!--<constructor-arg name="accountCache" ref="accountCache"/>-->
-    <!--</bean>-->
+    <bean id="accountService" class="com.flying.ams.service.server.AccountServerService">
+        <constructor-arg name="loader" ref="accountDBLoader"/>
+        <constructor-arg name="accountCache" ref="accountCache"/>
+    </bean>
     <bean id="accountDBLoader" class="com.flying.ams.service.server.AccountDBLoader"/>
     <bean id="accountCache" class="java.util.HashMap"/>
 </beans>

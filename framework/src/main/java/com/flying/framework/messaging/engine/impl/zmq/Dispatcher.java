@@ -2,7 +2,7 @@
  * Created by Walker.Zhang on 2017/4/25.
  * Revision History:
  * Date          Who              Version      What
- * 2017/4/25     Walker.Zhang     0.1.0        Created.
+ * 2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
  */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -15,9 +15,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeromq.ZLoop;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMsg;
+import org.zeromq.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,31 +25,37 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Dispatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
+    private ZContext context;
     private AsyncClientEngine engine;
     private ZLoop reactor;
     private Map<List<IEndpoint>, ZMQ.Socket> sockets;
     private Map<List<IEndpoint>, List<Server>> activeServers;
     private long sequence = 0L;
 
-    Dispatcher(AsyncClientEngine engine) {
+    public Dispatcher(AsyncClientEngine engine) {
         this.engine = engine;
+        this.context = ZContext.shadow(engine.getContext());
         this.reactor = new ZLoop();
         this.sockets = new HashMap<>();
         this.activeServers = new HashMap<>();
     }
 
-    int addZLoopHandler(List<IEndpoint> endpoints, ZLoop.IZLoopHandler handler, int socketType) {
-        ZMQ.Socket socket = engine.getContext().createSocket(socketType);
+    public void connect(List<IEndpoint> endpoints, int socketType) {
+        if (sockets.containsKey(endpoints)) return;
+        ZMQ.Socket socket = context.createSocket(socketType);
         List<Server> servers = new ArrayList<>();
         for (IEndpoint endpoint : endpoints) {
             socket.connect(endpoint.asString());
             servers.add(new Server(endpoint.asString()));
         }
-        ZMQ.PollItem pollInput = new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN);
         sockets.put(endpoints, socket);
         activeServers.put(endpoints, servers);
+    }
 
-        return reactor.addPoller(pollInput, handler, this);
+    public int addZLoopHandler(List<IEndpoint> endpoints, ZLoop.IZLoopHandler handler, Object handlerArg) {
+        ZMQ.Socket socket = sockets.get(endpoints);
+        ZMQ.PollItem pollInput = new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN);
+        return reactor.addPoller(pollInput, handler, handlerArg);
     }
 
     public int addMsgEventListener(List<IEndpoint> endpoints, IMsgEventListener listener) {
@@ -62,12 +66,17 @@ public class Dispatcher implements Runnable {
                 return 0;
             }
         };
-        return addZLoopHandler(endpoints, handler, ZMQ.ROUTER);
+        connect(endpoints, ZMQ.ROUTER);
+        return addZLoopHandler(endpoints, handler, this);
     }
 
     public void sendMsg(List<IEndpoint> endpoints, ZMsg msg) {
         boolean reqSent = false;
         ZMQ.Socket socket = sockets.get(endpoints);
+        if (socket.getType() != ZMQ.ROUTER) {
+            msg.send(socket);
+            return;
+        }
         List<Server> servers = activeServers.get(endpoints);
         while (!servers.isEmpty()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(0, servers.size());
@@ -98,32 +107,48 @@ public class Dispatcher implements Runnable {
 
     @Override
     public void run() {
-        reactor.start();
+        try {
+            reactor.start();
+        } catch (ZMQException zmqe) {
+            if (zmqe.getErrorCode() != ZMQ.Error.ETERM.getCode()) {
+                logger.error("Error occurs when running reactor!", zmqe);
+            }
+        }
+        context.destroy();
     }
 
     private class Server {
-        //TODO: support ping.
-        private String endpoint;        //  Server identity/endpoint
+        //  If not a single service replies within this time, give up
+        private final static int serverDisconnectTtl = 1 * 60 * 1000;
+        //  Server considered dead if silent for this long
+        private final static int serverTtl = 30 * 1000;
+        //  PING interval for servers we think are alive
+        private final static int serverPingInterval = 5 * 1000;
+
+        private String endpoint;                          // Server identity/endpoint
+        private boolean pingChecked = false;              // Flag to ping.
         private long pingAt = Long.MAX_VALUE;            //  Next ping at this time
         private long expires = Long.MAX_VALUE;           //  Expires at this time
         private long disconnectAt = Long.MAX_VALUE;      //  Disconnect at this time
 
         protected Server(String endpoint) {
+            this(endpoint, false);
+        }
+
+        protected Server(String endpoint, boolean pingChecked) {
             this.endpoint = endpoint;
+            this.pingChecked = pingChecked;
             refresh();
         }
 
         private void refresh() {
-//            pingAt = System.currentTimeMillis() + ZMQUCClientEngine.serverPingInterval;
-//            expires = System.currentTimeMillis() + ZMQUCClientEngine.serverTtl;
-//            disconnectAt = System.currentTimeMillis() + ZMQUCClientEngine.serverDisconnectTtl;
+            pingAt = System.currentTimeMillis() + Server.serverPingInterval;
+            expires = System.currentTimeMillis() + Server.serverTtl;
+            disconnectAt = System.currentTimeMillis() + Server.serverDisconnectTtl;
         }
 
         private void refreshPingAt() {
-//            pingAt = System.currentTimeMillis() + ZMQUCClientEngine.serverPingInterval;
-        }
-
-        protected void destroy() {
+            pingAt = System.currentTimeMillis() + Server.serverPingInterval;
         }
 
         private void ping(ZMQ.Socket socket) {

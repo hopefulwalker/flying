@@ -12,14 +12,16 @@ import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
-import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeromq.*;
+import org.zeromq.ZContext;
+import org.zeromq.ZLoop;
+import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +44,8 @@ public class AsyncClientEngine implements IClientEngine {
     //  Structure of our frontend class
     private ZContext context;            //  Our context wrapper
     private ZMQ.Socket pipe;             //  Pipe through to background
-    private Dispatcher dispatcher;
     private List<IEndpoint> endpoints;
     private IMsgEventListener msgEventListener;
-
-    private ZLoop.IZLoopHandler requestHandler;
-    private ZLoop.IZLoopHandler replyHandler;
 
     public AsyncClientEngine(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
@@ -69,10 +67,6 @@ public class AsyncClientEngine implements IClientEngine {
 
     @Override
     public void setEndpoints(List<IEndpoint> endpoints) {
-        if (running) {
-            for (IEndpoint newEndpoint : endpoints)
-                if (!this.endpoints.contains(newEndpoint)) connect(newEndpoint);
-        }
         this.endpoints = endpoints;
     }
 
@@ -194,27 +188,15 @@ public class AsyncClientEngine implements IClientEngine {
             return;
         }
         context = new ZContext();
+        //setup pipe to connect to dispatcher and remote server.
         pipe = context.createSocket(ZMQ.PAIR);
         IEndpoint pipeEndpoint = new Endpoint(String.format("inproc://zctx-pipe-%d", pipe.hashCode()));
         pipe.bind(pipeEndpoint.asString());
         List<IEndpoint> pipeEndpointAdapter = new ArrayList<>(1);
         pipeEndpointAdapter.add(pipeEndpoint);
-
-        dispatcher = new Dispatcher(this);
-        requestHandler = new RequestHandler(dispatcher, endpoints);
-        replyHandler = new ReplyHandler(dispatcher, pipeEndpointAdapter);
-
-        dispatcher.addZLoopHandler(pipeEndpointAdapter, requestHandler, ZMQ.PAIR);
-        dispatcher.addZLoopHandler(endpoints, replyHandler, ZMQ.ROUTER);
-
-        dispatcher.addMsgEventListener(endpoints, new IMsgEventListener() {
-            @Override
-            public IMsgEventResult onEvent(IMsgEvent event) {
-                logger.warn("Don't forget this");
-                return null;
-            }
-        });
-        dispatcher.sendMsg(endpoints, new MsgEvent(IMsgEvent.ID_MESSAGE, this, new MsgEventInfo(new byte[0])));
+        Dispatcher dispatcher = new Dispatcher(this);
+        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, endpoints, ZMQ.PAIR, ZMQ.ROUTER);
+        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, pipeEndpointAdapter, ZMQ.ROUTER, ZMQ.PAIR);
         new Thread(dispatcher).start();
         running = true;
     }
@@ -229,55 +211,63 @@ public class AsyncClientEngine implements IClientEngine {
         running = false;
     }
 
-    private void connect(IEndpoint endpoint) {
-        ZMsg msg = new ZMsg();
-        msg.add(Ints.toByteArray(IMsgEvent.ID_CONNECT));
-        msg.add(endpoint.asString());
-        msg.send(pipe);
-        msg.destroy();
-    }
-
-    private class RequestHandler implements ZLoop.IZLoopHandler {
+    private class RouteHandler implements ZLoop.IZLoopHandler {
         private Dispatcher dispatcher;
-        private List<IEndpoint> endpoints;
+        private List<IEndpoint> froms;
+        private List<IEndpoint> tos;
+        private int fromType;
+        private int toType;
 
-        public RequestHandler(Dispatcher dispatcher, List<IEndpoint> endpoints) {
+        public RouteHandler(Dispatcher dispatcher, List<IEndpoint> froms, List<IEndpoint> tos, int fromType, int toType) {
             this.dispatcher = dispatcher;
-            this.endpoints = endpoints;
+            this.froms = froms;
+            this.tos = tos;
+            this.fromType = fromType;
+            this.toType = toType;
+            initialize();
+        }
+
+        private void initialize() {
+            dispatcher.connect(froms, fromType);
+            dispatcher.connect(tos, toType);
+            dispatcher.addZLoopHandler(froms, this, tos);
         }
 
         @Override
-        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object o) {
-            ZMQ.Socket pipe = pollItem.getSocket();
-            ZMsg msg = ZMsg.recvMsg(pipe);
-            dispatcher.sendMsg(endpoints, msg);
-            msg.destroy();
-            return 0;
-        }
-    }
-
-    private class ReplyHandler implements ZLoop.IZLoopHandler {
-        private IMsgEventListener msgEventListener;
-
-        public ReplyHandler(IMsgEventListener msgEventListener) {
-            this.msgEventListener = msgEventListener;
-        }
-
-        @Override
-        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object o) {
+        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object arg) {
             ZMQ.Socket socket = pollItem.getSocket();
             ZMsg msg = ZMsg.recvMsg(socket);
-            //  Frame 0 is the identity of server that replied
-            String endpoint = msg.popString();
-            //  Frame 1 may be the command, we only handler PING ourselves, others should be route out.
-            ZFrame command = msg.pop();
-            // Frame 2 is msgNO.
-            msg.pop();
-            // Frame 3 is real data.
-            MsgEvent event = new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(msg.pop().getData()));
-            msgEventListener.onEvent(event);
+            // if the router , drop the identity frame before forward.
+            if (socket.getType() == ZMQ.ROUTER){
+                msg.pop();
+            }
+            dispatcher.sendMsg((List<IEndpoint>) arg, msg);
             msg.destroy();
             return 0;
         }
     }
+//    private class ReplyHandler implements ZLoop.IZLoopHandler {
+//        private IMsgEventListener msgEventListener;
+//
+//        public ReplyHandler(IMsgEventListener msgEventListener) {
+//            this.msgEventListener = msgEventListener;
+//        }
+//
+//        @Override
+//        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object o) {
+//            ZMQ.Socket socket = pollItem.getSocket();
+//            ZMsg msg = ZMsg.recvMsg(socket);
+//            //  Frame 0 is the identity of server that replied
+//            String endpoint = msg.popString();
+//            //  Frame 1 may be the command, we only handler PING ourselves, others should be route out.
+//            ZFrame command = msg.pop();
+//            // Frame 2 is msgNO.
+//            msg.pop();
+//            // Frame 3 is real data.
+//            MsgEvent event = new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(msg.pop().getData()));
+//            msgEventListener.onEvent(event);
+//            msg.destroy();
+//            return 0;
+//        }
+//    }
 }

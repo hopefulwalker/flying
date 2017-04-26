@@ -42,8 +42,12 @@ public class Endpoint implements IEndpoint {
 
     private void splitEndpointString() {
         this.protocol = StringUtils.substringBefore(endpoint, PROTOCOL_SPLITTER);
-        this.address = StringUtils.substringBetween(endpoint, PROTOCOL_SPLITTER, ADDRESS_SPLITTER);
-        this.port = Integer.valueOf(StringUtils.substringAfterLast(endpoint, ADDRESS_SPLITTER));
+        String addressString = StringUtils.substringAfter(endpoint, PROTOCOL_SPLITTER);
+        this.address = StringUtils.substringBefore(addressString, ADDRESS_SPLITTER);
+        this.port = 0;
+        String portString = StringUtils.substringAfter(StringUtils.substringAfter(endpoint, PROTOCOL_SPLITTER), ADDRESS_SPLITTER);
+        if (!portString.isEmpty()) this.port = Integer.valueOf(portString);
+
     }
 
     @Override

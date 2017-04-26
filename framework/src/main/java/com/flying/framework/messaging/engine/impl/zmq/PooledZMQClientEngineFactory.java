@@ -37,9 +37,11 @@ public class PooledZMQClientEngineFactory implements PooledObjectFactory<IClient
         }
     }
 
+
     @Override
     public PooledObject<IClientEngine> makeObject() throws Exception {
-        IClientEngine engine = new ZMQUCClientEngine(endpoints);
+//        IClientEngine engine = new ZMQUCClientEngine(endpoints);
+        IClientEngine engine = new AsyncClientEngine(endpoints);
         engine.start();
         return new DefaultPooledObject<>(engine);
     }

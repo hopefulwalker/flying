@@ -84,6 +84,7 @@ public class ZMQWorker implements Runnable {
         if (context != null) context.destroy();
     }
 
+
     private void sendReply(ZMQ.Socket socket, ZFrame address, int command, ZFrame msgNO, byte[] result) {
         ZMsg repMsg = new ZMsg();
         repMsg.add(address);
