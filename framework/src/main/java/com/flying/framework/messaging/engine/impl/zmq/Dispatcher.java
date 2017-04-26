@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class Dispatcher implements Runnable {
     private AsyncClientEngine engine;
     private ZLoop reactor;
     private Map<List<IEndpoint>, ZMQ.Socket> sockets;
-    private Map<List<IEndpoint>, List<Server>> activeServers;
+    private Map<List<IEndpoint>, Map<IEndpoint, Server>> activeServers;
     private long sequence = 0L;
 
     public Dispatcher(AsyncClientEngine engine) {
@@ -43,10 +42,10 @@ public class Dispatcher implements Runnable {
     public void connect(List<IEndpoint> endpoints, int socketType) {
         if (sockets.containsKey(endpoints)) return;
         ZMQ.Socket socket = context.createSocket(socketType);
-        List<Server> servers = new ArrayList<>();
+        Map<IEndpoint, Server> servers = new HashMap<>();
         for (IEndpoint endpoint : endpoints) {
             socket.connect(endpoint.asString());
-            servers.add(new Server(endpoint.asString()));
+            servers.put(endpoint, new Server(endpoint, socketType == ZMQ.ROUTER));
         }
         sockets.put(endpoints, socket);
         activeServers.put(endpoints, servers);
@@ -70,6 +69,12 @@ public class Dispatcher implements Runnable {
         return addZLoopHandler(endpoints, handler, this);
     }
 
+    public void refreshServer(List<IEndpoint> endpoints, IEndpoint endpoint) {
+        //  Frame 0 is the identity of server that replied
+        Server server = activeServers.get(endpoints).get(endpoint);
+        server.refresh();
+    }
+
     public void sendMsg(List<IEndpoint> endpoints, ZMsg msg) {
         boolean reqSent = false;
         ZMQ.Socket socket = sockets.get(endpoints);
@@ -77,15 +82,15 @@ public class Dispatcher implements Runnable {
             msg.send(socket);
             return;
         }
-        List<Server> servers = activeServers.get(endpoints);
+        Map<IEndpoint, Server> servers = activeServers.get(endpoints);
         while (!servers.isEmpty()) {
             int randomIndex = ThreadLocalRandom.current().nextInt(0, servers.size());
-            Server server = servers.get(randomIndex);
+            Server server = servers.get(servers.keySet().toArray()[randomIndex]);
             if (System.currentTimeMillis() >= server.expires) {
                 servers.remove(randomIndex);
-                logger.info("ZMQUCClientEngine: remove expired server:" + server.endpoint);
+                logger.warn("ZMQUCClientEngine: remove expired server:" + server.endpoint.asString());
             } else {
-                msg.push(server.endpoint);
+                msg.push(server.endpoint.asString());
                 msg.send(socket);
                 reqSent = true;
                 break;
@@ -125,20 +130,20 @@ public class Dispatcher implements Runnable {
         //  PING interval for servers we think are alive
         private final static int serverPingInterval = 5 * 1000;
 
-        private String endpoint;                          // Server identity/endpoint
-        private boolean pingChecked = false;              // Flag to ping.
+        private IEndpoint endpoint;                          // Server identity/endpoint
+        private boolean pingEnabled = false;              // Flag to ping.
         private long pingAt = Long.MAX_VALUE;            //  Next ping at this time
         private long expires = Long.MAX_VALUE;           //  Expires at this time
         private long disconnectAt = Long.MAX_VALUE;      //  Disconnect at this time
 
-        protected Server(String endpoint) {
+        Server(IEndpoint endpoint) {
             this(endpoint, false);
         }
 
-        protected Server(String endpoint, boolean pingChecked) {
+        Server(IEndpoint endpoint, boolean pingEnabled) {
             this.endpoint = endpoint;
-            this.pingChecked = pingChecked;
-            refresh();
+            this.pingEnabled = pingEnabled;
+            if (this.pingEnabled) refresh();
         }
 
         private void refresh() {
@@ -154,7 +159,7 @@ public class Dispatcher implements Runnable {
         private void ping(ZMQ.Socket socket) {
             if (System.currentTimeMillis() >= pingAt) {
                 ZMsg ping = new ZMsg();
-                ping.add(endpoint);
+                ping.add(endpoint.asString());
                 ping.add(Ints.toByteArray(IMsgEvent.ID_PING));
                 ping.add(Longs.toByteArray(System.currentTimeMillis()));
                 ping.send(socket);

@@ -17,9 +17,9 @@ import com.flying.framework.messaging.engine.IEngine;
  */
 public interface IMsgEvent extends IEvent<IEngine, IMsgEventInfo> {
     // control command
-    int ID_PING = 1;                    // ping
-    int ID_PONG = 2;                    // pong
-    int ID_MESSAGE = 3;                 // common type.
+    int ID_PING = 1;                    // heart beat event ping.
+    int ID_PONG = 2;                    // heart beat event pong.
+    int ID_MESSAGE = 3;                 // MESSAGE EVENT.
 
     @Deprecated
     int ID_CONNECT = 4;                 // connect
