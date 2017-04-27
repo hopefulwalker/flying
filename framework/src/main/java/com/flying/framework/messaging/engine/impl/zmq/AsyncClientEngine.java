@@ -195,11 +195,9 @@ public class AsyncClientEngine implements IClientEngine {
         List<IEndpoint> pipeEndpointAdapter = new ArrayList<>(1);
         pipeEndpointAdapter.add(pipeEndpoint);
         Dispatcher dispatcher = new Dispatcher(this);
-//        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, endpoints, ZMQ.PAIR, ZMQ.ROUTER);
-//        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, pipeEndpointAdapter, ZMQ.ROUTER, ZMQ.PAIR);
-        ZLoop.IZLoopHandler requestHandler = new HandlerAdapter(dispatcher, pipeEndpointAdapter, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, false);
+        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, false);
         dispatcher.addZLoopHandler(pipeEndpointAdapter, requestHandler, endpoints);
-        ZLoop.IZLoopHandler replyHandler = new HandlerAdapter(dispatcher, endpoints, ZMQ.ROUTER, false, pipeEndpointAdapter, ZMQ.PAIR, false);
+        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, false, pipeEndpointAdapter, ZMQ.PAIR, false);
         dispatcher.addZLoopHandler(endpoints, replyHandler, pipeEndpointAdapter);
         new Thread(dispatcher).start();
         running = true;
@@ -215,49 +213,13 @@ public class AsyncClientEngine implements IClientEngine {
         running = false;
     }
 
-    private class RouteHandler implements ZLoop.IZLoopHandler {
-        private Dispatcher dispatcher;
-        private List<IEndpoint> froms;
-        private List<IEndpoint> tos;
-        private int fromType;
-        private int toType;
-
-        public RouteHandler(Dispatcher dispatcher, List<IEndpoint> froms, List<IEndpoint> tos, int fromType, int toType) {
-            this.dispatcher = dispatcher;
-            this.froms = froms;
-            this.tos = tos;
-            this.fromType = fromType;
-            this.toType = toType;
-            initialize();
-        }
-
-        private void initialize() {
-            dispatcher.connect(froms, fromType);
-            dispatcher.connect(tos, toType);
-            dispatcher.addZLoopHandler(froms, this, tos);
-        }
-
-        @Override
-        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object arg) {
-            ZMQ.Socket socket = pollItem.getSocket();
-            ZMsg msg = ZMsg.recvMsg(socket);
-            // if the router , drop the identity frame before forward.
-            if (socket.getType() == ZMQ.ROUTER) {
-                msg.pop();
-            }
-            dispatcher.sendMsg((List<IEndpoint>) arg, msg);
-            msg.destroy();
-            return 0;
-        }
-    }
-
-    private class HandlerAdapter extends AbstractZLoopSocketHandler {
+    private class RouteHandler extends AbstractZLoopSocketHandler {
         private List<IEndpoint> tos;
         private int toType;
         private boolean toPing;
 
-        public HandlerAdapter(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean fromPing,
-                              List<IEndpoint> tos, int toType, boolean toPing) {
+        public RouteHandler(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean fromPing,
+                            List<IEndpoint> tos, int toType, boolean toPing) {
             super(dispatcher, froms, fromType, fromPing);
             this.tos = tos;
             this.toType = toType;

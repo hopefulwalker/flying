@@ -61,7 +61,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
                 rc = handle(msg, arg);
                 break;
             default:
-                logger.warn("Deprecated Command");
+//                logger.warn("Deprecated Command");
                 rc = handle(msg, arg);
                 break;
         }
