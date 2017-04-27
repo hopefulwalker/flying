@@ -26,7 +26,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
     private int fromType;
     private boolean pingEnabled;
 
-    public AbstractZLoopSocketHandler(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean pingEnabled) {
+    AbstractZLoopSocketHandler(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean pingEnabled) {
         this.dispatcher = dispatcher;
         this.froms = froms;
         this.fromType = fromType;
@@ -34,7 +34,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         dispatcher.connect(this.froms, this.fromType, this.pingEnabled);
     }
 
-    public Dispatcher getDispatcher() {
+    Dispatcher getDispatcher() {
         return this.dispatcher;
     }
 
@@ -43,19 +43,15 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         ZMQ.Socket socket = pollItem.getSocket();
         ZMsg msg = ZMsg.recvMsg(socket);
         String address = null;
-        if (socket.getType() == ZMQ.ROUTER) {
-            address = msg.popString();
-            dispatcher.refreshServer(froms, address);
-        } else {
-            dispatcher.refreshServer(froms);
-        }
+        if (socket.getType() == ZMQ.ROUTER) address = msg.popString();
+        if (pingEnabled) dispatcher.refreshServer(froms, address);
         int rc = 0;
         // handle the heart beat message.
         ZFrame command = msg.peekFirst();
         switch (Ints.fromByteArray(command.getData())) {
             case IMsgEvent.ID_PING:
                 ZMsg ping = new ZMsg();
-                if (socket.getType() == ZMQ.ROUTER) ping.add(address);
+                if (address != null) ping.add(address);
                 ping.add(Ints.toByteArray(IMsgEvent.ID_PONG));
                 ping.add(Longs.toByteArray(System.currentTimeMillis()));
                 ping.send(socket);
@@ -65,7 +61,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
                 rc = handle(msg, arg);
                 break;
             default:
-//                logger.warn("Deprecated Command");
+                logger.warn("Deprecated Command");
                 rc = handle(msg, arg);
                 break;
         }

@@ -33,7 +33,7 @@ public class Dispatcher implements Runnable {
     private Map<List<IEndpoint>, Map<String, Server>> allServers;
     private long sequence = 0L;
 
-    public Dispatcher(AsyncClientEngine engine) {
+    Dispatcher(AsyncClientEngine engine) {
         this.engine = engine;
         this.context = ZContext.shadow(engine.getContext());
         this.reactor = new ZLoop();
@@ -42,11 +42,11 @@ public class Dispatcher implements Runnable {
         this.activeServers = new HashMap<>();
     }
 
-    public void connect(List<IEndpoint> endpoints, int socketType) {
+    void connect(List<IEndpoint> endpoints, int socketType) {
         connect(endpoints, socketType, false);
     }
 
-    public void connect(List<IEndpoint> endpoints, int socketType, boolean pingEnabled) {
+    void connect(List<IEndpoint> endpoints, int socketType, boolean pingEnabled) {
         if (sockets.containsKey(endpoints)) return;
         ZMQ.Socket socket = context.createSocket(socketType);
         Map<String, Server> serverMap = new HashMap<>();
@@ -62,7 +62,7 @@ public class Dispatcher implements Runnable {
         activeServers.put(endpoints, serverList);
     }
 
-    public int addZLoopHandler(List<IEndpoint> endpoints, ZLoop.IZLoopHandler handler, Object handlerArg) {
+    int addZLoopHandler(List<IEndpoint> endpoints, ZLoop.IZLoopHandler handler, Object handlerArg) {
         ZMQ.Socket socket = sockets.get(endpoints);
         ZMQ.PollItem pollInput = new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN);
         return reactor.addPoller(pollInput, handler, handlerArg);
@@ -73,18 +73,16 @@ public class Dispatcher implements Runnable {
         return addZLoopHandler(froms, handler, this);
     }
 
-    public void refreshServer(List<IEndpoint> endpoints, String endpoint) {
-        //  Frame 0 is the identity of server that replied
-        Server server = allServers.get(endpoints).get(endpoint);
-        List<Server> serverList = activeServers.get(endpoints);
-        if (!serverList.contains(server)) serverList.add(server);
-        server.refresh();
-    }
-
-    public void refreshServer(List<IEndpoint> endpoints) {
+    void refreshServer(List<IEndpoint> endpoints, String endpoint) {
         Map<String, Server> serverMap = allServers.get(endpoints);
         List<Server> serverList = activeServers.get(endpoints);
-        for (Server server : serverMap.values()) {
+        if (endpoint == null) {
+            for (Server server : serverMap.values()) {
+                if (!serverList.contains(server)) serverList.add(server);
+                server.refresh();
+            }
+        } else {
+            Server server = serverMap.get(endpoint);
             if (!serverList.contains(server)) serverList.add(server);
             server.refresh();
         }
