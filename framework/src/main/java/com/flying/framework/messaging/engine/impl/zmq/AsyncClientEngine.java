@@ -238,7 +238,7 @@ public class AsyncClientEngine implements IClientEngine {
             ZMQ.Socket socket = pollItem.getSocket();
             ZMsg msg = ZMsg.recvMsg(socket);
             // if the router , drop the identity frame before forward.
-            if (socket.getType() == ZMQ.ROUTER){
+            if (socket.getType() == ZMQ.ROUTER) {
                 msg.pop();
             }
             dispatcher.sendMsg((List<IEndpoint>) arg, msg);
@@ -246,28 +246,25 @@ public class AsyncClientEngine implements IClientEngine {
             return 0;
         }
     }
-//    private class ReplyHandler implements ZLoop.IZLoopHandler {
-//        private IMsgEventListener msgEventListener;
-//
-//        public ReplyHandler(IMsgEventListener msgEventListener) {
-//            this.msgEventListener = msgEventListener;
-//        }
-//
-//        @Override
-//        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object o) {
-//            ZMQ.Socket socket = pollItem.getSocket();
-//            ZMsg msg = ZMsg.recvMsg(socket);
-//            //  Frame 0 is the identity of server that replied
-//            String endpoint = msg.popString();
-//            //  Frame 1 may be the command, we only handler PING ourselves, others should be route out.
-//            ZFrame command = msg.pop();
-//            // Frame 2 is msgNO.
-//            msg.pop();
-//            // Frame 3 is real data.
-//            MsgEvent event = new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(msg.pop().getData()));
-//            msgEventListener.onEvent(event);
-//            msg.destroy();
-//            return 0;
-//        }
-//    }
+
+    private class HandlerAdapter extends AbstractZLoopSocketHandler {
+        private List<IEndpoint> tos;
+        private int toType;
+        private boolean toPing;
+
+        public HandlerAdapter(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean fromPing,
+                              List<IEndpoint> tos, int toType, boolean toPing) {
+            super(dispatcher, froms, fromType, fromPing);
+            this.tos = tos;
+            this.toType = toType;
+            this.toPing = toPing;
+            getDispatcher().connect(tos, toType, toPing);
+        }
+
+        @Override
+        public int handle(ZMsg msg, Object arg) {
+            getDispatcher().sendMsg(tos, msg);
+            return 0;
+        }
+    }
 }
