@@ -195,9 +195,9 @@ public class AsyncClientEngine implements IClientEngine {
         List<IEndpoint> pipeEndpointAdapter = new ArrayList<>(1);
         pipeEndpointAdapter.add(pipeEndpoint);
         Dispatcher dispatcher = new Dispatcher(this);
-        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, false);
+        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, true);
         dispatcher.addZLoopHandler(pipeEndpointAdapter, requestHandler, endpoints);
-        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, false, pipeEndpointAdapter, ZMQ.PAIR, false);
+        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, true, pipeEndpointAdapter, ZMQ.PAIR, false);
         dispatcher.addZLoopHandler(endpoints, replyHandler, pipeEndpointAdapter);
         new Thread(dispatcher).start();
         running = true;

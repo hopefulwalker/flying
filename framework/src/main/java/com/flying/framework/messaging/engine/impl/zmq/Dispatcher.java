@@ -17,10 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Dispatcher implements Runnable {
@@ -126,6 +123,8 @@ public class Dispatcher implements Runnable {
     @Override
     public void run() {
         try {
+            //setup Scavenger
+            reactor.addTimer(Server.serverPingInterval, 0, new Scavenger(), this);
             reactor.start();
         } catch (ZMQException zmqe) {
             if (zmqe.getErrorCode() != ZMQ.Error.ETERM.getCode()) {
@@ -133,6 +132,27 @@ public class Dispatcher implements Runnable {
             }
         }
         context.destroy();
+    }
+
+    private void trackServers() {
+        for (Map.Entry<List<IEndpoint>, Map<String, Server>> allEntry : allServers.entrySet()) {
+            Iterator<Map.Entry<String, Server>> iterator = allEntry.getValue().entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Server> entry = iterator.next();
+                Server server = entry.getValue();
+                if (!server.pingEnabled) continue;
+                if (System.currentTimeMillis() > server.disconnectAt) {
+                    iterator.remove();
+                    activeServers.get(allEntry.getKey()).remove(server);
+                    sockets.get(allEntry.getKey()).disconnect(server.endpoint);
+                    logger.info("Dispatcher: disconnect from expired server:" + entry.getValue().endpoint);
+                } else {
+                    if (System.currentTimeMillis() > server.pingAt) {
+                        server.ping(sockets.get(allEntry.getKey()));
+                    }
+                }
+            }
+        }
     }
 
     private class Server {
@@ -196,6 +216,15 @@ public class Dispatcher implements Runnable {
             msg.pop();
             // handle the message.
             listener.onEvent(new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(msg.pop().getData())));
+            return 0;
+        }
+    }
+
+    private class Scavenger implements ZLoop.IZLoopHandler {
+        @Override
+        public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object arg) {
+            Dispatcher dispatcher = (Dispatcher) arg;
+            dispatcher.trackServers();
             return 0;
         }
     }
