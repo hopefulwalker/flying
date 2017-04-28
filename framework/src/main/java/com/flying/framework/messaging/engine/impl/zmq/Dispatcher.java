@@ -42,6 +42,7 @@ public class Dispatcher implements Runnable {
     void connect(List<IEndpoint> endpoints, int socketType, boolean pingEnabled) {
         if (sockets.containsKey(endpoints)) return;
         ZMQ.Socket socket = context.createSocket(socketType);
+        if (socketType == ZMQ.ROUTER) socket.setRouterMandatory(true);
         Map<String, Server> serverMap = new HashMap<>();
         List<Server> serverList = new ArrayList<>();
         for (IEndpoint endpoint : endpoints) {

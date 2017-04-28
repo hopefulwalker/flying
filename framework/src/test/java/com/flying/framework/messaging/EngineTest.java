@@ -132,7 +132,7 @@ public class EngineTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        long total = 10000;
+        long total = 1000;
         long startMillis = System.currentTimeMillis();
         long replyCnt = total;
         IMsgEvent reply;
