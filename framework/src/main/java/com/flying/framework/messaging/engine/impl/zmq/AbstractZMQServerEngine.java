@@ -1,9 +1,9 @@
-/**
- * Created by Walker.Zhang on 2015/5/19.
- * Revision History:
- * Date          Who              Version      What
- * 2015/5/19     Walker.Zhang     0.1.0        Created.
- */
+/*
+ Created by Walker.Zhang on 2015/5/19.
+ Revision History:
+ Date          Who              Version      What
+ 2015/5/19     Walker.Zhang     0.1.0        Created.
+*/
 package com.flying.framework.messaging.engine.impl.zmq;
 
 

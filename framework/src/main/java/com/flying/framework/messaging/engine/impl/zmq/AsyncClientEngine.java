@@ -186,7 +186,7 @@ public class AsyncClientEngine implements IClientEngine {
         pipe.bind(pipeEndpoint.asString());
         List<IEndpoint> pipeEndpointAdapter = new ArrayList<>(1);
         pipeEndpointAdapter.add(pipeEndpoint);
-        Dispatcher dispatcher = new Dispatcher(this);
+        Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
         ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, true);
         dispatcher.addZLoopHandler(pipeEndpointAdapter, requestHandler, endpoints);
         ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, true, pipeEndpointAdapter, ZMQ.PAIR, false);
@@ -220,9 +220,12 @@ public class AsyncClientEngine implements IClientEngine {
         }
 
         @Override
-        public int handle(ZMsg msg, Object arg) {
-            getDispatcher().sendMsg(tos, msg);
-            return 0;
+        public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
+            // todo refactor needed.
+            decodedMsg.others.add(Ints.toByteArray(decodedMsg.eventID));
+            decodedMsg.others.add(decodedMsg.data);
+            getDispatcher().sendMsg(tos, decodedMsg.others);
+            return null;
         }
     }
 }

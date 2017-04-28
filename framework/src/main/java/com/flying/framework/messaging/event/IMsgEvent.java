@@ -20,6 +20,8 @@ public interface IMsgEvent extends IEvent<IEngine, IMsgEventInfo> {
     int ID_PING = 1;                    // heart beat event ping.
     int ID_PONG = 2;                    // heart beat event pong.
     int ID_MESSAGE = 3;                 // MESSAGE EVENT.
+    @Deprecated
+    int ID_REPLY_UNSUPPORTED = 9;       // unsupported reply
 
     @Deprecated
     int ID_CONNECT = 4;                 // connect
@@ -31,8 +33,6 @@ public interface IMsgEvent extends IEvent<IEngine, IMsgEventInfo> {
     int ID_REPLY_SUCCEED = 7;           // success reply
     @Deprecated
     int ID_REPLY_TIMEOUT = 8;           // timeout reply
-    @Deprecated
-    int ID_REPLY_UNSUPPORTED = 9;       // unsupported reply
     @Deprecated
     int ID_REPLY_FAILED = 10;            // failed reply
 }

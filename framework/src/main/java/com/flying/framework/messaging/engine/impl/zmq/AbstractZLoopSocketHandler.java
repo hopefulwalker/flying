@@ -8,6 +8,7 @@ package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.event.IMsgEvent;
+import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZLoop;
@@ -39,26 +40,27 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
     public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object arg) {
         ZMQ.Socket socket = pollItem.getSocket();
         ZMsg msg = ZMsg.recvMsg(socket);
-        String address = Codec.popAddress(msg, socket.getType());
-        if (pingEnabled) dispatcher.refreshServer(froms, address);
-        int rc = 0;
+        Codec.Msg decodedMsg = Codec.decode(msg, socket.getType());
+        if (pingEnabled) dispatcher.refreshServer(froms, decodedMsg.address);
         // handle the heart beat message.
-        switch (Codec.decodeEventID(msg)) {
+        ZMsg reply = null;
+        switch (decodedMsg.eventID) {
             case IMsgEvent.ID_PING:
-                ZMsg ping = Codec.encodePongMsg(address);
-                ping.send(socket);
-                ping.destroy();
+                Codec.encode(decodedMsg, IMsgEvent.ID_PONG, Longs.toByteArray(System.currentTimeMillis())).send(socket);
                 break;
             case IMsgEvent.ID_MESSAGE:
-                rc = handle(msg, arg);
+                reply = handle(decodedMsg, arg);
                 break;
             default:
                 //logger.warn("Deprecated Command");
-                rc = handle(msg, arg);
+                reply = handle(decodedMsg, arg);
+        }
+        if (reply != null) {
+            reply.send(socket);
         }
         msg.destroy();
-        return rc;
+        return 0;
     }
 
-    public abstract int handle(ZMsg msg, Object arg);
+    public abstract ZMsg handle(Codec.Msg decodedMsg, Object arg);
 }

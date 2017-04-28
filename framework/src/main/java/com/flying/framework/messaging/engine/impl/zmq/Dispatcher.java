@@ -7,8 +7,10 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
+import com.flying.framework.messaging.engine.IEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
+import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import org.slf4j.Logger;
@@ -24,15 +26,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Dispatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ZContext context;
-    private AsyncClientEngine engine;
+    private IEngine engine;
     private ZLoop reactor;
     private Map<List<IEndpoint>, ZMQ.Socket> sockets;
     private Map<List<IEndpoint>, List<Server>> activeServers;
     private Map<List<IEndpoint>, Map<String, Server>> allServers;
 
-    Dispatcher(AsyncClientEngine engine) {
+    Dispatcher(IEngine engine, ZContext context) {
         this.engine = engine;
-        this.context = ZContext.shadow(engine.getContext());
+        this.context = context;
         this.reactor = new ZLoop();
         this.sockets = new HashMap<>();
         this.allServers = new HashMap<>();
@@ -62,7 +64,7 @@ public class Dispatcher implements Runnable {
         return reactor.addPoller(pollInput, handler, handlerArg);
     }
 
-    public int addMsgEventListener(List<IEndpoint> froms, int fromType, boolean pingEnabled, IMsgEventListener listener) {
+    int addMsgEventListener(List<IEndpoint> froms, int fromType, boolean pingEnabled, IMsgEventListener listener) {
         ZLoop.IZLoopHandler handler = new HandlerAdapter(this, froms, fromType, pingEnabled, listener);
         return addZLoopHandler(froms, handler, this);
     }
@@ -109,7 +111,7 @@ public class Dispatcher implements Runnable {
     }
 
     public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
-        ZMsg msg = Codec.encodeTransMsg(msgEvent.getInfo().getByteArray());
+        ZMsg msg = Codec.encodeTransData(msgEvent.getInfo().getByteArray());
         sendMsg(endpoints, msg);
         msg.destroy();
     }
@@ -185,7 +187,7 @@ public class Dispatcher implements Runnable {
 
         private void ping(ZMQ.Socket socket) {
             if (System.currentTimeMillis() >= pingAt) {
-                ZMsg ping = Codec.encodePingMsg(endpoint);
+                ZMsg ping = Codec.encodePingMsg(endpoint, socket.getType());
                 ping.send(socket);
                 ping.destroy();
                 refreshPingAt();
@@ -203,10 +205,11 @@ public class Dispatcher implements Runnable {
         }
 
         @Override
-        public int handle(ZMsg msg, Object arg) {
+        public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
             // handle the message.
-            listener.onEvent(new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(Codec.decodeTransMsg(msg))));
-            return 0;
+            IMsgEventResult result = listener.onEvent(new MsgEvent(decodedMsg.eventID, engine, new MsgEventInfo(decodedMsg.data)));
+            if (result == null) return null;
+            return Codec.encode(decodedMsg, decodedMsg.eventID, result.getByteArray());
         }
     }
 

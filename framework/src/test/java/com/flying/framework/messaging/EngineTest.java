@@ -11,7 +11,6 @@ import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.engine.impl.zmq.AsyncClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.ZMQUCClientEngine;
 import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
