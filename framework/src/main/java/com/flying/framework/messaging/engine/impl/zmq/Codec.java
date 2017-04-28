@@ -65,7 +65,6 @@ class Codec {
         return Ints.fromByteArray(msg.peekFirst().getData());
     }
 
-    @Nullable
     static String popAddress(ZMsg msg, int socketType) {
         if (socketType == ZMQ.ROUTER) return msg.popString();
         return null;
