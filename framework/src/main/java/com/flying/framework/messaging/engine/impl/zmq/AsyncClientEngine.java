@@ -1,17 +1,15 @@
 /*
- Created by Walker.Zhang on 2015/2/27.
+ Created by Walker.Zhang on 2017/4/25.
  Revision History:
  Date          Who              Version      What
- 2015/2/27     Walker.Zhang     0.1.0        Created.
- 2015/6/15     Walker.Zhang     0.2.0        Simplify the implementation of setEndpoints because Endpoint overrides hashCode and equals.
- */
+ 2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
+*/
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
-import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import com.google.common.primitives.Ints;
@@ -45,15 +43,9 @@ public class AsyncClientEngine implements IClientEngine {
     private ZContext context;            //  Our context wrapper
     private ZMQ.Socket pipe;             //  Pipe through to background
     private List<IEndpoint> endpoints;
-    private IMsgEventListener msgEventListener;
 
     public AsyncClientEngine(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
-    }
-
-    public AsyncClientEngine(List<IEndpoint> endpoints, IMsgEventListener msgEventListener) {
-        this.endpoints = endpoints;
-        this.msgEventListener = msgEventListener;
     }
 
     public ZContext getContext() {
@@ -218,8 +210,8 @@ public class AsyncClientEngine implements IClientEngine {
         private int toType;
         private boolean toPing;
 
-        public RouteHandler(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean fromPing,
-                            List<IEndpoint> tos, int toType, boolean toPing) {
+        RouteHandler(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean fromPing,
+                     List<IEndpoint> tos, int toType, boolean toPing) {
             super(dispatcher, froms, fromType, fromPing);
             this.tos = tos;
             this.toType = toType;

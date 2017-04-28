@@ -1,9 +1,9 @@
-/**
- * Created by Walker.Zhang on 2017/4/25.
- * Revision History:
- * Date          Who              Version      What
- * 2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
- */
+/*
+ Created by Walker.Zhang on 2017/4/25.
+ Revision History:
+ Date          Who              Version      What
+ 2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
+*/
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
@@ -11,8 +11,6 @@ import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEventInfo;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.*;
@@ -20,6 +18,9 @@ import org.zeromq.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Acting as the dispatcher in reactor pattern.
+ */
 public class Dispatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ZContext context;
@@ -28,7 +29,6 @@ public class Dispatcher implements Runnable {
     private Map<List<IEndpoint>, ZMQ.Socket> sockets;
     private Map<List<IEndpoint>, List<Server>> activeServers;
     private Map<List<IEndpoint>, Map<String, Server>> allServers;
-    private long sequence = 0L;
 
     Dispatcher(AsyncClientEngine engine) {
         this.engine = engine;
@@ -37,10 +37,6 @@ public class Dispatcher implements Runnable {
         this.sockets = new HashMap<>();
         this.allServers = new HashMap<>();
         this.activeServers = new HashMap<>();
-    }
-
-    void connect(List<IEndpoint> endpoints, int socketType) {
-        connect(endpoints, socketType, false);
     }
 
     void connect(List<IEndpoint> endpoints, int socketType, boolean pingEnabled) {
@@ -100,7 +96,7 @@ public class Dispatcher implements Runnable {
                 serverList.remove(randomIndex);
                 logger.warn("Dispatcher: remove expired server:" + server.endpoint);
             } else {
-                msg.push(server.endpoint);
+                Codec.pushAddress(msg, ZMQ.ROUTER, server.endpoint);
                 msg.send(socket);
                 reqSent = true;
                 break;
@@ -112,10 +108,7 @@ public class Dispatcher implements Runnable {
     }
 
     public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
-        ZMsg msg = new ZMsg();
-        msg.push(msgEvent.getInfo().getByteArray());
-        msg.push(Longs.toByteArray(++sequence));
-        msg.push(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
+        ZMsg msg = Codec.encodeTransMsg(msgEvent.getInfo().getByteArray());
         sendMsg(endpoints, msg);
         msg.destroy();
     }
@@ -191,11 +184,9 @@ public class Dispatcher implements Runnable {
 
         private void ping(ZMQ.Socket socket) {
             if (System.currentTimeMillis() >= pingAt) {
-                ZMsg ping = new ZMsg();
-                ping.add(endpoint);
-                ping.add(Ints.toByteArray(IMsgEvent.ID_PING));
-                ping.add(Longs.toByteArray(System.currentTimeMillis()));
+                ZMsg ping = Codec.encodePingMsg(endpoint);
                 ping.send(socket);
+                ping.destroy();
                 refreshPingAt();
             }
         }
@@ -204,18 +195,16 @@ public class Dispatcher implements Runnable {
     private class HandlerAdapter extends AbstractZLoopSocketHandler {
         private IMsgEventListener listener;
 
-        public HandlerAdapter(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean pingEnabled,
-                              IMsgEventListener listener) {
+        HandlerAdapter(Dispatcher dispatcher, List<IEndpoint> froms, int fromType, boolean pingEnabled,
+                       IMsgEventListener listener) {
             super(dispatcher, froms, fromType, pingEnabled);
             this.listener = listener;
         }
 
         @Override
         public int handle(ZMsg msg, Object arg) {
-            // pop command
-            msg.pop();
             // handle the message.
-            listener.onEvent(new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(msg.pop().getData())));
+            listener.onEvent(new MsgEvent(IMsgEvent.ID_MESSAGE, engine, new MsgEventInfo(Codec.decodeTransMsg(msg))));
             return 0;
         }
     }

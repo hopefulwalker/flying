@@ -2,17 +2,14 @@
  Created by Walker on 2017/4/26.
  Revision History:
  Date          Who              Version      What
- 2017/4/26      Walker           0.1.0        Created. 
+ 2017/4/26      Walker           0.3.3       Created to support zloop.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.event.IMsgEvent;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeromq.ZFrame;
 import org.zeromq.ZLoop;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
@@ -42,18 +39,13 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
     public int handle(ZLoop zLoop, ZMQ.PollItem pollItem, Object arg) {
         ZMQ.Socket socket = pollItem.getSocket();
         ZMsg msg = ZMsg.recvMsg(socket);
-        String address = null;
-        if (socket.getType() == ZMQ.ROUTER) address = msg.popString();
+        String address = Codec.popAddress(msg, socket.getType());
         if (pingEnabled) dispatcher.refreshServer(froms, address);
         int rc = 0;
         // handle the heart beat message.
-        ZFrame command = msg.peekFirst();
-        switch (Ints.fromByteArray(command.getData())) {
+        switch (Codec.decodeEventID(msg)) {
             case IMsgEvent.ID_PING:
-                ZMsg ping = new ZMsg();
-                if (address != null) ping.add(address);
-                ping.add(Ints.toByteArray(IMsgEvent.ID_PONG));
-                ping.add(Longs.toByteArray(System.currentTimeMillis()));
+                ZMsg ping = Codec.encodePongMsg(address);
                 ping.send(socket);
                 ping.destroy();
                 break;
@@ -61,9 +53,8 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
                 rc = handle(msg, arg);
                 break;
             default:
-//                logger.warn("Deprecated Command");
+                //logger.warn("Deprecated Command");
                 rc = handle(msg, arg);
-                break;
         }
         msg.destroy();
         return rc;
