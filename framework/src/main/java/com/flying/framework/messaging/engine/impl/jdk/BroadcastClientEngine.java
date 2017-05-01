@@ -68,12 +68,12 @@ public class BroadcastClientEngine implements IClientEngine {
         try {
             clientSocket.setSoTimeout(timeout);
             clientSocket.receive(packet);
-            event = new MsgEvent(IMsgEvent.ID_REPLY_SUCCEED, this, new MsgEventInfo(packet.getData()));
+            event = new MsgEvent(IMsgEvent.ID_REPLY, this, new MsgEventInfo(packet.getData()));
         } catch (SocketTimeoutException ste) {
-            event = new MsgEvent(IMsgEvent.ID_REPLY_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+            event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
         } catch (IOException ioe) {
             logger.error(ioe.toString(), ioe);
-            event = new MsgEvent(IMsgEvent.ID_REPLY_FAILED, this, new MsgEventInfo(new byte[0]));
+            event = new MsgEvent(IMsgEvent.ID_FAILED, this, new MsgEventInfo(new byte[0]));
         }
         return event;
     }

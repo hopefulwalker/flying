@@ -17,22 +17,15 @@ import com.flying.framework.messaging.engine.IEngine;
  */
 public interface IMsgEvent extends IEvent<IEngine, IMsgEventInfo> {
     // control command
-    int ID_PING = 1;                    // heart beat event ping.
-    int ID_PONG = 2;                    // heart beat event pong.
-    int ID_MESSAGE = 3;                 // MESSAGE EVENT.
-    @Deprecated
-    int ID_REPLY_UNSUPPORTED = 9;       // unsupported reply
+    int ID_PING = 1;                   // heart beat event ping.
+    int ID_PONG = 2;                   // heart beat event pong.
+    int ID_MESSAGE = 3;                // MESSAGE EVENT.
 
-    @Deprecated
-    int ID_CONNECT = 4;                 // connect
-    @Deprecated
-    int ID_REQUEST = 5;                 // request event
-    @Deprecated
-    int ID_REPLY = 6;                   // reply event.
-    @Deprecated
-    int ID_REPLY_SUCCEED = 7;           // success reply
-    @Deprecated
-    int ID_REPLY_TIMEOUT = 8;           // timeout reply
-    @Deprecated
-    int ID_REPLY_FAILED = 10;            // failed reply
+
+
+    int ID_REQUEST = 5;                // request event
+    int ID_REPLY = 6;                  // reply event.
+    int ID_UNSUPPORTED = 9;            // unsupported reply
+    int ID_TIMEOUT = 8;                // timeout reply
+    int ID_FAILED = 10;                // failed reply
 }

@@ -8,7 +8,6 @@ package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.event.IMsgEvent;
-import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZLoop;
@@ -46,7 +45,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         ZMsg reply = null;
         switch (decodedMsg.eventID) {
             case IMsgEvent.ID_PING:
-                Codec.encode(decodedMsg, IMsgEvent.ID_PONG, Longs.toByteArray(System.currentTimeMillis())).send(socket);
+                reply = Codec.encodePongMsg(decodedMsg.others, decodedMsg.address);
                 break;
             case IMsgEvent.ID_MESSAGE:
                 reply = handle(decodedMsg, arg);
@@ -57,6 +56,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         }
         if (reply != null) {
             reply.send(socket);
+            reply.destroy();
         }
         msg.destroy();
         return 0;

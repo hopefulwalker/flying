@@ -72,11 +72,7 @@ public class AsyncClientEngine implements IClientEngine {
     @Override
     public IMsgEvent request(IMsgEvent msgEvent, int timeout) {
         // send request. setup the command and the msgID(for the corresponding reply).
-        ZMsg reqMsg = new ZMsg();
-        reqMsg.add(Ints.toByteArray(IMsgEvent.ID_REQUEST));
-        long msgNO = ++sequence;
-        reqMsg.add(Longs.toByteArray(msgNO));
-        reqMsg.add(msgEvent.getInfo().getByteArray());
+        ZMsg reqMsg = Codec.encode(msgEvent);
         reqMsg.send(pipe);
         reqMsg.destroy();
         // receive reply.
@@ -91,20 +87,11 @@ public class AsyncClientEngine implements IClientEngine {
             pipe.setReceiveTimeOut(waitTime);
             repMsg = ZMsg.recvMsg(pipe);
             if (repMsg == null) {
-                event = new MsgEvent(IMsgEvent.ID_REPLY_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+                event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
                 break;
             }
-            int answer = Ints.fromByteArray(repMsg.pop().getData());
-            // check the message NO.
-            if (msgNO != Longs.fromByteArray(repMsg.pop().getData())) {
-                repMsg.destroy();
-                continue;
-            }
-            if (answer == IMsgEvent.ID_REPLY_SUCCEED) {
-                event = new MsgEvent(answer, this, new MsgEventInfo(repMsg.pop().getData()));
-            } else {
-                event = new MsgEvent(answer, this, new MsgEventInfo(new byte[0]));
-            }
+            Codec.Msg decodedMsg = Codec.decode(repMsg, pipe.getType());
+            event = new MsgEvent(decodedMsg.eventID, this, new MsgEventInfo(decodedMsg.data));
             repMsg.destroy();
             break;
         } while (System.currentTimeMillis() < startTime + timeout);
@@ -122,8 +109,8 @@ public class AsyncClientEngine implements IClientEngine {
     public void sendMsg(IMsgEvent msgEvent) {
         // send request. setup the command.
         ZMsg reqMsg = new ZMsg();
-        reqMsg.add(Ints.toByteArray(IMsgEvent.ID_REQUEST));
         reqMsg.add(Longs.toByteArray(++sequence));
+        reqMsg.add(Ints.toByteArray(IMsgEvent.ID_REQUEST));
         reqMsg.add(msgEvent.getInfo().getByteArray());
         assert (pipe != null);
         reqMsg.send(pipe);
@@ -150,21 +137,20 @@ public class AsyncClientEngine implements IClientEngine {
         if (pollTime < 0) pollTime = 0;
         int rc = items.poll(pollTime);
         if (rc == -1) {
-            event = new MsgEvent(IMsgEvent.ID_REPLY_FAILED, this, new MsgEventInfo(new byte[0]));
+            event = new MsgEvent(IMsgEvent.ID_FAILED, this, new MsgEventInfo(new byte[0]));
             return event;
         }
         if (rc == 0) {
-            event = new MsgEvent(IMsgEvent.ID_REPLY_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+            event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
             return event;
         }
         repMsg = ZMsg.recvMsg(pipe);
-        int answer = Ints.fromByteArray(repMsg.pop().getData());
-        repMsg.pop(); // pop up the msgNO;
-        if (answer == IMsgEvent.ID_REPLY_SUCCEED) {
-            event = new MsgEvent(answer, this, new MsgEventInfo(repMsg.pop().getData()));
-        } else {
-            event = new MsgEvent(answer, this, new MsgEventInfo(new byte[0]));
+        if (repMsg == null) {
+            event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+            return event;
         }
+        Codec.Msg decodedMsg = Codec.decode(repMsg, pipe.getType());
+        event = new MsgEvent(decodedMsg.eventID, this, new MsgEventInfo(decodedMsg.data));
         repMsg.destroy();
         return event;
     }
@@ -221,10 +207,7 @@ public class AsyncClientEngine implements IClientEngine {
 
         @Override
         public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
-            // todo refactor needed.
-            decodedMsg.others.add(Ints.toByteArray(decodedMsg.eventID));
-            decodedMsg.others.add(decodedMsg.data);
-            getDispatcher().sendMsg(tos, decodedMsg.others);
+            getDispatcher().sendMsg(tos, Codec.encode(decodedMsg.others, decodedMsg.address, decodedMsg.eventID, decodedMsg.data));
             return null;
         }
     }

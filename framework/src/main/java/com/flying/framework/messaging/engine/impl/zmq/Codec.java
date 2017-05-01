@@ -18,35 +18,41 @@ import org.zeromq.ZMsg;
 class Codec {
     private static long sequence = 0L;
 
-    static ZMsg encodePingMsg(String endpoint, int socketType) {
-        ZMsg ping = new ZMsg();
-        if (socketType == ZMQ.ROUTER) ping.add(endpoint);
-        ping.add(Ints.toByteArray(IMsgEvent.ID_PING));
-        ping.add(Longs.toByteArray(System.currentTimeMillis()));
-        return ping;
+    static ZMsg encodePingMsg(String address) {
+        return encode(null, address, IMsgEvent.ID_PING, Longs.toByteArray(System.currentTimeMillis()));
     }
 
-    static ZMsg encodeTransData(byte[] data) {
-        ZMsg msg = new ZMsg();
-        msg.add(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
+    static ZMsg encodePongMsg(ZMsg msg, String address) {
+        return encode(msg, address, IMsgEvent.ID_PONG, Longs.toByteArray(System.currentTimeMillis()));
+    }
+
+    static ZMsg encode(ZMsg msg, String address, int eventID) {
+        return encode(msg, address, eventID, Longs.toByteArray(System.currentTimeMillis()));
+    }
+
+
+    static ZMsg encode(IMsgEvent event) {
+        return encode(null, null, event.getId(), event.getInfo().getByteArray());
+    }
+
+    static ZMsg encode(ZMsg msg, String address, int eventID, byte[] data) {
+        if (msg == null) msg = new ZMsg();
+        if (address != null) msg.push(address);
+        msg.add(Ints.toByteArray(eventID));
         msg.add(data);
         return msg;
     }
 
-    static ZMsg encode(Msg decodedMsg, int eventID, byte[] data) {
-        if (decodedMsg.address != null) decodedMsg.others.push(decodedMsg.address);
-        decodedMsg.others.add(Ints.toByteArray(eventID));
-        decodedMsg.others.add(data);
-        return decodedMsg.others;
+    static void pushAddress(ZMsg msg, String address) {
+        if (address != null) msg.push(address);
     }
 
-    //    static String popAddress(ZMsg msg, int socketType) {
-//        if (socketType == ZMQ.ROUTER) return msg.popString();
-//        return null;
-//    }
-//
-    static void pushAddress(ZMsg msg, int socketType, String address) {
-        if (socketType == ZMQ.ROUTER) msg.push(address);
+    static Msg decode(ZMsg msg, int socketType) {
+        String address = null;
+        if (socketType == ZMQ.ROUTER) address = msg.popString();
+        byte[] data = msg.pollLast().getData();
+        int eventID = Ints.fromByteArray(msg.pollLast().getData());
+        return new Msg(address, msg, eventID, data);
     }
 
 //    static ZMsg encodeTransData(byte[] data, String endpoint) {
@@ -56,14 +62,12 @@ class Codec {
 //        msg.add(data);
 //        return msg;
 //    }
-
-    static Msg decode(ZMsg msg, int socketType) {
-        String address = null;
-        if (socketType == ZMQ.ROUTER) address = msg.popString();
-        byte[] data = msg.pollLast().getData();
-        int eventID = Ints.fromByteArray(msg.pollLast().getData());
-        return new Msg(address, msg, eventID, data);
-    }
+//    static ZMsg encodeTransData(byte[] data) {
+//        ZMsg msg = new ZMsg();
+//        msg.add(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
+//        msg.add(data);
+//        return msg;
+//    }
 
     static class Msg {
         String address;

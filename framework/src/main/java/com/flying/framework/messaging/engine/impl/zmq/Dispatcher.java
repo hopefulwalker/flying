@@ -8,7 +8,6 @@ package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IEngine;
-import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -99,7 +98,7 @@ public class Dispatcher implements Runnable {
                 serverList.remove(randomIndex);
                 logger.warn("Dispatcher: remove expired server:" + server.endpoint);
             } else {
-                Codec.pushAddress(msg, ZMQ.ROUTER, server.endpoint);
+                Codec.pushAddress(msg, server.endpoint);
                 msg.send(socket);
                 reqSent = true;
                 break;
@@ -110,11 +109,11 @@ public class Dispatcher implements Runnable {
         }
     }
 
-    public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
-        ZMsg msg = Codec.encodeTransData(msgEvent.getInfo().getByteArray());
-        sendMsg(endpoints, msg);
-        msg.destroy();
-    }
+//    public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
+//        ZMsg msg = Codec.encodeTransData(msgEvent.getInfo().getByteArray());
+//        sendMsg(endpoints, msg);
+//        msg.destroy();
+//    }
 
     @Override
     public void run() {
@@ -124,7 +123,7 @@ public class Dispatcher implements Runnable {
             reactor.start();
         } catch (ZMQException zmqe) {
             if (zmqe.getErrorCode() != ZMQ.Error.ETERM.getCode()) {
-                logger.error("Error occurs when running reactor!", zmqe);
+                logger.error("Error occurs when running reactor!" + zmqe.getErrorCode(), zmqe);
             }
         }
         context.destroy();
@@ -187,7 +186,7 @@ public class Dispatcher implements Runnable {
 
         private void ping(ZMQ.Socket socket) {
             if (System.currentTimeMillis() >= pingAt) {
-                ZMsg ping = Codec.encodePingMsg(endpoint, socket.getType());
+                ZMsg ping = Codec.encodePingMsg(socket.getType() == ZMQ.ROUTER ? endpoint : null);
                 ping.send(socket);
                 ping.destroy();
                 refreshPingAt();
@@ -209,7 +208,7 @@ public class Dispatcher implements Runnable {
             // handle the message.
             IMsgEventResult result = listener.onEvent(new MsgEvent(decodedMsg.eventID, engine, new MsgEventInfo(decodedMsg.data)));
             if (result == null) return null;
-            return Codec.encode(decodedMsg, decodedMsg.eventID, result.getByteArray());
+            return Codec.encode(decodedMsg.others, decodedMsg.address, decodedMsg.eventID, result.getByteArray());
         }
     }
 
