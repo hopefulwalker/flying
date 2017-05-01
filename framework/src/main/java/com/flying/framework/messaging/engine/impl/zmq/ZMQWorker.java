@@ -2,7 +2,8 @@
  Created by Walker.Zhang on 2015/2/23.
  Revision History:
  Date          Who              Version      What
-2015/2/23     Walker.Zhang     0.1.0        Created. 
+ 2015/2/23     Walker.Zhang     0.1.0        Created.
+ 2017/5/1      Walker.Zhang     0.3.4        redefine the message event id.
  */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -61,12 +62,12 @@ public class ZMQWorker implements Runnable {
                     case IMsgEvent.ID_MESSAGE:
                         IMsgEventListener listener = engine.getMsgEventListener();
                         if (listener != null) {
-                            IMsgEventResult result = listener.onEvent(new MsgEvent(decodedMsg.eventID, engine, new MsgEventInfo(decodedMsg.data)));
+                            IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, engine, decodedMsg.data));
                             if (result != null) {
                                 Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getByteArray()).send(socket);
                             }
                         } else {
-                            Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_UNSUPPORTED).send(socket);
+                            Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_FAILED).send(socket);
                         }
                         break;
                 }

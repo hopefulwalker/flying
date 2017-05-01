@@ -3,6 +3,7 @@
  Revision History:
  Date          Who              Version      What
  2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
+ 2017/5/1      Walker.Zhang     0.3.4        redefine the message event id and log zmq error using error code.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -123,7 +124,7 @@ public class Dispatcher implements Runnable {
             reactor.start();
         } catch (ZMQException zmqe) {
             if (zmqe.getErrorCode() != ZMQ.Error.ETERM.getCode()) {
-                logger.error("Error occurs when running reactor!" + zmqe.getErrorCode(), zmqe);
+                logger.error("Error info: " + ZMQ.Error.findByCode(zmqe.getErrorCode()), zmqe);
             }
         }
         context.destroy();
@@ -206,7 +207,7 @@ public class Dispatcher implements Runnable {
         @Override
         public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
             // handle the message.
-            IMsgEventResult result = listener.onEvent(new MsgEvent(decodedMsg.eventID, engine, new MsgEventInfo(decodedMsg.data)));
+            IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, engine, decodedMsg.data));
             if (result == null) return null;
             return Codec.encode(decodedMsg.others, decodedMsg.address, decodedMsg.eventID, result.getByteArray());
         }

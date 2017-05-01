@@ -3,6 +3,7 @@
  Revision History:
  Date          Who              Version      What
  2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -11,9 +12,6 @@ import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.event.impl.MsgEventInfo;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZContext;
@@ -25,24 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * todo refactor this engine to support CONNECT settings.
  * the background ZMQ.Socket is a router socket. when the peer is dead, the message will silently discard the message.
  * so the client should call with timeout parameters.
+ * This API works in two halves, a common pattern for APIs that need to run in the background.
+ * One half is an frontend object our application creates and works with;
+ * the other half is a backend "agent" that runs in a background thread. The frontend talks to the backend over an
+ * inproc pipe socket.
  */
 public class AsyncClientEngine implements IClientEngine {
     private static final Logger logger = LoggerFactory.getLogger(AsyncClientEngine.class);
-    //  If not a single service replies within this time, give up
-    private boolean running = false;
-    private long sequence = 0L;
-    //  This API works in two halves, a common pattern for APIs that need to
-    //  run in the background. One half is an frontend object our application
-    //  creates and works with; the other half is a backend "agent" that runs
-    //  in a background thread. The frontend talks to the backend over an
-    //  inproc pipe socket:
-    //  Structure of our frontend class
+    private volatile boolean running = false;
+    private List<IEndpoint> endpoints;
+
     private ZContext context;            //  Our context wrapper
     private ZMQ.Socket pipe;             //  Pipe through to background
-    private List<IEndpoint> endpoints;
 
     public AsyncClientEngine(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
@@ -63,6 +57,8 @@ public class AsyncClientEngine implements IClientEngine {
     }
 
     /**
+     * todo this method should removed to sync engine.
+     *
      * @param msgEvent the message that need to be sent out.
      * @param timeout  it shall wait timeout milliseconds for the reply to come back.
      *                 If the value of timeout is 0, it shall return immediately.
@@ -71,7 +67,7 @@ public class AsyncClientEngine implements IClientEngine {
      */
     @Override
     public IMsgEvent request(IMsgEvent msgEvent, int timeout) {
-        // send request. setup the command and the msgID(for the corresponding reply).
+        // send request.
         ZMsg reqMsg = Codec.encode(msgEvent);
         reqMsg.send(pipe);
         reqMsg.destroy();
@@ -87,11 +83,11 @@ public class AsyncClientEngine implements IClientEngine {
             pipe.setReceiveTimeOut(waitTime);
             repMsg = ZMsg.recvMsg(pipe);
             if (repMsg == null) {
-                event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+                event = MsgEvent.newInstance(IMsgEvent.ID_TIMEOUT, this);
                 break;
             }
             Codec.Msg decodedMsg = Codec.decode(repMsg, pipe.getType());
-            event = new MsgEvent(decodedMsg.eventID, this, new MsgEventInfo(decodedMsg.data));
+            event = MsgEvent.newInstance(decodedMsg.eventID, this, decodedMsg.data);
             repMsg.destroy();
             break;
         } while (System.currentTimeMillis() < startTime + timeout);
@@ -100,19 +96,14 @@ public class AsyncClientEngine implements IClientEngine {
     }
 
     /**
-     * To implement the request method, the frontend object sends a message
-     * to the backend, specifying a command "REQ" and the request message:
+     * send message to the backend
      *
      * @param msgEvent the msg event that need to be sent.
      */
     @Override
     public void sendMsg(IMsgEvent msgEvent) {
         // send request. setup the command.
-        ZMsg reqMsg = new ZMsg();
-        reqMsg.add(Longs.toByteArray(++sequence));
-        reqMsg.add(Ints.toByteArray(IMsgEvent.ID_REQUEST));
-        reqMsg.add(msgEvent.getInfo().getByteArray());
-        assert (pipe != null);
+        ZMsg reqMsg = Codec.encode(msgEvent);
         reqMsg.send(pipe);
         reqMsg.destroy();
     }
@@ -121,7 +112,7 @@ public class AsyncClientEngine implements IClientEngine {
      * Poll socket for a reply, with timeout
      *
      * @param timeout timeout in milliseconds, same as the interface definition.
-     * @return message event. null when time out.
+     * @return message event.
      */
     @Override
     public IMsgEvent recvMsg(int timeout) {
@@ -137,20 +128,20 @@ public class AsyncClientEngine implements IClientEngine {
         if (pollTime < 0) pollTime = 0;
         int rc = items.poll(pollTime);
         if (rc == -1) {
-            event = new MsgEvent(IMsgEvent.ID_FAILED, this, new MsgEventInfo(new byte[0]));
+            event = MsgEvent.newInstance(IMsgEvent.ID_FAILED, this);
             return event;
         }
         if (rc == 0) {
-            event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+            event = MsgEvent.newInstance(IMsgEvent.ID_TIMEOUT, this);
             return event;
         }
         repMsg = ZMsg.recvMsg(pipe);
         if (repMsg == null) {
-            event = new MsgEvent(IMsgEvent.ID_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+            event = MsgEvent.newInstance(IMsgEvent.ID_TIMEOUT, this);
             return event;
         }
         Codec.Msg decodedMsg = Codec.decode(repMsg, pipe.getType());
-        event = new MsgEvent(decodedMsg.eventID, this, new MsgEventInfo(decodedMsg.data));
+        event = MsgEvent.newInstance(decodedMsg.eventID, this, decodedMsg.data);
         repMsg.destroy();
         return event;
     }

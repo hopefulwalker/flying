@@ -2,7 +2,8 @@
  Created by Walker.Zhang on 2015/3/3.
  Revision History:
  Date          Who              Version      What
- 2015/3/3     Walker.Zhang     0.1.0        Created. 
+ 2015/3/3      Walker.Zhang     0.1.0        Created.
+ 2017/5/1      Walker.Zhang     0.3.4        redefine the message event id.
  */
 package com.flying.framework.messaging;
 
@@ -98,7 +99,7 @@ public class EngineTest {
         }
         clientEngine.sendMsg(request);
         IMsgEvent reply = clientEngine.recvMsg(1000);
-//        assertEquals(IMsgEvent.ID_REPLY, reply.getId());
+        assertEquals(IMsgEvent.ID_REPLY, reply.getId());
         assertEquals(66, reply.getInfo().getByteArray()[0]);
     }
 
@@ -114,8 +115,8 @@ public class EngineTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        IMsgEvent reply = clientEngine.request(request, 10000);
-//        assertEquals(IMsgEvent.ID_REPLY, reply.getId());
+        IMsgEvent reply = clientEngine.request(request, 1000);
+        assertEquals(IMsgEvent.ID_REPLY, reply.getId());
         assertEquals(66, reply.getInfo().getByteArray()[0]);
     }
 

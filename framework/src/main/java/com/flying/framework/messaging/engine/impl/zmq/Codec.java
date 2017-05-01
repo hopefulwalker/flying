@@ -3,6 +3,7 @@
  Revision History:
  Date          Who              Version      What
  2017/4/28     Walker.Zhang     0.3.3        Created to extract protocol related function.
+ 2017/5/1      Walker.Zhang     0.3.4        redefine the message event id.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -14,6 +15,11 @@ import org.zeromq.ZMsg;
 
 /**
  * This class define the decoder and encoder for communication.
+ * Here is the message protocol:
+ * 1. address(if socket type is router)
+ * 2. others
+ * 3. message event id
+ * 4. message data.
  */
 class Codec {
     private static long sequence = 0L;
@@ -26,6 +32,7 @@ class Codec {
         return encode(msg, address, IMsgEvent.ID_PONG, Longs.toByteArray(System.currentTimeMillis()));
     }
 
+    // TODO  need to check whether i need it.
     static ZMsg encode(ZMsg msg, String address, int eventID) {
         return encode(msg, address, eventID, Longs.toByteArray(System.currentTimeMillis()));
     }

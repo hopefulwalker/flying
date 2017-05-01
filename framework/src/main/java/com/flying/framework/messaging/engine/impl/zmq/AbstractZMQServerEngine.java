@@ -78,8 +78,8 @@ public abstract class AbstractZMQServerEngine implements IServerEngine, Runnable
             // prepare thread pool.
             threadPool = Executors.newFixedThreadPool(workers);
             context = new ZContext();
-            new Thread(this, "ServerEngine").start();
             this.workerURL = "inproc://" + System.nanoTime();
+            new Thread(this, "ServerEngine").start();
             running = true;
         }
     }
