@@ -22,29 +22,29 @@ import java.util.concurrent.Executors;
 
 public abstract class AbstractAsyncEngine implements IEngine {
     private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncEngine.class);
-    //    private IEndpoint listenEndpoint;
+
     private boolean running = false;
     private ZContext context;
 
     private int dispatchers = 1;
     private String dispatcherURL;
+
+    public ZContext getContext() {
+        return context;
+    }
+
     private ExecutorService threadPool;
     private IMsgEventListener msgEventListener;
-
-
-    private List<IEndpoint> endpoints;
-    private ZMQ.Socket pipe;             //  Pipe through to background
-
 
     private ZMQ.Socket setupMsgPipe(int socketType) {
         ZMQ.Socket pipe = context.createSocket(socketType);
         IEndpoint endpoint = new Endpoint(dispatcherURL);
         pipe.bind(endpoint.asString());
         for (int i = 0; i < dispatchers; i++) {
+            Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
             List<IEndpoint> froms = new ArrayList<>(1);
             froms.add(endpoint);
-            Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
-            setupDispatcherHandler(dispatcher);
+            setupDispatcherHandler(dispatcher, froms);
             threadPool.submit(dispatcher);
         }
         return pipe;
@@ -57,7 +57,7 @@ public abstract class AbstractAsyncEngine implements IEngine {
             threadPool = Executors.newFixedThreadPool(dispatchers);
             context = new ZContext();
             dispatcherURL = "inproc://" + System.nanoTime();
-            setupMsgPipe(getPipeSocketType());
+            initialize(setupMsgPipe(getPipeSocketType()));
             running = true;
         } else {
             logger.info("Service is running...");
@@ -75,7 +75,25 @@ public abstract class AbstractAsyncEngine implements IEngine {
         }
     }
 
-    abstract int getPipeSocketType();
+    public IMsgEventListener getMsgEventListener() {
+        return msgEventListener;
+    }
 
-    abstract int setupDispatcherHandler(Dispatcher dispatcher);
+    public void setMsgEventListener(IMsgEventListener msgEventListener) {
+        this.msgEventListener = msgEventListener;
+    }
+
+    public int getWorkers() {
+        return dispatchers;
+    }
+
+    public void setWorkers(int dispatchers) {
+        this.dispatchers = dispatchers;
+    }
+
+    abstract void initialize(ZMQ.Socket pipe);
+
+    abstract void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms);
+
+    abstract int getPipeSocketType();
 }

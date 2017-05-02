@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 
-public class ZMQBCServerEngine extends AbstractZMQServerEngine {
+public class ZMQBCServerEngine extends AbstractAsyncEngine {
     public static final int PACKET_SIZE = 512;
     private static final Logger logger = LoggerFactory.getLogger(ZMQBCServerEngine.class);
 
@@ -94,4 +94,5 @@ public class ZMQBCServerEngine extends AbstractZMQServerEngine {
             logger.error("Exception in route in message.", ioe);
         }
     }
+
 }

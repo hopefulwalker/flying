@@ -15,10 +15,10 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 import java.util.List;
 
-public class PooledZMQClientEngineFactory implements PooledObjectFactory<IClientEngine> {
+public class PooledClientEngineFactory implements PooledObjectFactory<IClientEngine> {
     private List<IEndpoint> endpoints;
 
-    public PooledZMQClientEngineFactory(List<IEndpoint> endpoints) {
+    public PooledClientEngineFactory(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 

@@ -9,6 +9,7 @@ package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IEngine;
+import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -209,7 +210,7 @@ public class Dispatcher implements Runnable {
             // handle the message.
             IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, engine, decodedMsg.data));
             if (result == null) return null;
-            return Codec.encode(decodedMsg.others, decodedMsg.address, decodedMsg.eventID, result.getByteArray());
+            return Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getByteArray());
         }
     }
 

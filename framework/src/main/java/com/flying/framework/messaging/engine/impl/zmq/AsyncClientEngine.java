@@ -30,20 +30,30 @@ import java.util.List;
  * the other half is a backend "agent" that runs in a background thread. The frontend talks to the backend over an
  * inproc pipe socket.
  */
-public class AsyncClientEngine implements IClientEngine {
-    private static final Logger logger = LoggerFactory.getLogger(AsyncClientEngine.class);
-    private volatile boolean running = false;
+public class AsyncClientEngine extends AbstractAsyncEngine implements IClientEngine {
     private List<IEndpoint> endpoints;
-
-    private ZContext context;            //  Our context wrapper
     private ZMQ.Socket pipe;             //  Pipe through to background
 
     public AsyncClientEngine(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 
-    public ZContext getContext() {
-        return context;
+    @Override
+    void initialize(ZMQ.Socket pipe) {
+        this.pipe = pipe;
+    }
+
+    @Override
+    void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms) {
+        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, froms, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, true);
+        dispatcher.addZLoopHandler(froms, requestHandler, endpoints);
+        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, true, froms, ZMQ.PAIR, false);
+        dispatcher.addZLoopHandler(endpoints, replyHandler, froms);
+    }
+
+    @Override
+    int getPipeSocketType() {
+        return ZMQ.PAIR;
     }
 
     @Override
@@ -144,42 +154,6 @@ public class AsyncClientEngine implements IClientEngine {
         event = MsgEvent.newInstance(decodedMsg.eventID, this, decodedMsg.data);
         repMsg.destroy();
         return event;
-    }
-
-    @Override
-    public void start() {
-        if (running) {
-            logger.info("Service is already running ...");
-            return;
-        }
-        if (endpoints.size() <= 0) {
-            logger.info("Please setup endpoint before you start.");
-            return;
-        }
-        context = new ZContext();
-        //setup pipe to connect to dispatcher and remote server.
-        pipe = context.createSocket(ZMQ.PAIR);
-        IEndpoint pipeEndpoint = new Endpoint(String.format("inproc://zctx-pipe-%d", pipe.hashCode()));
-        pipe.bind(pipeEndpoint.asString());
-        List<IEndpoint> pipeEndpointAdapter = new ArrayList<>(1);
-        pipeEndpointAdapter.add(pipeEndpoint);
-        Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
-        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, pipeEndpointAdapter, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, true);
-        dispatcher.addZLoopHandler(pipeEndpointAdapter, requestHandler, endpoints);
-        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, true, pipeEndpointAdapter, ZMQ.PAIR, false);
-        dispatcher.addZLoopHandler(endpoints, replyHandler, pipeEndpointAdapter);
-        new Thread(dispatcher).start();
-        running = true;
-    }
-
-    @Override
-    public void stop() {
-        if (!running) {
-            logger.info("Service is not running now.");
-            return;
-        }
-        context.destroy();
-        running = false;
     }
 
     private class RouteHandler extends AbstractZLoopSocketHandler {
