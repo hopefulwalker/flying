@@ -33,7 +33,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         byte[] request = new byte[buf.readableBytes()];
         buf.readBytes(request);
         if (engine.getConfig().getMsgEventListener() != null) {
-            IMsgEventResult result = engine.getConfig().getMsgEventListener().onEvent(new MsgEvent(IMsgEvent.ID_REPLY, engine, new MsgEventInfo(request)));
+            IMsgEventResult result = engine.getConfig().getMsgEventListener().onEvent(MsgEvent.newInstance(IMsgEvent.ID_REPLY, engine, request));
             ctx.writeAndFlush(Unpooled.wrappedBuffer(result.getByteArray()));
         }
     }

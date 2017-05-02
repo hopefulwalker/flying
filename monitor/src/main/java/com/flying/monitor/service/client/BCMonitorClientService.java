@@ -32,7 +32,7 @@ public class BCMonitorClientService implements IMonitorService {
     @Override
     public void register(ServerBO serverBO) throws MonitorServiceException {
         byte[] requestBytes = msgCodec.encodeServerRegistryRequest(serverBO);
-        IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(requestBytes));
+        IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBytes);
         engine.sendMsg(requestEvent);
     }
 
@@ -44,7 +44,7 @@ public class BCMonitorClientService implements IMonitorService {
     @Override
     public List<ServerBO> find(String region, short type) throws MonitorServiceException {
         byte[] requestBytes = msgCodec.encodeServerQueryRequest(region, type);
-        IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(requestBytes));
+        IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBytes);
         engine.sendMsg(requestEvent);
         IMsgEvent replyEvent = engine.recvMsg(DEFAULT_TIMEOUT);
         // we need to analyze the replyClass event here.

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class NettyEngineTest {
     private static IAsyncClientEngine clientEngine;
     private static IAsyncServerEngine serverEngine;
+    private static byte[] data;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -38,6 +39,8 @@ public class NettyEngineTest {
         IEngineConfig serverConfig = new NettyEngineConfig(endpoints);
         serverConfig.setMsgEventListener(event -> new MockMsgEventResult());
         serverEngine = new NettyServerEngine(serverConfig);
+        data = new byte[1];
+        data[0] = 66;
     }
 
     @AfterClass
@@ -58,11 +61,7 @@ public class NettyEngineTest {
 
     @Test
     public void sendMsg() throws Exception {
-        IMsgEvent request = new MsgEvent(IMsgEvent.ID_REQUEST, clientEngine, () -> {
-            byte[] array = new byte[1];
-            array[0] = 66;   // char = 'B'
-            return array;
-        });
+        IMsgEvent request = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, clientEngine, data);
         clientEngine.sendMsg(request);
         try {
             Thread.sleep(5000); // wait for the server to stop.

@@ -12,7 +12,7 @@ import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.engine.impl.zmq.AsyncClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.AsyncServerEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -26,14 +26,17 @@ import static org.junit.Assert.assertEquals;
 public class EngineTest {
     private static IServerEngine serverEngine;
     private static IClientEngine clientEngine;
+    private static byte[] data;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        serverEngine = new ZMQUCServerEngine(new Endpoint());
+        serverEngine = new AsyncServerEngine(new Endpoint());
         serverEngine.setMsgEventListener(event -> new MockMsgEventResult());
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(serverEngine.getListenEndpoint());
         clientEngine = new AsyncClientEngine(endpoints);
+        data = new byte[1];
+        data[0] = 66;
     }
 
     @AfterClass
@@ -87,11 +90,8 @@ public class EngineTest {
 
     @Test
     public void testSendMsgAndRecvMsg() {
-        IMsgEvent request = new MsgEvent(IMsgEvent.ID_REQUEST, clientEngine, () -> {
-            byte[] array = new byte[1];
-            array[0] = 66;   // char = 'B'
-            return array;
-        });
+
+        IMsgEvent request = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, clientEngine, data);
         try {
             Thread.sleep(500); // wait for the client to finish the connection.
         } catch (InterruptedException e) {
@@ -105,11 +105,7 @@ public class EngineTest {
 
     @Test
     public void testRequest() {
-        IMsgEvent request = new MsgEvent(IMsgEvent.ID_REQUEST, clientEngine, () -> {
-            byte[] array = new byte[1];
-            array[0] = 66;   // char = 'B'
-            return array;
-        });
+        IMsgEvent request = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, clientEngine, data);
         try {
             Thread.sleep(500); // wait for the client to finish the connectiion.
         } catch (InterruptedException e) {
@@ -122,11 +118,7 @@ public class EngineTest {
 
     @Test
     public void testPerfermance() {
-        IMsgEvent request = new MsgEvent(IMsgEvent.ID_REQUEST, clientEngine, () -> {
-            byte[] array = new byte[1];
-            array[0] = 66;   // char = 'B'
-            return array;
-        });
+        IMsgEvent request = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, clientEngine, data);
         try {
             Thread.sleep(500); // wait for the client to finish the connectiion.
         } catch (InterruptedException e) {
@@ -143,7 +135,7 @@ public class EngineTest {
                 requestCnt++;
             }
             reply = clientEngine.recvMsg(0);
-            if (reply.getId() == IMsgEvent.ID_REQUEST) replyCnt--;
+            if (reply.getId() == IMsgEvent.ID_REPLY) replyCnt--;
         }
         long period = System.currentTimeMillis() - startMillis;
         System.out.println("Message processed:" + requestCnt + " Time used in millis:" + period);

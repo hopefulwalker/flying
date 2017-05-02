@@ -22,7 +22,7 @@
         <property name="delay" value="5000"/>
         <property name="initialDelay" value="3000"/>
     </bean>
-    <bean id="monitorServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.ZMQBCServerEngine">
+    <bean id="monitorServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.BCAsyncServerEngine">
         <constructor-arg name="listenEndpoint" ref="monitorListenEndPoint"/>
         <property name="msgEventListener" ref="monitorMsgListener"/>
     </bean>

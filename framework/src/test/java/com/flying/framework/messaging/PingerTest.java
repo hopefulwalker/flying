@@ -10,7 +10,7 @@ import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IPinger;
 import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.engine.impl.zmq.ZMQPinger;
-import com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.AsyncServerEngine;
 import org.junit.*;
 
 import java.util.concurrent.ExecutorService;
@@ -28,7 +28,7 @@ public class PingerTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        serverEngine = new ZMQUCServerEngine(new Endpoint());
+        serverEngine = new AsyncServerEngine(new Endpoint());
         pinger = new ZMQPinger();
     }
 

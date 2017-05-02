@@ -22,23 +22,35 @@ import java.util.concurrent.Executors;
 
 public abstract class AbstractAsyncEngine implements IEngine {
     private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncEngine.class);
-
     private boolean running = false;
     private ZContext context;
-
     private int dispatchers = 1;
-    private String dispatcherURL;
+    private ExecutorService threadPool;
+    private IMsgEventListener msgEventListener;
 
     public ZContext getContext() {
         return context;
     }
 
-    private ExecutorService threadPool;
-    private IMsgEventListener msgEventListener;
+    public IMsgEventListener getMsgEventListener() {
+        return msgEventListener;
+    }
+
+    public void setMsgEventListener(IMsgEventListener msgEventListener) {
+        this.msgEventListener = msgEventListener;
+    }
+
+    public int getWorkers() {
+        return dispatchers;
+    }
+
+    public void setWorkers(int dispatchers) {
+        this.dispatchers = dispatchers;
+    }
 
     private ZMQ.Socket setupMsgPipe(int socketType) {
         ZMQ.Socket pipe = context.createSocket(socketType);
-        IEndpoint endpoint = new Endpoint(dispatcherURL);
+        IEndpoint endpoint = new Endpoint("inproc://" + System.nanoTime());
         pipe.bind(endpoint.asString());
         for (int i = 0; i < dispatchers; i++) {
             Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
@@ -56,7 +68,6 @@ public abstract class AbstractAsyncEngine implements IEngine {
             // prepare thread pool.
             threadPool = Executors.newFixedThreadPool(dispatchers);
             context = new ZContext();
-            dispatcherURL = "inproc://" + System.nanoTime();
             initialize(setupMsgPipe(getPipeSocketType()));
             running = true;
         } else {
@@ -73,22 +84,6 @@ public abstract class AbstractAsyncEngine implements IEngine {
         } else {
             logger.info("Service is not running...");
         }
-    }
-
-    public IMsgEventListener getMsgEventListener() {
-        return msgEventListener;
-    }
-
-    public void setMsgEventListener(IMsgEventListener msgEventListener) {
-        this.msgEventListener = msgEventListener;
-    }
-
-    public int getWorkers() {
-        return dispatchers;
-    }
-
-    public void setWorkers(int dispatchers) {
-        this.dispatchers = dispatchers;
     }
 
     abstract void initialize(ZMQ.Socket pipe);

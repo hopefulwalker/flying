@@ -11,9 +11,11 @@ import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.google.common.primitives.Ints;
+import com.sun.org.apache.bcel.internal.classfile.Code;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class BCAsyncServerEngine extends AbstractAsyncEngine implements IServerEngine {
     private static final Logger logger = LoggerFactory.getLogger(BCAsyncServerEngine.class);
@@ -46,14 +49,7 @@ public class BCAsyncServerEngine extends AbstractAsyncEngine implements IServerE
 
     @Override
     void initialize(ZMQ.Socket pipe) {
-        try (DatagramChannel channel = DatagramChannel.open()) {
-            channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-            channel.bind(new InetSocketAddress(listenEndpoint.getPort()));
-            new ServerThread(this, channel, pipe).start();
-        } catch (Exception e) {
-            logger.error("ZMQ Service wrong exit, stop engine now", e);
-            stop();
-        }
+        new ServerThread(this, pipe).start();
     }
 
     @Override
@@ -68,19 +64,19 @@ public class BCAsyncServerEngine extends AbstractAsyncEngine implements IServerE
 
     private static class ServerThread extends Thread {
         private IServerEngine serverEngine;
-        private DatagramChannel front;
         private ZMQ.Socket back;
 
-        ServerThread(IServerEngine serverEngine, DatagramChannel front, ZMQ.Socket back) {
+        ServerThread(IServerEngine serverEngine, ZMQ.Socket back) {
             super("ServerEngine");
             this.serverEngine = serverEngine;
-            this.front = front;
             this.back = back;
         }
 
         @Override
         public void run() {
-            try {
+            try (DatagramChannel front = DatagramChannel.open()) {
+                front.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+                front.bind(new InetSocketAddress(serverEngine.getListenEndpoint().getPort()));
                 ZMQ.PollItem[] items = {
                         new ZMQ.PollItem(front, ZMQ.Poller.POLLIN),
                         new ZMQ.PollItem(back, ZMQ.Poller.POLLIN)
@@ -93,7 +89,11 @@ public class BCAsyncServerEngine extends AbstractAsyncEngine implements IServerE
                     if (items[1].isReadable()) routeOutMsg(front, back);
                 }
             } catch (Exception e) {
-                logger.error("ZMQ Service wrong exit, stop engine now", e);
+                if (e instanceof ZMQException) {
+                    logger.error("ZMQException:" + ZMQ.Error.findByCode(((ZMQException) e).getErrorCode()), e);
+                } else {
+                    logger.error("Error in server engine!", e);
+                }
                 serverEngine.stop();
             }
         }
@@ -102,16 +102,15 @@ public class BCAsyncServerEngine extends AbstractAsyncEngine implements IServerE
             try {
                 DatagramPacket replyPacket;
                 ZMsg msg = ZMsg.recvMsg(backend);
-                InetAddress address = InetAddress.getByAddress(msg.pop().getData());
-                // event ID.
-                msg.pop();
+                Codec.Msg decodedMsg = Codec.decode(msg, backend.getType());
+                // address
+                InetAddress address = InetAddress.getByAddress(decodedMsg.others.pop().getData());
                 // port
-                int port = Ints.fromByteArray(msg.pop().getData());
-                // data
-                byte[] data = msg.pop().getData();
-                msg.destroy();
+                int port = Ints.fromByteArray(decodedMsg.others.pop().getData());
+                byte[] data = decodedMsg.data;
                 replyPacket = new DatagramPacket(data, data.length, address, port);
                 channel.socket().send(replyPacket);
+                msg.destroy();
             } catch (IOException ioe) {
                 logger.error("Exception in route out message.", ioe);
             }
@@ -121,14 +120,11 @@ public class BCAsyncServerEngine extends AbstractAsyncEngine implements IServerE
             try {
                 requestPacket.setLength(PACKET_SIZE);
                 channel.socket().receive(requestPacket);
-                // address
-                backend.send(requestPacket.getAddress().getAddress(), ZMQ.SNDMORE);
-                // event id
-                backend.send(Ints.toByteArray(IMsgEvent.ID_REQUEST), ZMQ.SNDMORE);
-                // port
-                backend.send(Ints.toByteArray(requestPacket.getPort()), ZMQ.SNDMORE);
-                // data
-                backend.send(requestPacket.getData(), 0, requestPacket.getLength(), 0);
+                ZMsg msg = new ZMsg();
+                msg.add(requestPacket.getAddress().getAddress());
+                msg.add(Ints.toByteArray(requestPacket.getPort()));
+                Codec.encode(msg, null, IMsgEvent.ID_REQUEST, requestPacket.getData()).send(backend);
+                msg.destroy();
             } catch (IOException ioe) {
                 logger.error("Exception in route in message.", ioe);
             }
