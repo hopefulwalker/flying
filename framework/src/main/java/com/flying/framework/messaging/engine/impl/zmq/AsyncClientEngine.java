@@ -3,7 +3,7 @@
  Revision History:
  Date          Who              Version      What
  2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
- 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 

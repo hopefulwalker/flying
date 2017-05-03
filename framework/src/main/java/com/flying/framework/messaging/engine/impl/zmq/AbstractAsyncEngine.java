@@ -2,7 +2,7 @@
  Created by Walker on 2017/5/1.
  Revision History:
  Date          Who              Version      What
- 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 

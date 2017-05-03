@@ -1,10 +1,11 @@
-/**
- * Created by Walker.Zhang on 2015/5/30.
- * Revision History:
- * Date          Who              Version      What
- * 2015/5/30     Walker.Zhang     0.1.0        Created.
- * 2015/6/15     Walker.Zhang     0.2.0        Simplify the implementation of setEndpoints because Endpoint overrides hashCode and equals.
- */
+/*
+ Created by Walker.Zhang on 2015/5/30.
+ Revision History:
+ Date          Who              Version      What
+ 2015/5/30     Walker.Zhang     0.1.0        Created.
+ 2015/6/15     Walker.Zhang     0.2.0        Simplify the implementation of setEndpoints because Endpoint overrides hashCode and equals.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+*/
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
@@ -36,7 +37,6 @@ public class PooledClientEngineFactory implements PooledObjectFactory<IClientEng
             }
         }
     }
-
 
     @Override
     public PooledObject<IClientEngine> makeObject() throws Exception {

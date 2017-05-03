@@ -3,7 +3,7 @@
  Revision History:
  Date          Who              Version      What
  2017/4/28     Walker.Zhang     0.3.3        Created to extract protocol related function.
- 2017/5/1      Walker.Zhang     0.3.4        redefine the message event id.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -32,12 +32,6 @@ class Codec {
         return encode(msg, address, IMsgEvent.ID_PONG, Longs.toByteArray(System.currentTimeMillis()));
     }
 
-    // TODO  need to check whether i need it.
-    static ZMsg encode(ZMsg msg, String address, int eventID) {
-        return encode(msg, address, eventID, Longs.toByteArray(System.currentTimeMillis()));
-    }
-
-
     static ZMsg encode(IMsgEvent event) {
         return encode(null, null, event.getId(), event.getInfo().getByteArray());
     }
@@ -61,20 +55,6 @@ class Codec {
         int eventID = Ints.fromByteArray(msg.pollLast().getData());
         return new Msg(address, msg, eventID, data);
     }
-
-//    static ZMsg encodeTransData(byte[] data, String endpoint) {
-//        ZMsg msg = new ZMsg();
-//        if (endpoint != null) msg.add(endpoint);
-//        msg.add(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
-//        msg.add(data);
-//        return msg;
-//    }
-//    static ZMsg encodeTransData(byte[] data) {
-//        ZMsg msg = new ZMsg();
-//        msg.add(Ints.toByteArray(IMsgEvent.ID_MESSAGE));
-//        msg.add(data);
-//        return msg;
-//    }
 
     static class Msg {
         String address;

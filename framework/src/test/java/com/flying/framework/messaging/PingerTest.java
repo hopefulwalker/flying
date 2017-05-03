@@ -9,8 +9,8 @@ package com.flying.framework.messaging;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IPinger;
 import com.flying.framework.messaging.engine.IServerEngine;
-import com.flying.framework.messaging.engine.impl.zmq.ZMQPinger;
-import com.flying.framework.messaging.engine.impl.zmq.AsyncServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.Pinger;
+import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine;
 import org.junit.*;
 
 import java.util.concurrent.ExecutorService;
@@ -23,13 +23,13 @@ import static org.junit.Assert.assertTrue;
 public class PingerTest {
     private static IServerEngine serverEngine;
     private static IPinger pinger;
-    private static final int TIMEOUT = 1000;
+    private static final int TIMEOUT = 500;
     private static final int CONCURRENT_USERS = 100;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        serverEngine = new AsyncServerEngine(new Endpoint());
-        pinger = new ZMQPinger();
+        serverEngine = new UCAsyncServerEngine(new Endpoint());
+        pinger = new Pinger();
     }
 
     @AfterClass
@@ -64,7 +64,7 @@ public class PingerTest {
         assertFalse(System.currentTimeMillis() - before <= TIMEOUT);
     }
 
-    @Test(timeout = 5000L)
+    @Test(timeout = 3000L)
     public void testPerfermance() {
         ExecutorService pool = Executors.newFixedThreadPool(CONCURRENT_USERS);
         for (int i = 0; i < CONCURRENT_USERS; i++)

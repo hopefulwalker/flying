@@ -41,9 +41,6 @@ public class OrderRequestHandler implements IMsgHandler {
         try {
             orderBO = buildOrderBO(requestDecoder);
             orderBO = service.placeOrder(orderBO);
-        } catch (UnsupportedEncodingException uee) {
-            logger.error("Error in handling requestClass", uee);
-            retCode = IReturnCode.UNSUPPORTED_ENCODING;
         } catch (OrderServiceException ose) {
             logger.error("Error in placing order", ose);
             retCode = ose.getCode();
@@ -53,7 +50,7 @@ public class OrderRequestHandler implements IMsgHandler {
         return msgCodec.encodeOrderReply(retCode, orderBO);
     }
 
-    private OrderBO buildOrderBO(OrderRequestDecoder requestDecoder) throws UnsupportedEncodingException {
+    private OrderBO buildOrderBO(OrderRequestDecoder requestDecoder) {
         OrderBO orderBO = new OrderBO();
         // from request.
         orderBO.setExtNo(requestDecoder.extNo());

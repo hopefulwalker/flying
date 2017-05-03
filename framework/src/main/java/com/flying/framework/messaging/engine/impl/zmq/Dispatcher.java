@@ -119,13 +119,20 @@ public class Dispatcher implements Runnable {
 
     @Override
     public void run() {
-        try {
-            //setup Scavenger
-            reactor.addTimer(Server.serverPingInterval, 0, new Scavenger(), this);
-            reactor.start();
-        } catch (ZMQException zmqe) {
-            if (zmqe.getErrorCode() != ZMQ.Error.ETERM.getCode()) {
-                logger.error("Error info: " + ZMQ.Error.findByCode(zmqe.getErrorCode()), zmqe);
+        boolean terminated = false;
+        //setup Scavenger
+        reactor.addTimer(Server.serverPingInterval, 0, new Scavenger(), this);
+        while (!terminated) {
+            try {
+                reactor.start();
+            } catch (ZMQException zmqe) {
+                if (zmqe.getErrorCode() != ZMQ.Error.ETERM.getCode()) {
+                    logger.error("Error info: " + ZMQ.Error.findByCode(zmqe.getErrorCode()), zmqe);
+                } else {
+                    terminated = true;
+                }
+            } catch (Exception e) {
+                logger.error("Exception in zloop, please check handler or timer:", e);
             }
         }
         context.destroy();
@@ -209,7 +216,10 @@ public class Dispatcher implements Runnable {
         public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
             // handle the message.
             IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, engine, decodedMsg.data));
-            if (result == null) return null;
+            if (result == null || result.getByteArray() == null) {
+                logger.info("result or result.bytearray is null");
+                return null;
+            }
             return Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getByteArray());
         }
     }

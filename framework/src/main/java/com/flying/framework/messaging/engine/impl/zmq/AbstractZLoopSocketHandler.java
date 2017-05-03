@@ -2,7 +2,9 @@
  Created by Walker on 2017/4/26.
  Revision History:
  Date          Who              Version      What
- 2017/4/26      Walker           0.3.3       Created to support zloop.
+ 2017/4/26     Walker.Zhang     0.3.3        Created to support zloop.
+ 2017/5/2      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -47,12 +49,20 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
             case IMsgEvent.ID_PING:
                 reply = Codec.encodePongMsg(decodedMsg.others, decodedMsg.address);
                 break;
+            case IMsgEvent.ID_PONG:
+                break;
             case IMsgEvent.ID_MESSAGE:
+            case IMsgEvent.ID_REQUEST:
+            case IMsgEvent.ID_REPLY:
+            case IMsgEvent.ID_FAILED:
                 reply = handle(decodedMsg, arg);
                 break;
+            case IMsgEvent.ID_TIMEOUT:
+                logger.warn("ID_TIMEOUT should not happen here, please check");
+                break;
             default:
-                //logger.warn("Deprecated Command");
-                reply = handle(decodedMsg, arg);
+                logger.warn("Undefined Event" + decodedMsg.eventID);
+                break;
         }
         if (reply != null) {
             reply.send(socket);

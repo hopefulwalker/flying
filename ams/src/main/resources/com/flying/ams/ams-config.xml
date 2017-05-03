@@ -11,7 +11,7 @@
         <property name="scheduler" ref="scheduler"/>
     </bean>
 
-    <bean id="accountServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.ZMQUCServerEngine">
+    <bean id="accountServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine">
         <constructor-arg name="listenEndpoint" ref="listenEndpoint"/>
         <property name="msgEventListener" ref="amsMsgListener"/>
         <property name="listenEndpoint">

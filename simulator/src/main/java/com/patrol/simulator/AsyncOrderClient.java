@@ -29,7 +29,7 @@ public class AsyncOrderClient {
     private final static String ENDPOINT_FACTORY = "endpointFactory";
     private final static String ORDER_SERVICE = "orderService";
     private final static String CFG_FILE = "com/patrol/simulator/order-cfg.xml";
-    private final static long NUMBER_OF_REQUEST =1;
+    private final static long NUMBER_OF_REQUEST =Long.MAX_VALUE;
 
     public static void main(String args[]) {
         AbstractApplicationContext context = new ClassPathXmlApplicationContext(CFG_FILE);
@@ -47,7 +47,7 @@ public class AsyncOrderClient {
         long responseTime;
         long startTime = System.currentTimeMillis();
         for (long i = 0; i < NUMBER_OF_REQUEST || requests.size() > 0; ) {
-            if ((i < NUMBER_OF_REQUEST) && (i - rvn < 10)) {
+            if ((i < NUMBER_OF_REQUEST) && (i - rvn < 1000)) {
                 try {
                     orderBO = new OrderBO();
                     orderBO.setExtNo(i);

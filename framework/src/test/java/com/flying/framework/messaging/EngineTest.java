@@ -12,7 +12,7 @@ import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
 import com.flying.framework.messaging.engine.IServerEngine;
 import com.flying.framework.messaging.engine.impl.zmq.AsyncClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.AsyncServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -30,7 +30,7 @@ public class EngineTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        serverEngine = new AsyncServerEngine(new Endpoint());
+        serverEngine = new UCAsyncServerEngine(new Endpoint());
         serverEngine.setMsgEventListener(event -> new MockMsgEventResult());
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(serverEngine.getListenEndpoint());
