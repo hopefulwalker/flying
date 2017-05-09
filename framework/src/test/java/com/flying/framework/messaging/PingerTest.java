@@ -61,7 +61,8 @@ public class PingerTest {
         assertTrue(System.currentTimeMillis() - before <= TIMEOUT);
         before = System.currentTimeMillis();
         assertFalse(pinger.ping(new Endpoint(), TIMEOUT));
-        assertFalse(System.currentTimeMillis() - before <= TIMEOUT);
+        System.out.println(System.currentTimeMillis() - before);
+        assertFalse(System.currentTimeMillis() - before < TIMEOUT);
     }
 
     @Test(timeout = 3000L)
