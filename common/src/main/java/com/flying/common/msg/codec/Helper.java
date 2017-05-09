@@ -20,20 +20,18 @@ import org.agrona.concurrent.UnsafeBuffer;
 
 public class Helper {
     public static byte[] request(IClientEngine engine, int timeout, byte[] bytes) throws ServiceException {
-        IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(bytes));
+        IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, bytes);
         IMsgEvent replyEvent = engine.request(requestEvent, timeout);
         return buildReplyBytes(engine, timeout, replyEvent);
     }
 
     public static byte[] buildReplyBytes(IClientEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
-            case IMsgEvent.ID_REPLY_SUCCEED:
-                return replyEvent.getEventInfo().getByteArray();
-            case IMsgEvent.ID_REPLY_TIMEOUT:
+            case IMsgEvent.ID_REPLY:
+                return replyEvent.getInfo().getByteArray();
+            case IMsgEvent.ID_TIMEOUT:
                 throw new ServiceException(IReturnCode.TIMEOUT, buildExceptionMessage(engine, timeout, replyEvent));
-            case IMsgEvent.ID_REPLY_UNSUPPORTED:
-                throw new ServiceException(ServiceException.UNSUPPORTED_SERVICE, buildExceptionMessage(engine, timeout, replyEvent));
-            case IMsgEvent.ID_REPLY_FAILED:
+            case IMsgEvent.ID_FAILED:
                 throw new ServiceException(IReturnCode.UNKNOWN_FAILURE, buildExceptionMessage(engine, timeout, replyEvent));
             default:
                 StringBuilder sb = new StringBuilder("EventId:").append("[").append(replyEvent.getId()).append("]");
@@ -42,20 +40,18 @@ public class Helper {
     }
 
     public static DirectBuffer request(IClientEngine engine, int timeout, DirectBuffer requestBuffer) throws ServiceException {
-        IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(requestBuffer.byteArray()));
+        IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBuffer.byteArray());
         IMsgEvent replyEvent = engine.request(requestEvent, timeout);
         return buildReplyBuffer(engine, timeout, replyEvent);
     }
 
     private static DirectBuffer buildReplyBuffer(IClientEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
-            case IMsgEvent.ID_REPLY_SUCCEED:
-                return new UnsafeBuffer(replyEvent.getEventInfo().getByteArray());
-            case IMsgEvent.ID_REPLY_TIMEOUT:
+            case IMsgEvent.ID_REPLY:
+                return new UnsafeBuffer(replyEvent.getInfo().getByteArray());
+            case IMsgEvent.ID_TIMEOUT:
                 throw new ServiceException(IReturnCode.TIMEOUT, buildExceptionMessage(engine, timeout, replyEvent));
-            case IMsgEvent.ID_REPLY_UNSUPPORTED:
-                throw new ServiceException(ServiceException.UNSUPPORTED_SERVICE, buildExceptionMessage(engine, timeout, replyEvent));
-            case IMsgEvent.ID_REPLY_FAILED:
+            case IMsgEvent.ID_FAILED:
                 throw new ServiceException(IReturnCode.UNKNOWN_FAILURE, buildExceptionMessage(engine, timeout, replyEvent));
             default:
                 StringBuilder sb = new StringBuilder("EventId:").append("[").append(replyEvent.getId()).append("]");
@@ -74,19 +70,14 @@ public class Helper {
     }
 
     public static void sendMsg(IClientEngine engine, byte[] bytes) {
-        IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(bytes));
+        IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, bytes);
         engine.sendMsg(requestEvent);
     }
 
     public static void sendMsg(IClientEngine engine, DirectBuffer requestBuffer) throws ServiceException {
-        IMsgEvent requestEvent = new MsgEvent(IMsgEvent.ID_REQUEST, engine, new MsgEventInfo(requestBuffer.byteArray()));
+        IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBuffer.byteArray());
         engine.sendMsg(requestEvent);
     }
-
-//    public static DirectBuffer recvMsg(IClientEngine engine, int timeout) throws ServiceException {
-//        IMsgEvent replyEvent = engine.recvMsg(timeout);
-//        return Helper.buildReplyBuffer(engine, timeout, replyEvent);
-//    }
 
     public static byte[] recvMsg(IClientEngine engine, int timeout) throws ServiceException {
         IMsgEvent replyEvent = engine.recvMsg(timeout);

@@ -2,15 +2,14 @@
  Created by Walker.Zhang on 2015/3/19.
  Revision History:
  Date          Who              Version      What
- 2015/3/19     Walker.Zhang     0.1.0        Created. 
- */
+ 2015/3/19     Walker.Zhang     0.1.0        Created.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+*/
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.engine.IPinger;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
+import com.flying.framework.messaging.event.IMsgEvent;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
@@ -18,7 +17,7 @@ import org.zeromq.ZMsg;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class ZMQPinger implements IPinger {
+public class Pinger implements IPinger {
     private ConcurrentMap<String, ZMQ.Socket> sockets = null;
     private ZContext context = null;
 
@@ -40,9 +39,6 @@ public class ZMQPinger implements IPinger {
 
     /**
      * ping endpoint and wait for the reply before timeout.
-     * <p>
-     * The request message structure.
-     * Frame0: command = ID_PING, no subsequent frame.
      *
      * @param endpoint target to ping.
      * @param timeout  milliseconds. should be >=0. if <0, will set to 0 automatically.
@@ -67,28 +63,26 @@ public class ZMQPinger implements IPinger {
 
     private boolean ping(ZMQ.Socket socket, int timeout) {
         // send ping message.
-        ZMsg msg = new ZMsg();
-        msg.add(Ints.toByteArray(IMsgEvent.ID_PING));
-        long msgNO = System.currentTimeMillis();
-        msg.add(Longs.toByteArray(msgNO));
+
+        ZMsg msg = Codec.encodePingMsg(null);
         msg.send(socket);
+        msg.destroy();
         // set up the time out.
         if (timeout < 0) timeout = 0;
         boolean succeed = false;
         int oldTimeout = socket.getReceiveTimeOut();
         int waitTime;
+        long startTime = System.currentTimeMillis();
         do {
-            waitTime = (int) (timeout - (System.currentTimeMillis() - msgNO));
-            if (waitTime < 0) waitTime = 0;
-            socket.setReceiveTimeOut(waitTime);
+            socket.setReceiveTimeOut(timeout);
             ZMsg repMsg = ZMsg.recvMsg(socket);
             if (repMsg == null) break;
-            int command = Ints.fromByteArray(repMsg.pop().getData());
-            if (command == IMsgEvent.ID_PING && msgNO == Longs.fromByteArray(repMsg.pop().getData())) {
+            Codec.Msg decodedMsg = Codec.decode(repMsg, ZMQ.DEALER);
+            if (decodedMsg.eventID == IMsgEvent.ID_PONG) {
                 succeed = true;
                 break;
             }
-        } while (System.currentTimeMillis() < msgNO + timeout);
+        } while (System.currentTimeMillis() < startTime + timeout);
         socket.setReceiveTimeOut(oldTimeout);
         return succeed;
     }

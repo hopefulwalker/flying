@@ -16,7 +16,7 @@ import com.flying.oms.msg.gen.OrderRequestDecoder;
 
 @DefaultInfo(headerDecoderClass = "com.flying.oms.msg.gen.MessageHeaderDecoder",
         headerEncoderClass = "com.flying.oms.msg.gen.MessageHeaderEncoder",
-        msgTypeClass = "com.flying.ams.oms.IOrderMsgType",
+        msgTypeClass = "com.flying.oms.msg.IOrderMsgType",
         headerCodecPackage = "com.flying.oms.msg.gen",
         bodyCodecPackage = "com.flying.oms.msg.gen",
         msgTypePackage = "com.flying.oms.msg")
@@ -28,9 +28,9 @@ public interface IOrderMsgCodec extends IMsgCodec {
 
     @CodecInfo(type = CodecInfo.ENCODE_MSG,
             bodyEncoderClass = "OrderRequestEncoder")
-    byte[] encodeOrderRequest(@Name("orderBO") @Fields OrderBO orderBO);
+   byte[] encodeOrderRequest(@Name("orderBO") @Fields("extNo, acctId, bsSideId, exchId, sectCode, price, qty") OrderBO orderBO);
 
-    @CodecInfo(type = CodecInfo.DECODE_MSG,
+    @CodecInfo(type = CodecInfo.GET_BODY_DECODER,
             bodyDecoderClass = "OrderRequestDecoder")
     OrderRequestDecoder getOrderRequestDecoder(@Name("msg") byte[] msg);
 
@@ -39,6 +39,6 @@ public interface IOrderMsgCodec extends IMsgCodec {
     public byte[] encodeOrderReply(@Name("retCode") @Fields int retCode, @Name("orderBO") @Fields OrderBO orderBO);
 
     @CodecInfo(type = CodecInfo.DECODE_MSG,
-            bodyDecoderClass = "OrderReply")
+            bodyDecoderClass = "OrderReplyDecoder")
     OrderBO getOrderReply(@Name("bytes") byte[] bytes);
 }

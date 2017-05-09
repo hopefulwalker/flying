@@ -13,20 +13,21 @@ dependencies {
 
     compile group: 'org.apache.commons', name: 'commons-beanutils', version: '1.9.2'
     compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
+//    compile("org.springframework:spring-core:4.3.8.RELEASE") {
+//        exclude group: 'commons-logging', name: 'commons-logging'
+//    }
+    compile("org.springframework:spring-core:4.3.8.RELEASE")
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.3.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.3.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version: '4.3.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-expression', version: '4.3.8.RELEASE'
 
-    compile group: 'org.springframework', name: 'spring-core', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-beans', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context-support', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-expression', version: '4.1.4.RELEASE'
-
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.7'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
     runtime group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.0.1'
     runtime group: 'org.apache.commons', name: 'commons-lang3', version: '3.3.2'
     runtime group: 'org.apache.commons', name: 'commons-logging', version: '1.2'
     runtime group: 'org.skife.jdbi', name: 'jdbi', version: '2.56'
-    runtime group: 'org.zeromq', name: 'jzmq', version: '3.1.1-SNAPSHOT'
     runtime group: 'com.google.guava', name: 'guava', version: '18.0'
     runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.1.2'
     runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'

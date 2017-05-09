@@ -20,8 +20,8 @@ public class OrderEvent extends CommonEvent<IState, IStateEventInfo> implements 
     }
 
     @Override
-    public OrderBO getEventInfo() {
-        return (OrderBO) super.getEventInfo();
+    public OrderBO getInfo() {
+        return (OrderBO) super.getInfo();
     }
 }
 

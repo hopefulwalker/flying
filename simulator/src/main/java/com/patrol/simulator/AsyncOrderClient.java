@@ -29,7 +29,7 @@ public class AsyncOrderClient {
     private final static String ENDPOINT_FACTORY = "endpointFactory";
     private final static String ORDER_SERVICE = "orderService";
     private final static String CFG_FILE = "com/patrol/simulator/order-cfg.xml";
-    private final static long NUMBER_OF_REQUEST = Long.MAX_VALUE;
+    private final static long NUMBER_OF_REQUEST =Long.MAX_VALUE;
 
     public static void main(String args[]) {
         AbstractApplicationContext context = new ClassPathXmlApplicationContext(CFG_FILE);
@@ -47,7 +47,7 @@ public class AsyncOrderClient {
         long responseTime;
         long startTime = System.currentTimeMillis();
         for (long i = 0; i < NUMBER_OF_REQUEST || requests.size() > 0; ) {
-            if ((i < NUMBER_OF_REQUEST) && (i - rvn < 10)) {
+            if ((i < NUMBER_OF_REQUEST) && (i - rvn < 1000)) {
                 try {
                     orderBO = new OrderBO();
                     orderBO.setExtNo(i);
@@ -89,14 +89,14 @@ public class AsyncOrderClient {
                 }
             }
             try {
-                if (rvn % 1000000 == 1) {
+                if (rvn % 50000 == 1) {
                     long totaltime = (System.currentTimeMillis() - startTime);
-                    System.out.println("send:"+i);
+                    System.out.println("send:" + i);
                     System.out.println("rvn:" + rvn);
                     System.out.println("Time Elpase:" + totaltime);
                     System.out.println("min:" + min);
                     System.out.println("max:" + max);
-                    System.out.println("avg:" + sum/rvn);
+                    System.out.println("avg:" + sum / rvn);
                     System.out.println("throughput:" + (rvn * 1000) / totaltime);
                 }
             } catch (Exception e) {

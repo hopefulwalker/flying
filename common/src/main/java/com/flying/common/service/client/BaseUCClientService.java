@@ -11,7 +11,7 @@ import com.flying.common.service.IServiceType;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.PooledZMQClientEngineFactory;
+import com.flying.framework.messaging.engine.impl.zmq.PooledClientEngineFactory;
 import com.flying.util.common.Dictionary;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -31,7 +31,7 @@ public class BaseUCClientService implements Runnable {
 
     private IEndpointFactory endpointFactory;
     private GenericObjectPoolConfig poolConfig;
-    private PooledZMQClientEngineFactory poolFactory;
+    private PooledClientEngineFactory poolFactory;
     private ObjectPool<IClientEngine> enginePool;
 
     public BaseUCClientService(String region, short serviceType, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig) {
@@ -54,7 +54,7 @@ public class BaseUCClientService implements Runnable {
             logger.warn("Could not get endpoints:" + getInfo());
             return;
         }
-        this.poolFactory = new PooledZMQClientEngineFactory(endpoints);
+        this.poolFactory = new PooledClientEngineFactory(endpoints);
         this.enginePool = new GenericObjectPool<IClientEngine>(poolFactory, poolConfig);
         try {
             PoolUtils.prefill(enginePool, poolConfig.getMinIdle());

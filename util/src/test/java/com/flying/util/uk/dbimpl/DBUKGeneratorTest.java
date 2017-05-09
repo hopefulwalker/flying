@@ -1,7 +1,7 @@
 package com.flying.util.uk.dbimpl;
 
-import com.flying.util.cfg.IConfiguration;
 import com.flying.util.cfg.DynamicConfiguration;
+import com.flying.util.cfg.IConfiguration;
 import com.flying.util.cfg.ReadOnlyConfiguration;
 import com.flying.util.uk.IUKGenerator;
 import com.flying.util.uk.UKGeneratorFactory;
@@ -25,7 +25,6 @@ public class DBUKGeneratorTest {
         cfg = new DynamicConfiguration();
         cfg.put(UKGeneratorFactory.GENERATOR_STEP, STEP);
         cfg.put(UKGeneratorFactory.GENERATOR_SIZE, SIZE);
-        cfg.put(UKGeneratorFactory.GENERATOR_DSNAME, "mysql");
         cfg = new ReadOnlyConfiguration(cfg);
     }
 

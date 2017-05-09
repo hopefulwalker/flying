@@ -49,7 +49,7 @@ public class BroadcastClientEngine implements IClientEngine {
 
     @Override
     public void sendMsg(IMsgEvent msgEvent) {
-        DatagramPacket packet = new DatagramPacket(msgEvent.getEventInfo().getByteArray(), msgEvent.getEventInfo().getByteArray().length);
+        DatagramPacket packet = new DatagramPacket(msgEvent.getInfo().getByteArray(), msgEvent.getInfo().getByteArray().length);
         for (IEndpoint endpoint : endpoints) {
             try {
                 packet.setAddress(InetAddress.getByName(endpoint.getAddress()));
@@ -68,12 +68,12 @@ public class BroadcastClientEngine implements IClientEngine {
         try {
             clientSocket.setSoTimeout(timeout);
             clientSocket.receive(packet);
-            event = new MsgEvent(IMsgEvent.ID_REPLY_SUCCEED, this, new MsgEventInfo(packet.getData()));
+            event = MsgEvent.newInstance(IMsgEvent.ID_REPLY, this, packet.getData());
         } catch (SocketTimeoutException ste) {
-            event = new MsgEvent(IMsgEvent.ID_REPLY_TIMEOUT, this, new MsgEventInfo(new byte[0]));
+            event = MsgEvent.newInstance(IMsgEvent.ID_TIMEOUT, this);
         } catch (IOException ioe) {
             logger.error(ioe.toString(), ioe);
-            event = new MsgEvent(IMsgEvent.ID_REPLY_FAILED, this, new MsgEventInfo(new byte[0]));
+            event = MsgEvent.newInstance(IMsgEvent.ID_FAILED, this);
         }
         return event;
     }

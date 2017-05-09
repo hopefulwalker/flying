@@ -32,7 +32,7 @@ public class ClientHandler extends ChannelDuplexHandler {
         byte[] request = new byte[buf.readableBytes()];
         buf.readBytes(request);
         if (engine.getConfig().getMsgEventListener() != null) {
-            engine.getConfig().getMsgEventListener().onEvent(new MsgEvent(IMsgEvent.ID_REPLY, engine, new MsgEventInfo(request)));
+            engine.getConfig().getMsgEventListener().onEvent(MsgEvent.newInstance(IMsgEvent.ID_REPLY, engine, request));
         }
     }
 

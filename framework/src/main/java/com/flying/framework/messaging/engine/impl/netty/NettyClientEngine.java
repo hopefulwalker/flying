@@ -77,8 +77,8 @@ public class NettyClientEngine implements IAsyncClientEngine {
             if (f.isSuccess()) {
                 Channel ch = f.getNow();
                 // Do somethings
-                ByteBuf msg = Unpooled.buffer(msgEvent.getEventInfo().getByteArray().length);
-                msg.writeBytes(msgEvent.getEventInfo().getByteArray());
+                ByteBuf msg = Unpooled.buffer(msgEvent.getInfo().getByteArray().length);
+                msg.writeBytes(msgEvent.getInfo().getByteArray());
                 ch.writeAndFlush(msg);
                 // Release back to pool
                 pool.release(ch);

@@ -1,10 +1,11 @@
-/**
- * Created by Walker.Zhang on 2015/5/30.
- * Revision History:
- * Date          Who              Version      What
- * 2015/5/30     Walker.Zhang     0.1.0        Created.
- * 2015/6/15     Walker.Zhang     0.2.0        Simplify the implementation of setEndpoints because Endpoint overrides hashCode and equals.
- */
+/*
+ Created by Walker.Zhang on 2015/5/30.
+ Revision History:
+ Date          Who              Version      What
+ 2015/5/30     Walker.Zhang     0.1.0        Created.
+ 2015/6/15     Walker.Zhang     0.2.0        Simplify the implementation of setEndpoints because Endpoint overrides hashCode and equals.
+ 2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+*/
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
@@ -15,10 +16,10 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 import java.util.List;
 
-public class PooledZMQClientEngineFactory implements PooledObjectFactory<IClientEngine> {
+public class PooledClientEngineFactory implements PooledObjectFactory<IClientEngine> {
     private List<IEndpoint> endpoints;
 
-    public PooledZMQClientEngineFactory(List<IEndpoint> endpoints) {
+    public PooledClientEngineFactory(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 
@@ -39,7 +40,7 @@ public class PooledZMQClientEngineFactory implements PooledObjectFactory<IClient
 
     @Override
     public PooledObject<IClientEngine> makeObject() throws Exception {
-        IClientEngine engine = new ZMQUCClientEngine(endpoints);
+        IClientEngine engine = new AsyncClientEngine(endpoints);
         engine.start();
         return new DefaultPooledObject<>(engine);
     }

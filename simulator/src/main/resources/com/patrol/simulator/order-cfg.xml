@@ -7,7 +7,7 @@
         <constructor-arg name="region" value="SZ"/>
         <constructor-arg name="endpointFactory" ref="endpointFactory"/>
         <constructor-arg name="poolConfig" ref="poolConfig"/>
-        <constructor-arg name="msgConverter" ref="orderMsgConverter"/>
+        <constructor-arg name="msgCodec" ref="orderMsgCodec"/>
     </bean>
     <bean id="endpointFactory" class="com.flying.monitor.service.client.MonitorEndpointFactory">
         <constructor-arg name="service" ref="monitorService"/>
@@ -15,12 +15,12 @@
     <bean id="poolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
         <property name="minIdle" value="1"/>
     </bean>
-    <bean id="orderMsgConverter" class="com.flying.oms.msg.codec.OrderMsgCodec"/>
+    <bean id="orderMsgCodec" class="com.flying.oms.msg.codec.OrderMsgCodec"/>
 
 
     <bean id="monitorService" class="com.flying.monitor.service.client.BCMonitorClientService">
         <constructor-arg name="engine" ref="broadcastEngine"/>
-        <constructor-arg name="msgConverter" ref="monitorMsgBuilder"/>
+        <constructor-arg name="msgCodec" ref="monitorMsgBuilder"/>
     </bean>
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>

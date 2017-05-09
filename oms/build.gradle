@@ -25,7 +25,6 @@ dependencies {
 
     runtime group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
     runtime group: 'org.apache.commons', name: 'commons-logging', version: '1.2'
-    runtime group: 'org.zeromq', name: 'jzmq', version: '3.1.1-SNAPSHOT'
     runtime group: 'com.google.guava', name: 'guava', version: '18.0'
     runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.1.2'
     runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
