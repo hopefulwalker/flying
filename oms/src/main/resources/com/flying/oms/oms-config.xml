@@ -5,12 +5,16 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <import resource="orderstates.xml"/>
     <!-- The first part: order manage server -->
-    <bean id="orderManageServer" class="com.flying.oms.OrderManageServer">
-        <constructor-arg type="java.lang.String" name="region" value="SZ"/>
-        <constructor-arg type="short" name="type" value="3"/>
-        <constructor-arg type="java.lang.String" name="name" value="OS-Walker"/>
+    <bean id="orderManageServer" class="com.flying.monitor.model.Server">
+        <constructor-arg name="serverBO" ref="serverBO"/>
         <property name="serverEngine" ref="orderServerEngine"/>
         <property name="scheduler" ref="scheduler"/>
+    </bean>
+
+    <bean id="serverBO" class="com.flying.monitor.model.ServerBO">
+        <constructor-arg type="java.lang.String" name="region" value="SZ"/>
+        <constructor-arg type="short" name="serviceType" value="3"/>
+        <constructor-arg type="java.lang.String" name="name" value="OS-Walker"/>
     </bean>
 
     <bean id="orderServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine">
@@ -45,8 +49,8 @@
         <constructor-arg name="msgConverter" ref="orderMsgCodec"/>
     </bean>
     <bean id="orderReporter" class="com.flying.monitor.service.client.ServerReporter">
-        <property name="server" ref="orderManageServer"/>
-        <property name="service" ref="bcMonitorClientService"/>
+        <constructor-arg name="serverBO" ref="serverBO"/>
+        <constructor-arg name="service" ref="bcMonitorClientService"/>
     </bean>
 
     <bean id="orderServerService" class="com.flying.oms.service.server.OrderServerService">
@@ -59,7 +63,8 @@
         <constructor-arg name="msgCodec" ref="monitorMsgCodec"/>
     </bean>
 
-    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
+    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine"
+          init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="broadcastEndpoints" class="java.util.ArrayList">
@@ -81,13 +86,14 @@
     <bean id="orderCache" class="java.util.HashMap"/>
     <bean id="orderStateMachine" class="com.flying.framework.fsm.impl.DefaultStateMachine"/>
 
-    <bean id="accountService" class="com.flying.ams.service.client.AccountClientService" init-method="init" destroy-method="close">
-        <constructor-arg name="region" value="SZ"/>
-        <constructor-arg name="endpointFactory" ref="endpointFactory"/>
-        <constructor-arg name="poolConfig" ref="poolConfig"/>
-        <constructor-arg name="msgCodec" ref="accountMsgCodec"/>
-        <!--<property name="accountCache" ref="accountCache"/>-->
-    </bean>
+    <!--<bean id="accountService" class="com.flying.ams.service.client.AccountClientService" init-method="init"-->
+          <!--destroy-method="close">-->
+        <!--<constructor-arg name="region" value="SZ"/>-->
+        <!--<constructor-arg name="endpointFactory" ref="endpointFactory"/>-->
+        <!--<constructor-arg name="poolConfig" ref="poolConfig"/>-->
+        <!--<constructor-arg name="msgCodec" ref="accountMsgCodec"/>-->
+        <!--&lt;!&ndash;<property name="accountCache" ref="accountCache"/>&ndash;&gt;-->
+    <!--</bean>-->
     <bean id="endpointFactory" class="com.flying.monitor.service.client.MonitorEndpointFactory">
         <constructor-arg name="service" ref="bcMonitorClientService"/>
     </bean>
@@ -95,10 +101,10 @@
         <property name="minIdle" value="1"/>
     </bean>
 
-    <!--<bean id="accountService" class="com.flying.ams.service.server.AccountServerService">-->
-        <!--<constructor-arg name="loader" ref="accountDBLoader"/>-->
-        <!--<constructor-arg name="accountCache" ref="accountCache"/>-->
-    <!--</bean>-->
+    <bean id="accountService" class="com.flying.ams.service.server.AccountServerService">
+    <constructor-arg name="loader" ref="accountDBLoader"/>
+    <constructor-arg name="accountCache" ref="accountCache"/>
+    </bean>
     <bean id="accountDBLoader" class="com.flying.ams.service.server.AccountDBLoader"/>
     <bean id="accountCache" class="java.util.HashMap"/>
 </beans>

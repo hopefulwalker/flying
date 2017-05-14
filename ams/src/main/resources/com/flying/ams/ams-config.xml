@@ -3,10 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="accountManageServer" class="com.flying.ams.AccountManageServer">
-        <constructor-arg type="java.lang.String" name="region" value="SZ"/>
-        <constructor-arg type="short" name="type" value="2"/>
-        <constructor-arg type="java.lang.String" name="name" value="AMS-Walker"/>
+    <bean id="accountManageServer" class="com.flying.monitor.model.Server">
+        <constructor-arg name="serverBO" ref="serverBO"/>
         <property name="serverEngine" ref="accountServerEngine"/>
         <property name="scheduler" ref="scheduler"/>
     </bean>
@@ -20,8 +18,8 @@
         <property name="workers" value="5"/>
     </bean>
     <bean id="accountReporter" class="com.flying.monitor.service.client.ServerReporter">
-        <property name="server" ref="accountManageServer"/>
-        <property name="service" ref="bcMonitorClientService"/>
+        <constructor-arg name="serverBO" ref="serverBO"/>
+        <constructor-arg name="service" ref="bcMonitorClientService"/>
     </bean>
     <bean id="scheduler" class="com.flying.util.schedule.Scheduler">
         <constructor-arg name="tasks">
@@ -31,6 +29,12 @@
         </constructor-arg>
         <property name="delay" value="5000"/>
         <property name="initialDelay" value="3000"/>
+    </bean>
+
+    <bean id="serverBO" class="com.flying.monitor.model.ServerBO">
+        <constructor-arg type="java.lang.String" name="region" value="SZ"/>
+        <constructor-arg type="short" name="serviceType" value="2"/>
+        <constructor-arg type="java.lang.String" name="name" value="AMS-Walker"/>
     </bean>
 
     <bean id="listenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint"/>
@@ -58,7 +62,8 @@
     <!--<constructor-arg name="msgConverter" ref="monitorMsgConverter"/>-->
     <!--</bean>-->
 
-    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine" init-method="start" destroy-method="stop">
+    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine"
+          init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="monitorMsgCodec" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>

@@ -4,6 +4,7 @@
  Date          Who              Version      What
  2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
  2017/5/1      Walker.Zhang     0.3.4        redefine the message event id and log zmq error using error code.
+ 2017/5/13     Walker.Zhang     0.3.5        remove log information when there is no reply message.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -13,7 +14,6 @@ import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.*;
@@ -161,7 +161,7 @@ public class Dispatcher implements Runnable {
 
     private class Server {
         //  If not a single service replies within this time, give up
-        private final static int serverDisconnectTtl = 1 * 60 * 1000;
+        private final static int serverDisconnectTtl = 60 * 1000;
         //  Server considered dead if silent for this long
         private final static int serverTtl = 30 * 1000;
         //  PING interval for servers we think are alive
@@ -172,10 +172,6 @@ public class Dispatcher implements Runnable {
         private long pingAt = Long.MAX_VALUE;            //  Next ping at this time
         private long expires = Long.MAX_VALUE;           //  Expires at this time
         private long disconnectAt = Long.MAX_VALUE;      //  Disconnect at this time
-
-        Server(String endpoint) {
-            this(endpoint, false);
-        }
 
         Server(String endpoint, boolean pingEnabled) {
             this.endpoint = endpoint;
@@ -216,11 +212,10 @@ public class Dispatcher implements Runnable {
         public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
             // handle the message.
             IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, engine, decodedMsg.data));
-            if (result == null || result.getByteArray() == null) {
-                logger.info("result or result.bytearray is null");
-                return null;
+            if (result != null && result.getByteArray() != null) {
+                return Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getByteArray());
             }
-            return Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getByteArray());
+            return null;
         }
     }
 

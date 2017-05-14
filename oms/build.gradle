@@ -53,6 +53,7 @@ task clientJar(type: Jar) {
     include '**/client/**'
     include '**/model/**'
     include '**/msg/**'
+    exclude '**/config/**'
     exclude '**/handler/**'
 }
 
