@@ -2,7 +2,8 @@
  Created by Walker.Zhang on 2015/3/20.
  Revision History:
  Date          Who              Version      What
- 2015/3/20     Walker.Zhang     0.1.0        Created. 
+ 2015/3/20     Walker.Zhang     0.1.0        Created.
+ 2017/5/14     Walker           0.3.5        Refactor to change the output information.
  */
 package com.flying.monitor.service.server;
 
@@ -34,7 +35,7 @@ public class ServerSweeper implements Runnable {
             serverBOs = service.find(serverTTL);
             // ping server, if do not response in serverTTL milliseconds, unregister it.
             for (ServerBO serverBO : serverBOs) service.unregister(serverBO);
-            System.out.println("Registered service:" + service.getNumServerBO());
+            logger.info("Sweeper: Registered service:" + service.getNumServerBO());
         } catch (Exception ie) {
             logger.error("Exception occurs when sweeping...", ie);
         }
