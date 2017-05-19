@@ -1,7 +1,7 @@
 subprojects {
     apply plugin: 'java'
 
-    def flatDirHome=System.getenv('WORK_HOME')
+    def flatDirHome = System.getenv('WORK_HOME')
 
     repositories {
         flatDir {
@@ -41,6 +41,7 @@ subprojects {
 
             // framework.
             dirs "${flatDirHome}/open/spring"
+            dirs "${flatDirHome}/open/spring/spring-statemachine-1.2.4.RELEASE/libs"
 
             // expression language
             dirs "${flatDirHome}/open/mvel"
@@ -59,7 +60,7 @@ subprojects {
 
     compileJava {
         options.compilerArgs = ["-Xlint:unchecked"]
-    }    
+    }
 }
 
 version = '0.2.0'
