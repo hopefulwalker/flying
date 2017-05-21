@@ -10,6 +10,9 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-context-support', version: '4.1.4.RELEASE'
     compile group: 'org.springframework', name: 'spring-expression', version: '4.1.4.RELEASE'
 
+    runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
     compile project(':util')
     compile project(':framework')
     compile project(':common')

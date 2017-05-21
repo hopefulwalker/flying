@@ -43,6 +43,9 @@ public class OrderBO implements IStateEventInfo, Serializable {
     private long updateTime;
 
     public OrderBO() {
+        // set string to empty string to avoid the null pointer exception.
+        this.sectCode = "";
+        this.cntrNo = "";
     }
 
     public int getStateEnteredCode() {

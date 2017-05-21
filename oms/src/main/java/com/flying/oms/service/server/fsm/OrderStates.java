@@ -4,8 +4,8 @@
  Date          Who              Version      What
  2015/5/18     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
 */
-package com.flying.oms.msg;
+package com.flying.oms.service.server.fsm;
 
-public enum OrderEvents {
-    OrderRequest
+public enum OrderStates {
+    CREATED, REJECTED, SENT
 }

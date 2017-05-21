@@ -11,6 +11,7 @@ import org.springframework.statemachine.action.Action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SpringStateMachineActionLink<S, E> implements Action<S, E> {
     public List<Action<S, E>> actions;
@@ -27,9 +28,8 @@ public class SpringStateMachineActionLink<S, E> implements Action<S, E> {
         for (Action<S, E> action : actions) {
             action.execute(context);
             // todo figout the beter way. define new interface?
-            if ((Boolean) context.getExtendedState().getVariables().get("BREAK")) {
-                break;
-            }
+            Map variables = context.getExtendedState().getVariables();
+            if (variables.containsKey("BREAK") && (boolean) variables.get("BREAK")) break;
         }
     }
 }

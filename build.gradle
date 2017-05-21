@@ -17,7 +17,7 @@ subprojects {
 
             // log
             dirs "${flatDirHome}/open/slf4j/slf4j-1.7.25"
-            dirs "${flatDirHome}/open/logback/logback-1.1.2"
+            dirs "${flatDirHome}/open/logback/logback-1.2.3"
 
             // messaging, encoder and decoder.
             dirs "${flatDirHome}/open/jzmq/jzmq20170423/jzmq-jni/lib"

@@ -13,6 +13,7 @@ import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderState;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.msg.gen.OrderRequestDecoder;
+import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.service.server.OrderServerService;
 import com.flying.util.math.IntegerUtils;
@@ -25,10 +26,10 @@ import java.io.UnsupportedEncodingException;
 
 public class OrderRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(OrderRequestHandler.class);
-    private OrderServerService service;
+    private IOrderService service;
     private IOrderMsgCodec msgCodec;
 
-    public OrderRequestHandler(OrderServerService service, IOrderMsgCodec msgCodec) {
+    public OrderRequestHandler(IOrderService service, IOrderMsgCodec msgCodec) {
         this.service = service;
         this.msgCodec = msgCodec;
     }

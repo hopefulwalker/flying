@@ -6,7 +6,6 @@
  */
 package com.flying.oms.service.server;
 
-import com.flying.common.service.ServiceException;
 import com.flying.framework.event.IEventSource;
 import com.flying.framework.fsm.IStateFactory;
 import com.flying.framework.fsm.IStateMachine;
