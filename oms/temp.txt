@@ -1,0 +1,749 @@
+:oms:dependencies
+
+------------------------------------------------------------
+Project :oms
+------------------------------------------------------------
+
+apiElements - API elements for main. (n)
+No dependencies
+
+archives - Configuration for archive artifacts.
+No dependencies
+
+compile - Dependencies for source set 'main' (deprecated, use 'implementation ' instead).
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
+\--- project :ams
+     +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- project :util (*)
+     +--- project :framework (*)
+     +--- project :common (*)
+     +--- project :monitor (*)
+     +--- ch.qos.logback:logback-core:1.2.3 FAILED
+     \--- ch.qos.logback:logback-classic:1.2.3 FAILED
+
+compileClasspath - Compile classpath for source set 'main'.
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
+\--- project :ams
+     +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+     +--- project :util (*)
+     +--- project :framework (*)
+     +--- project :common (*)
+     +--- project :monitor (*)
+     +--- ch.qos.logback:logback-core:1.2.3 FAILED
+     \--- ch.qos.logback:logback-classic:1.2.3 FAILED
+
+compileOnly - Compile only dependencies for source set 'main'.
+No dependencies
+
+default - Configuration for default artifacts.
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- org.slf4j:jcl-over-slf4j:1.7.25
++--- org.apache.commons:commons-pool2:2.2
++--- org.apache.commons:commons-logging:1.2
++--- com.google.guava:guava:18.0
++--- ch.qos.logback:logback-core:1.2.3 FAILED
+\--- ch.qos.logback:logback-classic:1.2.3 FAILED
+
+implementation - Implementation only dependencies for source set 'main'. (n)
+No dependencies
+
+runtime - Runtime dependencies for source set 'main' (deprecated, use 'runtimeOnly ' instead).
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- org.slf4j:jcl-over-slf4j:1.7.25
++--- org.apache.commons:commons-pool2:2.2
++--- org.apache.commons:commons-logging:1.2
++--- com.google.guava:guava:18.0
++--- ch.qos.logback:logback-core:1.2.3 FAILED
+\--- ch.qos.logback:logback-classic:1.2.3 FAILED
+
+runtimeClasspath - Runtime classpath of source set 'main'.
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- org.slf4j:jcl-over-slf4j:1.7.25
++--- org.apache.commons:commons-pool2:2.2
++--- org.apache.commons:commons-logging:1.2
++--- com.google.guava:guava:18.0
++--- ch.qos.logback:logback-core:1.2.3 FAILED
+\--- ch.qos.logback:logback-classic:1.2.3 FAILED
+
+runtimeElements - Elements of runtime for main. (n)
+No dependencies
+
+runtimeOnly - Runtime only dependencies for source set 'main'. (n)
+No dependencies
+
+testCompile - Dependencies for source set 'test' (deprecated, use 'testImplementation ' instead).
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
+\--- junit:junit:4.12
+
+testCompileClasspath - Compile classpath for source set 'test'.
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
+\--- junit:junit:4.12
+
+testCompileOnly - Compile only dependencies for source set 'test'.
+No dependencies
+
+testImplementation - Implementation only dependencies for source set 'test'. (n)
+No dependencies
+
+testRuntime - Runtime dependencies for source set 'test' (deprecated, use 'testRuntimeOnly ' instead).
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- org.slf4j:jcl-over-slf4j:1.7.25
++--- org.apache.commons:commons-pool2:2.2
++--- org.apache.commons:commons-logging:1.2
++--- com.google.guava:guava:18.0
++--- ch.qos.logback:logback-core:1.2.3 FAILED
++--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- junit:junit:4.12
+\--- org.hamcrest:hamcrest-core:1.3
+
+testRuntimeClasspath - Runtime classpath of source set 'test'.
++--- uk.co.real-logic:sbe-tool:1.6.2
++--- org.agrona:agrona:0.9.5
++--- org.slf4j:slf4j-api:1.7.25
++--- com.hazelcast:hazelcast:3.5
++--- org.springframework:spring-core:4.3.8.RELEASE
++--- org.springframework:spring-beans:4.3.8.RELEASE
++--- org.springframework:spring-context:4.3.8.RELEASE
++--- org.springframework:spring-context-support:4.3.8.RELEASE
++--- org.springframework:spring-expression:4.3.8.RELEASE
++--- org.springframework:spring-messaging:4.3.8.RELEASE
++--- org.springframework:spring-tx:4.3.8.RELEASE
++--- org.springframework.statemachine:spring-statemachine-core:1.2.4.RELEASE
++--- project :util
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- mysql:mysql-connector-java:5.1.34
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :framework
+|    +--- project :util (*)
+|    +--- org.zeromq:jzmq-jni:3.1.1
+|    +--- org.zeromq:jzmq-core:3.1.1
+|    +--- io.netty:netty-all:4.1.9.Final
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- com.google.guava:guava:18.0
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- project :common
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- org.mvel:mvel2:2.2.4.Final
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    \--- com.hazelcast:hazelcast:3.5
++--- project :monitor
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- uk.co.real-logic:sbe-tool:1.6.2
+|    +--- org.agrona:agrona:0.9.5
+|    +--- org.apache.commons:commons-beanutils:1.9.2
+|    +--- org.apache.commons:commons-pool2:2.2
+|    +--- org.springframework:spring-core:4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.3.8.RELEASE
+|    +--- org.slf4j:slf4j-api:1.7.25
+|    +--- org.springframework:spring-aop:4.3.8.RELEASE
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    +--- ch.qos.logback:logback-classic:1.2.3 FAILED
+|    +--- org.apache.commons:commons-dbcp2:2.0.1
+|    +--- org.apache.commons:commons-lang3:3.3.2
+|    +--- org.apache.commons:commons-logging:1.2
+|    +--- org.skife.jdbi:jdbi:2.56
+|    \--- com.google.guava:guava:18.0
++--- project :ams
+|    +--- org.springframework:spring-core:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-beans:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-context-support:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- org.springframework:spring-expression:4.1.4.RELEASE -> 4.3.8.RELEASE
+|    +--- project :util (*)
+|    +--- project :framework (*)
+|    +--- project :common (*)
+|    +--- project :monitor (*)
+|    +--- ch.qos.logback:logback-core:1.2.3 FAILED
+|    \--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- org.slf4j:jcl-over-slf4j:1.7.25
++--- org.apache.commons:commons-pool2:2.2
++--- org.apache.commons:commons-logging:1.2
++--- com.google.guava:guava:18.0
++--- ch.qos.logback:logback-core:1.2.3 FAILED
++--- ch.qos.logback:logback-classic:1.2.3 FAILED
++--- junit:junit:4.12
+\--- org.hamcrest:hamcrest-core:1.3
+
+testRuntimeOnly - Runtime only dependencies for source set 'test'. (n)
+No dependencies
+
+(*) - dependencies omitted (listed previously)
+
+BUILD SUCCESSFUL
+
+Total time: 0.929 secs

@@ -7,14 +7,15 @@
 package com.flying.oms.config;
 
 import com.flying.ams.service.IAccountService;
+import com.flying.framework.fsm.SpringStateMachineGuardLink;
 import com.flying.oms.service.server.fsm.*;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.StateMachineBuilder;
+import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 import org.springframework.statemachine.persist.StateMachinePersister;
 
@@ -38,29 +39,29 @@ public class StateMachineConfig {
         builder.configureTransitions()
                 .withExternal()
                 .source(OrderStates.CREATED).target(OrderStates.SENT)
-                .event(OrderEvents.OrderRequest).action(placeOrderAction(accountService));
+                .event(OrderEvents.OrderRequest).guard(placeOrderGuard(accountService));
         return builder.build();
     }
 
     @Bean
-    public SpringStateMachineActionLink<OrderStates, OrderEvents> placeOrderAction(IAccountService accountService) {
-        List<Action<OrderStates, OrderEvents>> actions = new ArrayList<>(2);
-        actions.add(validateAccountAction(accountService));
-        actions.add(sendOrderAction());
-        return new SpringStateMachineActionLink<>(actions);
+    public SpringStateMachineGuardLink<OrderStates, OrderEvents> placeOrderGuard(IAccountService accountService) {
+        List<Guard<OrderStates, OrderEvents>> guards = new ArrayList<>(2);
+        guards.add(validateAccountGuard(accountService));
+        guards.add(sendOrderAction());
+        return new SpringStateMachineGuardLink<>(guards);
     }
 
     @Bean
-    public ValidateAccountAction validateAccountAction(IAccountService accountService) {
-        ValidateAccountAction action = new ValidateAccountAction();
+    public ValidateAccountGuard validateAccountGuard(IAccountService accountService) {
+        ValidateAccountGuard action = new ValidateAccountGuard();
 
         action.setAccountService(accountService);
         return action;
     }
 
     @Bean
-    public SendOrderAction sendOrderAction() {
-        return new SendOrderAction();
+    public SendOrderGuard sendOrderAction() {
+        return new SendOrderGuard();
     }
 
     @Bean

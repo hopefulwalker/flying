@@ -12,7 +12,7 @@ subprojects {
             dirs "${flatDirHome}/open/commons/commons-dbcp2-2.0.1"
             dirs "${flatDirHome}/open/commons/commons-lang3-3.3.2"
             dirs "${flatDirHome}/open/commons/commons-logging-1.2"
-            dirs "${flatDirHome}/open/commons/commons-pool2-2.2"
+            dirs "${flatDirHome}/open/commons/commons-pool2-2.4.2"
             dirs "${flatDirHome}/open/commons/commons-beanutils-1.9.2"
 
             // log

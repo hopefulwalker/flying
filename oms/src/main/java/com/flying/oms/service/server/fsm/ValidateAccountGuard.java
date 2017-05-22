@@ -12,10 +12,11 @@ import com.flying.common.service.ServiceException;
 import com.flying.oms.model.OrderBO;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
+import org.springframework.statemachine.guard.Guard;
 
 import java.util.Map;
 
-public class ValidateAccountAction implements Action<OrderStates, OrderEvents> {
+public class ValidateAccountGuard implements Guard<OrderStates, OrderEvents> {
     private IAccountService accountService;
 
     public void setAccountService(IAccountService accountService) {
@@ -23,22 +24,19 @@ public class ValidateAccountAction implements Action<OrderStates, OrderEvents> {
     }
 
     @Override
-    public void execute(StateContext<OrderStates, OrderEvents> context) {
+    public boolean evaluate(StateContext<OrderStates, OrderEvents> context) {
         Map variables = context.getExtendedState().getVariables();
         OrderBO orderBO = (OrderBO) variables.get("ORDER");
         try {
-            if (accountService.isAccountNormal(orderBO.getAcctId())) return;
+            if (accountService.isAccountNormal(orderBO.getAcctId())) return true;
             orderBO.setStateId((byte) OrderStates.REJECTED.ordinal());
             orderBO.setStateEnteredCode(AccountServiceException.ACCOUNT_NOT_NORMAL);
             orderBO.setUpdateTime(System.currentTimeMillis());
-            variables.put("ORDER", orderBO);
-            variables.put("BREAK", true);
         } catch (ServiceException se) {
             orderBO.setStateId((byte) OrderStates.REJECTED.ordinal());
             orderBO.setStateEnteredCode(se.getCode());
             orderBO.setUpdateTime(System.currentTimeMillis());
-            variables.put("ORDER", orderBO);
-            variables.put("BREAK", true);
         }
+        return false;
     }
 }

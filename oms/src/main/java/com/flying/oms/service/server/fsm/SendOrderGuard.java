@@ -9,17 +9,20 @@ package com.flying.oms.service.server.fsm;
 import com.flying.oms.model.OrderBO;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
+import org.springframework.statemachine.guard.Guard;
 
 import java.util.Map;
 
-public class SendOrderAction implements Action<OrderStates, OrderEvents> {
+public class SendOrderGuard implements Guard<OrderStates, OrderEvents> {
     @Override
-    public void execute(StateContext<OrderStates, OrderEvents> context) {
+    public boolean evaluate(StateContext<OrderStates, OrderEvents> context) {
         if (context.getEvent() == OrderEvents.OrderRequest) {
             Map variables = context.getExtendedState().getVariables();
             OrderBO orderBO = (OrderBO) variables.get("ORDER");
-//            orderBO.setCntrNo("CH100001");
+            orderBO.setCntrNo("CH100001");
             orderBO.setStateId((byte) OrderStates.SENT.ordinal());
+            return true;
         }
+        return false;
     }
 }
