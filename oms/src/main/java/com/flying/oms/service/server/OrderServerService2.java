@@ -12,6 +12,7 @@ import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.service.server.fsm.OrderEvents;
 import com.flying.oms.service.server.fsm.OrderStates;
+import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -38,7 +39,7 @@ public class OrderServerService2 implements IOrderService, IEventSource {
     public OrderServerService2(PooledOrderStateMachineFactory poolFactory, GenericObjectPoolConfig poolConfig, Map<Long, OrderBO> orderCache) {
         this.poolFactory = poolFactory;
         this.poolConfig = poolConfig;
-        this.stateMachineObjectPool = new GenericObjectPool<StateMachine<OrderStates, OrderEvents>>(poolFactory, poolConfig);
+        this.stateMachineObjectPool = new GenericObjectPool<>(poolFactory, poolConfig);
         this.orderCache = orderCache;
         try {
             PoolUtils.prefill(stateMachineObjectPool, poolConfig.getMinIdle());
@@ -53,7 +54,7 @@ public class OrderServerService2 implements IOrderService, IEventSource {
         try {
             machine = stateMachineObjectPool.borrowObject();
             statesStateMachinePersister.restore(machine, OrderStates.values()[orderBO.getStateId()]);
-            machine.getExtendedState().getVariables().put("ORDER", orderBO);
+            machine.getExtendedState().getVariables().put(OrderBO.class.getName(), orderBO);
             machine.sendEvent(OrderEvents.OrderRequest);
         } catch (Exception e) {
             throw new OrderServiceException(OrderServiceException.FAILED_TO_PLACE_ORDER, e);

@@ -9,6 +9,7 @@ package com.flying.oms.service.server.fsm;
 import com.flying.ams.service.AccountServiceException;
 import com.flying.ams.service.IAccountService;
 import com.flying.common.service.ServiceException;
+import com.flying.framework.fsm.IGuard;
 import com.flying.oms.model.OrderBO;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
@@ -16,7 +17,7 @@ import org.springframework.statemachine.guard.Guard;
 
 import java.util.Map;
 
-public class ValidateAccountGuard implements Guard<OrderStates, OrderEvents> {
+public class ValidateAccountGuard implements IGuard<OrderBO> {
     private IAccountService accountService;
 
     public void setAccountService(IAccountService accountService) {
@@ -24,9 +25,7 @@ public class ValidateAccountGuard implements Guard<OrderStates, OrderEvents> {
     }
 
     @Override
-    public boolean evaluate(StateContext<OrderStates, OrderEvents> context) {
-        Map variables = context.getExtendedState().getVariables();
-        OrderBO orderBO = (OrderBO) variables.get("ORDER");
+    public boolean evaluate(OrderBO orderBO) {
         try {
             if (accountService.isAccountNormal(orderBO.getAcctId())) return true;
             orderBO.setStateId((byte) OrderStates.REJECTED.ordinal());
@@ -38,5 +37,6 @@ public class ValidateAccountGuard implements Guard<OrderStates, OrderEvents> {
             orderBO.setUpdateTime(System.currentTimeMillis());
         }
         return false;
+
     }
 }

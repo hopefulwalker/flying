@@ -9,23 +9,28 @@ package com.flying.framework.fsm;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
 
-import java.util.ArrayList;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-public class SpringStateMachineGuardLink<S, E> implements Guard<S, E> {
-    private List<Guard<S, E>> guards;
+public class SpringStateMachineGuardLink<S, E, V> implements Guard<S, E> {
+    private Class<V> varClass;
+    private List<IGuard<V>> guards;
 
-    public SpringStateMachineGuardLink(List<Guard<S, E>> guards) {
-        if (guards == null)
-            this.guards = new ArrayList<>();
-        else
-            this.guards = guards;
+    public SpringStateMachineGuardLink(List<IGuard<V>> guards) {
+        this.guards = guards;
+        if (guards != null && guards.size() >= 1) {
+            this.varClass = (Class<V>) ((ParameterizedType) guards.get(0).getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+        }
     }
 
     @Override
     public boolean evaluate(StateContext<S, E> context) {
-        for (Guard<S, E> guard : guards) {
-            if (!guard.evaluate(context)) return false;
+        if (guards == null || guards.size() == 0) return true;
+        Object object = context.getExtendedState().getVariables().get(this.varClass.getName());
+        if (object == null) return false;
+        if (!varClass.isAssignableFrom(object.getClass())) return false;
+        for (IGuard<V> guard : guards) {
+            if (!guard.evaluate((V) object)) return false;
         }
         return true;
     }

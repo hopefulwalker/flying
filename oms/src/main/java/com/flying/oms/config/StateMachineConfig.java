@@ -7,12 +7,15 @@
 package com.flying.oms.config;
 
 import com.flying.ams.service.IAccountService;
+import com.flying.framework.fsm.IGuard;
 import com.flying.framework.fsm.SpringStateMachineGuardLink;
+import com.flying.oms.model.OrderBO;
 import com.flying.oms.service.server.fsm.*;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.Order;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineBuilder;
 import org.springframework.statemachine.guard.Guard;
@@ -44,17 +47,16 @@ public class StateMachineConfig {
     }
 
     @Bean
-    public SpringStateMachineGuardLink<OrderStates, OrderEvents> placeOrderGuard(IAccountService accountService) {
-        List<Guard<OrderStates, OrderEvents>> guards = new ArrayList<>(2);
+    public SpringStateMachineGuardLink<OrderStates, OrderEvents, OrderBO> placeOrderGuard(IAccountService accountService) {
+        List<IGuard<OrderBO>> guards = new ArrayList<>(2);
         guards.add(validateAccountGuard(accountService));
         guards.add(sendOrderAction());
-        return new SpringStateMachineGuardLink<>(guards);
+        return new SpringStateMachineGuardLink<OrderStates, OrderEvents, OrderBO>(guards);
     }
 
     @Bean
     public ValidateAccountGuard validateAccountGuard(IAccountService accountService) {
         ValidateAccountGuard action = new ValidateAccountGuard();
-
         action.setAccountService(accountService);
         return action;
     }

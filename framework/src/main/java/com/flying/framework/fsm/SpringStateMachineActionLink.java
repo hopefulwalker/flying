@@ -9,27 +9,28 @@ package com.flying.framework.fsm;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SpringStateMachineActionLink<S, E, V> implements Action<S, E> {
-    private final static String KEY_VARIABLE = "VAR_OBJECT";
-    private Class<V> varType;
+    private Class<V> varClass;
     private List<IAction<V>> actions;
 
-    public SpringStateMachineActionLink(List<IAction<V>> actions, Class<V> varType) {
-        if (actions == null)
-            actions = new ArrayList<>();
-        else
-            this.actions = actions;
-        this.varType = varType;
+    public SpringStateMachineActionLink(List<IAction<V>> actions) {
+        this.actions = actions;
+        if (actions != null && actions.size() >= 1) {
+            this.varClass = (Class<V>) ((ParameterizedType) actions.get(0).getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+        }
     }
 
     @Override
     public void execute(StateContext<S, E> context) {
-        Object object = context.getExtendedState().getVariables().get(KEY_VARIABLE);
-        if (object != null || varType.isAssignableFrom(object.getClass())) return;
+        if (actions == null || actions.size() == 0) return;
+        Object object = context.getExtendedState().getVariables().get(this.varClass.getName());
+        if (object == null) return;
+        if (!varClass.isAssignableFrom(object.getClass())) return;
         for (IAction<V> action : actions) {
             if (!action.execute((V) object)) return;
         }

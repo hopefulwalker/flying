@@ -25,7 +25,7 @@ import com.flying.oms.msg.codec.OrderMsgCodec;
 import com.flying.oms.msg.handler.OrderRequestHandler;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.server.OrderServerService2;
-import com.flying.oms.service.server.PooledOrderStateMachineFactory;
+import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
 import com.flying.oms.service.server.fsm.OrderEvents;
 import com.flying.oms.service.server.fsm.OrderStates;
 import com.flying.util.schedule.Scheduler;
@@ -119,5 +119,4 @@ public class OmsConfig {
     public PooledOrderStateMachineFactory machinePoolFactory() {
         return new PooledOrderStateMachineFactory();
     }
-
 }

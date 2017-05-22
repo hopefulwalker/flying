@@ -4,7 +4,7 @@
  Date          Who              Version      What
  2015/5/20     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
 */
-package com.flying.oms.service.server;
+package com.flying.oms.service.server.fsm;
 
 import com.flying.oms.service.server.fsm.OrderEvents;
 import com.flying.oms.service.server.fsm.OrderStates;

@@ -6,6 +6,7 @@
 */
 package com.flying.oms.service.server.fsm;
 
+import com.flying.framework.fsm.IGuard;
 import com.flying.oms.model.OrderBO;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
@@ -13,16 +14,11 @@ import org.springframework.statemachine.guard.Guard;
 
 import java.util.Map;
 
-public class SendOrderGuard implements Guard<OrderStates, OrderEvents> {
+public class SendOrderGuard implements IGuard<OrderBO> {
     @Override
-    public boolean evaluate(StateContext<OrderStates, OrderEvents> context) {
-        if (context.getEvent() == OrderEvents.OrderRequest) {
-            Map variables = context.getExtendedState().getVariables();
-            OrderBO orderBO = (OrderBO) variables.get("ORDER");
-            orderBO.setCntrNo("CH100001");
-            orderBO.setStateId((byte) OrderStates.SENT.ordinal());
-            return true;
-        }
-        return false;
+    public boolean evaluate(OrderBO orderBO) {
+        orderBO.setCntrNo("CH100001");
+        orderBO.setStateId((byte) OrderStates.SENT.ordinal());
+        return true;
     }
 }
