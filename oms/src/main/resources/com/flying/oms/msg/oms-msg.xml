@@ -56,7 +56,7 @@
         <field name="qty" id="9" type="Qty"/>
         <field name="cntrNo" id="10" type="CntrNo"/>
         <field name="bizDate" id="11" type="Date"/>
-        <field name="stateId" id="12" type="ByteId"/>
+        <field name="state" id="12" type="ByteId"/>
         <field name="stateEnteredCode" id="13" type="RetCode"/>
         <field name="createTime" id="14" type="Time"/>
         <field name="updateTime" id="15" type="Time"/>

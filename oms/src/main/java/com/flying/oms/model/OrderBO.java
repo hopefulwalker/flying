@@ -12,7 +12,7 @@ import com.flying.framework.fsm.IStateEventInfo;
 
 import java.io.Serializable;
 
-public class OrderBO implements IStateEventInfo, Serializable {
+public class OrderBO implements Serializable {
     @Serialization(id = 1)
     private long oid;
     @Serialization(id = 2)
@@ -34,7 +34,7 @@ public class OrderBO implements IStateEventInfo, Serializable {
     @Serialization(id = 10)
     private int bizDate;
     @Serialization(id = 11)
-    private byte stateId;
+    private OrderStates state;
     @Serialization(id = 12)
     private int stateEnteredCode;
     @Serialization(id = 13)
@@ -144,14 +144,12 @@ public class OrderBO implements IStateEventInfo, Serializable {
         this.qty = qty;
     }
 
-    @Override
-    public byte getStateId() {
-        return stateId;
+    public OrderStates getState() {
+        return state;
     }
 
-    @Override
-    public void setStateId(byte stateId) {
-        this.stateId = stateId;
+    public void setState(OrderStates state) {
+        this.state = state;
     }
 
     public long getExtNo() {

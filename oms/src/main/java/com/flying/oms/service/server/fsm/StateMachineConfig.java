@@ -4,21 +4,19 @@
  Date          Who              Version      What
  2015/5/18     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
 */
-package com.flying.oms.config;
+package com.flying.oms.service.server.fsm;
 
 import com.flying.ams.service.IAccountService;
 import com.flying.framework.fsm.IGuard;
 import com.flying.framework.fsm.SpringStateMachineGuardLink;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.service.server.fsm.*;
+import com.flying.oms.model.OrderStates;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.annotation.Order;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineBuilder;
-import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.persist.DefaultStateMachinePersister;
 import org.springframework.statemachine.persist.StateMachinePersister;
 
@@ -51,7 +49,7 @@ public class StateMachineConfig {
         List<IGuard<OrderBO>> guards = new ArrayList<>(2);
         guards.add(validateAccountGuard(accountService));
         guards.add(sendOrderAction());
-        return new SpringStateMachineGuardLink<OrderStates, OrderEvents, OrderBO>(guards);
+        return new SpringStateMachineGuardLink<>(guards);
     }
 
     @Bean

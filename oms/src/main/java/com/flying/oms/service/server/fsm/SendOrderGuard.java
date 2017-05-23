@@ -8,17 +8,13 @@ package com.flying.oms.service.server.fsm;
 
 import com.flying.framework.fsm.IGuard;
 import com.flying.oms.model.OrderBO;
-import org.springframework.statemachine.StateContext;
-import org.springframework.statemachine.action.Action;
-import org.springframework.statemachine.guard.Guard;
-
-import java.util.Map;
+import com.flying.oms.model.OrderStates;
 
 public class SendOrderGuard implements IGuard<OrderBO> {
     @Override
     public boolean evaluate(OrderBO orderBO) {
         orderBO.setCntrNo("CH100001");
-        orderBO.setStateId((byte) OrderStates.SENT.ordinal());
+        orderBO.setState(OrderStates.SENT);
         return true;
     }
 }

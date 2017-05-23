@@ -10,18 +10,15 @@ package com.flying.oms.msg.handler;
 import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.model.OrderState;
+import com.flying.oms.model.OrderStates;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.msg.gen.OrderRequestDecoder;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
-import com.flying.oms.service.server.OrderServerService;
 import com.flying.util.math.IntegerUtils;
 import com.flying.util.uk.UKGeneratorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.UnsupportedEncodingException;
 
 
 public class OrderRequestHandler implements IMsgHandler {
@@ -67,7 +64,7 @@ public class OrderRequestHandler implements IMsgHandler {
         long currentTime = System.currentTimeMillis();
         orderBO.setCreateTime(currentTime);
         orderBO.setUpdateTime(currentTime);
-        orderBO.setStateId(OrderState.CREATED);
+        orderBO.setState(OrderStates.CREATED);
         //contract number should be set by the state machine.
         return orderBO;
     }

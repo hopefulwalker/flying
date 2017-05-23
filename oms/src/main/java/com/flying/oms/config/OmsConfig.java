@@ -21,13 +21,13 @@ import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.client.ServerReporter;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
-import com.flying.oms.msg.codec.OrderMsgCodec;
 import com.flying.oms.msg.handler.OrderRequestHandler;
 import com.flying.oms.service.IOrderService;
-import com.flying.oms.service.server.OrderServerService2;
+import com.flying.oms.service.server.OrderServerService;
 import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
 import com.flying.oms.service.server.fsm.OrderEvents;
-import com.flying.oms.service.server.fsm.OrderStates;
+import com.flying.oms.model.OrderStates;
+import com.flying.oms.service.server.fsm.StateMachineConfig;
 import com.flying.util.schedule.Scheduler;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.context.annotation.Bean;
@@ -81,7 +81,7 @@ public class OmsConfig {
 
     @Bean
     public IOrderService orderServerService2(StateMachinePersister<OrderStates, OrderEvents, OrderStates> stateMachinePersister) {
-        OrderServerService2 service = new OrderServerService2(machinePoolFactory(), machinePoolConfig(), orderCache());
+        OrderServerService service = new OrderServerService(machinePoolFactory(), machinePoolConfig(), orderCache());
         service.setStatesStateMachinePersister(stateMachinePersister);
         return service;
     }
@@ -93,7 +93,8 @@ public class OmsConfig {
 
     @Bean
     public IOrderMsgCodec orderMsgCodec() {
-        return new OrderMsgCodec();
+        return null;
+//        return new OrderMsgCodec();
     }
 
     @Bean

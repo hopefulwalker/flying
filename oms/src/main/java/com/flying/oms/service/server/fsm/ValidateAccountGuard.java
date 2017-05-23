@@ -11,11 +11,7 @@ import com.flying.ams.service.IAccountService;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.fsm.IGuard;
 import com.flying.oms.model.OrderBO;
-import org.springframework.statemachine.StateContext;
-import org.springframework.statemachine.action.Action;
-import org.springframework.statemachine.guard.Guard;
-
-import java.util.Map;
+import com.flying.oms.model.OrderStates;
 
 public class ValidateAccountGuard implements IGuard<OrderBO> {
     private IAccountService accountService;
@@ -28,11 +24,11 @@ public class ValidateAccountGuard implements IGuard<OrderBO> {
     public boolean evaluate(OrderBO orderBO) {
         try {
             if (accountService.isAccountNormal(orderBO.getAcctId())) return true;
-            orderBO.setStateId((byte) OrderStates.REJECTED.ordinal());
+            orderBO.setState(OrderStates.REJECTED);
             orderBO.setStateEnteredCode(AccountServiceException.ACCOUNT_NOT_NORMAL);
             orderBO.setUpdateTime(System.currentTimeMillis());
         } catch (ServiceException se) {
-            orderBO.setStateId((byte) OrderStates.REJECTED.ordinal());
+            orderBO.setState(OrderStates.REJECTED);
             orderBO.setStateEnteredCode(se.getCode());
             orderBO.setUpdateTime(System.currentTimeMillis());
         }
