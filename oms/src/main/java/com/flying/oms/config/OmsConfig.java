@@ -25,7 +25,7 @@ import com.flying.oms.msg.handler.OrderRequestHandler;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.server.OrderServerService;
 import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
-import com.flying.oms.service.server.fsm.OrderEvents;
+import com.flying.oms.model.OrderEvents;
 import com.flying.oms.model.OrderStates;
 import com.flying.oms.service.server.fsm.StateMachineConfig;
 import com.flying.util.schedule.Scheduler;

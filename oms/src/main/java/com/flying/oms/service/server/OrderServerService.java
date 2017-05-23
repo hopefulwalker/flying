@@ -10,7 +10,7 @@ import com.flying.framework.event.IEventSource;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
-import com.flying.oms.service.server.fsm.OrderEvents;
+import com.flying.oms.model.OrderEvents;
 import com.flying.oms.model.OrderStates;
 import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
 import org.apache.commons.pool2.ObjectPool;

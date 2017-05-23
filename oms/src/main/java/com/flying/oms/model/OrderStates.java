@@ -52,7 +52,7 @@ public enum OrderStates {
             case 10:
                 return PARTIAL_CANCELLED;
         }
-        throw new IllegalArgumentException("Unknown order state:" + value);
+        throw new IllegalArgumentException("Unknown OrderStates:" + value);
     }
 }
 
