@@ -8,15 +8,15 @@
 package com.flying.oms;
 
 import com.flying.monitor.model.AbstractServerManager;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.flying.oms.config.OmsConfig;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class OrderServerManager extends AbstractServerManager {
-    private final static String BEAN_ENGINE = "orderManageServer";
-    private final static String CFG_FILE_NAME = "com/flying/oms/oms-config.xml";
+    private final static String BEAN_ENGINE = "orderServer";
 
     @Override
     public void initServer() {
-        setContext(new ClassPathXmlApplicationContext(CFG_FILE_NAME));
+        setContext(new AnnotationConfigApplicationContext(OmsConfig.class));
         setServer(BEAN_ENGINE);
     }
 }

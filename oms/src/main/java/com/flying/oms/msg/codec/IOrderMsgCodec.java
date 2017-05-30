@@ -16,7 +16,7 @@ import com.flying.oms.msg.gen.OrderRequestDecoder;
 
 @DefaultInfo(headerDecoderClass = "com.flying.oms.msg.gen.MessageHeaderDecoder",
         headerEncoderClass = "com.flying.oms.msg.gen.MessageHeaderEncoder",
-        msgTypeClass = "com.flying.oms.msg.IOrderMsgType",
+        msgTypeClass = "com.flying.oms.model.OrderEvents",
         headerCodecPackage = "com.flying.oms.msg.gen",
         bodyCodecPackage = "com.flying.oms.msg.gen",
         msgTypePackage = "com.flying.oms.msg")

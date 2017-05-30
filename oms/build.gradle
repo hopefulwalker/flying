@@ -7,15 +7,21 @@ dependencies {
     compile group: 'uk.co.real-logic', name: 'sbe-tool', version: '1.6.2'
     compile group: 'org.agrona', name: 'agrona', version: '0.9.5'
 
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.7'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
     compile group: 'com.hazelcast', name: 'hazelcast', version: '3.5'
 
-    compile group: 'org.springframework', name: 'spring-core', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-beans', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context-support', version: '4.1.4.RELEASE'
-    compile group: 'org.springframework', name: 'spring-expression', version: '4.1.4.RELEASE'
+//    compile group: 'org.springframework', name: 'spring-core', version: '4.3.8.RELEASE'
+    compile("org.springframework:spring-core:4.3.8.RELEASE") {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    runtime("org.slf4j:jcl-over-slf4j:1.7.25")
+
+
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.3.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.3.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version: '4.3.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-expression', version: '4.3.8.RELEASE'
 
     compile project(':util')
     compile project(':framework')
@@ -23,11 +29,11 @@ dependencies {
     compile project(':monitor')
     compile project(':ams')
 
-    runtime group: 'org.apache.commons', name: 'commons-pool2', version: '2.2'
+    runtime group: 'org.apache.commons', name: 'commons-pool2', version: '2.4.2'
     runtime group: 'org.apache.commons', name: 'commons-logging', version: '1.2'
     runtime group: 'com.google.guava', name: 'guava', version: '18.0'
-    runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.1.2'
-    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.2'
+    runtime group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 }
 
 task generateOrderMsgCodec(type: JavaExec) {

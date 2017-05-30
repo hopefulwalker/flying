@@ -1,7 +1,7 @@
 subprojects {
     apply plugin: 'java'
 
-    def flatDirHome=System.getenv('WORK_HOME')
+    def flatDirHome = System.getenv('WORK_HOME')
 
     repositories {
         flatDir {
@@ -12,12 +12,12 @@ subprojects {
             dirs "${flatDirHome}/open/commons/commons-dbcp2-2.0.1"
             dirs "${flatDirHome}/open/commons/commons-lang3-3.3.2"
             dirs "${flatDirHome}/open/commons/commons-logging-1.2"
-            dirs "${flatDirHome}/open/commons/commons-pool2-2.2"
+            dirs "${flatDirHome}/open/commons/commons-pool2-2.4.2"
             dirs "${flatDirHome}/open/commons/commons-beanutils-1.9.2"
 
             // log
             dirs "${flatDirHome}/open/slf4j/slf4j-1.7.25"
-            dirs "${flatDirHome}/open/logback/logback-1.1.2"
+            dirs "${flatDirHome}/open/logback/logback-1.2.3"
 
             // messaging, encoder and decoder.
             dirs "${flatDirHome}/open/jzmq/jzmq20170423/jzmq-jni/lib"
@@ -41,6 +41,7 @@ subprojects {
 
             // framework.
             dirs "${flatDirHome}/open/spring"
+            dirs "${flatDirHome}/open/spring/spring-statemachine-1.2.4.RELEASE/libs"
 
             // expression language
             dirs "${flatDirHome}/open/mvel"
@@ -59,7 +60,7 @@ subprojects {
 
     compileJava {
         options.compilerArgs = ["-Xlint:unchecked"]
-    }    
+    }
 }
 
 version = '0.2.0'

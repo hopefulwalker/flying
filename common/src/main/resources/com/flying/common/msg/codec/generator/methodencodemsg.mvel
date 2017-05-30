@@ -14,7 +14,7 @@
         @{varHeaderEncoder}.wrap(buffer, 0).blockLength(@{varBodyEncoder}.sbeBlockLength())
                 .templateId(@{varBodyEncoder}.sbeTemplateId()).schemaId(@{varBodyEncoder}.sbeSchemaId()).version(@{varBodyEncoder}.sbeSchemaVersion())
                 .sourceIP(CommUtils.getLocalIp4AddressAsInt()).timestamp(System.currentTimeMillis())
-                .msgType(@{msgTypeClass}.@{bodyClass});
+                .msgType(@{msgTypeClass}.@{bodyClass}.value());
         @{varBodyEncoder}.wrap(buffer, @{varHeaderEncoder}.encodedLength())@{varFields};
         @if{elementExists}
         if (numInGroup > 0) {

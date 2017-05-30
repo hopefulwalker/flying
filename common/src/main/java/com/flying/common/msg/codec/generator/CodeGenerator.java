@@ -369,11 +369,24 @@ class CodeGenerator {
         for (Field field : clazz.getDeclaredFields()) {
             if (fieldNameString.isEmpty() || ArrayUtils.contains(fieldNames, field.getName())) {
                 if (voDecoder == null) {
-                    sb.append(".").append(field.getName()).append("(").append(voName)
-                            .append(".get").append(StringUtils.capitalize(field.getName())).append("())");
+                    if (field.getType().isEnum()) {
+                        addImports(field.getType());
+                        sb.append(".").append(field.getName()).append("(").append(voName)
+                                .append(".get").append(StringUtils.capitalize(field.getName())).append("().value())");
+                    } else {
+                        sb.append(".").append(field.getName()).append("(").append(voName)
+                                .append(".get").append(StringUtils.capitalize(field.getName())).append("())");
+                    }
                 } else {
-                    sb.append(voName).append(".set").append(StringUtils.capitalize(field.getName()))
-                            .append("(").append(voDecoder).append(".").append(field.getName()).append("());");
+                    if (field.getType().isEnum()) {
+                        addImports(field.getType());
+                        sb.append(voName).append(".set").append(StringUtils.capitalize(field.getName()))
+                                .append("(").append(field.getType().getSimpleName()).append(".get")
+                                .append("(").append(voDecoder).append(".").append(field.getName()).append("()));");
+                    } else {
+                        sb.append(voName).append(".set").append(StringUtils.capitalize(field.getName()))
+                                .append("(").append(voDecoder).append(".").append(field.getName()).append("());");
+                    }
                 }
             }
         }
