@@ -21,6 +21,7 @@ import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.client.ServerReporter;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
+import com.flying.oms.msg.codec.OrderMsgCodec;
 import com.flying.oms.msg.handler.OrderRequestHandler;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.server.OrderServerService;
@@ -93,8 +94,7 @@ public class OmsConfig {
 
     @Bean
     public IOrderMsgCodec orderMsgCodec() {
-        return null;
-//        return new OrderMsgCodec();
+        return new OrderMsgCodec();
     }
 
     @Bean

@@ -90,7 +90,6 @@ public class EngineTest {
 
     @Test
     public void testSendMsgAndRecvMsg() {
-
         IMsgEvent request = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, clientEngine, data);
         try {
             Thread.sleep(500); // wait for the client to finish the connection.

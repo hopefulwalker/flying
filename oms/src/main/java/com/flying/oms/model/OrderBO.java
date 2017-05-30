@@ -8,7 +8,6 @@
 package com.flying.oms.model;
 
 import com.flying.common.codegen.serializer.anno.Serialization;
-import com.flying.framework.fsm.IStateEventInfo;
 
 import java.io.Serializable;
 
