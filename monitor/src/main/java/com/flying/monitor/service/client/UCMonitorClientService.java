@@ -10,7 +10,7 @@ import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
-import com.flying.framework.messaging.engine.IClientEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.monitor.model.ServerBO;
 import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
@@ -37,7 +37,7 @@ public class UCMonitorClientService extends BaseUCClientService implements IMoni
 
     @Override
     public void register(ServerBO serverBO) throws MonitorServiceException {
-        IClientEngine engine = null;
+        ISyncClientCommEngine engine = null;
         // send register message to monitor server.
         try {
             engine = borrowEngine();
@@ -65,7 +65,7 @@ public class UCMonitorClientService extends BaseUCClientService implements IMoni
     @Override
     public List<ServerBO> find(String region, short type) throws MonitorServiceException {
         List<ServerBO> serverBOs = null;
-        IClientEngine engine = null;
+        ISyncClientCommEngine engine = null;
         // send find message to account server.
         try {
             engine = borrowEngine();

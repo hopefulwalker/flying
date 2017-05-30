@@ -8,7 +8,7 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IPinger;
+import com.flying.framework.messaging.engine.ICommPinger;
 import com.flying.framework.messaging.event.IMsgEvent;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -17,7 +17,7 @@ import org.zeromq.ZMsg;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class Pinger implements IPinger {
+public class Pinger implements ICommPinger {
     private ConcurrentMap<String, ZMQ.Socket> sockets = null;
     private ZContext context = null;
 

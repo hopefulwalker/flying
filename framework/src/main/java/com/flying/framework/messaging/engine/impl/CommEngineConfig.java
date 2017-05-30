@@ -4,24 +4,20 @@
  Date          Who              Version      What
  2017/4/9      Walker.Zhang     0.3.0        Created.
                                              Refactor to support multi-communication library, such as netty.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
-package com.flying.framework.messaging.engine.impl.netty;
+package com.flying.framework.messaging.engine.impl;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IEngineConfig;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEventListener;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
-public class NettyEngineConfig implements IEngineConfig {
+public class CommEngineConfig implements ICommEngineConfig {
     private List<IEndpoint> endpoints;
-    private Executor executor;
+    private int workers = 1;
     private IMsgEventListener msgEventListener;
-
-    public NettyEngineConfig(List<IEndpoint> endpoints) {
-        this.endpoints = endpoints;
-    }
 
     @Override
     public List<IEndpoint> getEndpoints() {
@@ -29,13 +25,8 @@ public class NettyEngineConfig implements IEngineConfig {
     }
 
     @Override
-    public Executor getExecutor() {
-        return executor;
-    }
-
-    @Override
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
+    public void setEndpoints(List<IEndpoint> endpoints) {
+        this.endpoints = endpoints;
     }
 
     @Override
@@ -46,5 +37,15 @@ public class NettyEngineConfig implements IEngineConfig {
     @Override
     public void setMsgEventListener(IMsgEventListener msgEventListener) {
         this.msgEventListener = msgEventListener;
+    }
+
+    @Override
+    public int getWorkers() {
+        return workers;
+    }
+
+    @Override
+    public void setWorkers(int workers) {
+        this.workers = workers;
     }
 }

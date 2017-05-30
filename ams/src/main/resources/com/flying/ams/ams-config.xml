@@ -9,7 +9,7 @@
         <property name="scheduler" ref="scheduler"/>
     </bean>
 
-    <bean id="accountServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine">
+    <bean id="accountServerEngine" class="com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerCommEngine">
         <constructor-arg name="listenEndpoint" ref="listenEndpoint"/>
         <property name="msgEventListener" ref="amsMsgListener"/>
         <property name="listenEndpoint">
@@ -62,7 +62,7 @@
     <!--<constructor-arg name="msgConverter" ref="monitorMsgConverter"/>-->
     <!--</bean>-->
 
-    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine"
+    <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BroadcastSyncClientCommEngine"
           init-method="start" destroy-method="stop">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>

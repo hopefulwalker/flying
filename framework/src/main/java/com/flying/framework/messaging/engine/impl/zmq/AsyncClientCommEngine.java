@@ -4,11 +4,14 @@
  Date          Who              Version      What
  2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
  2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IClientEngine;
+import com.flying.framework.messaging.engine.IAsyncClientCommEngine;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.zeromq.ZLoop;
@@ -25,12 +28,11 @@ import java.util.List;
  * the other half is a backend "agent" that runs in a background thread. The frontend talks to the backend over an
  * inproc pipe socket.
  */
-public class AsyncClientEngine extends AbstractAsyncEngine implements IClientEngine {
-    private List<IEndpoint> endpoints;
+public class AsyncClientCommEngine extends AbstractAsyncCommEngine implements IAsyncClientCommEngine, ISyncClientCommEngine {
     private ZMQ.Socket pipe;             //  Pipe through to background
 
-    public AsyncClientEngine(List<IEndpoint> endpoints) {
-        this.endpoints = endpoints;
+    public AsyncClientCommEngine(ICommEngineConfig config) {
+        setConfig(config);
     }
 
     @Override
@@ -40,10 +42,15 @@ public class AsyncClientEngine extends AbstractAsyncEngine implements IClientEng
 
     @Override
     void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms) {
-        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, froms, ZMQ.PAIR, false, endpoints, ZMQ.ROUTER, true);
-        dispatcher.addZLoopHandler(froms, requestHandler, endpoints);
-        ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, endpoints, ZMQ.ROUTER, true, froms, ZMQ.PAIR, false);
-        dispatcher.addZLoopHandler(endpoints, replyHandler, froms);
+        // todo check whether we ping two times.
+        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, froms, ZMQ.PAIR, false, getConfig().getEndpoints(), ZMQ.ROUTER, true);
+        dispatcher.addZLoopHandler(froms, requestHandler, null);
+        if (getConfig().getMsgEventListener() != null) {
+            dispatcher.addMsgEventListener(getConfig().getEndpoints(), ZMQ.ROUTER, true, getConfig().getMsgEventListener());
+        } else {
+            ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, getConfig().getEndpoints(), ZMQ.ROUTER, true, froms, ZMQ.PAIR, false);
+            dispatcher.addZLoopHandler(getConfig().getEndpoints(), replyHandler, froms);
+        }
     }
 
     @Override
@@ -51,24 +58,12 @@ public class AsyncClientEngine extends AbstractAsyncEngine implements IClientEng
         return ZMQ.PAIR;
     }
 
-    @Override
-    public List<IEndpoint> getEndpoints() {
-        return this.endpoints;
-    }
-
-    @Override
-    public void setEndpoints(List<IEndpoint> endpoints) {
-        this.endpoints = endpoints;
-    }
-
     /**
-     * todo this method should removed to sync engine.
-     *
      * @param msgEvent the message that need to be sent out.
      * @param timeout  it shall wait timeout milliseconds for the reply to come back.
      *                 If the value of timeout is 0, it shall return immediately.
      *                 If the value of timeout < 0, it shall use 0 directly.
-     * @return the reply message event.
+     * @return the reply message event. null when exists msg listener
      */
     @Override
     public IMsgEvent request(IMsgEvent msgEvent, int timeout) {

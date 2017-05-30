@@ -10,10 +10,10 @@ import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.msg.handler.ServiceMsgListener;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.IClientEngine;
-import com.flying.framework.messaging.engine.IServerEngine;
-import com.flying.framework.messaging.engine.impl.jdk.BroadcastClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.BCAsyncServerEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngine;
+import com.flying.framework.messaging.engine.impl.jdk.BroadcastSyncClientCommEngine;
+import com.flying.framework.messaging.engine.impl.zmq.BCAsyncServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.monitor.model.IServer;
 import com.flying.monitor.model.Server;
@@ -47,8 +47,8 @@ public class BroadcastConfig {
     }
 
     @Bean
-    public IServerEngine monitorServerEngine() {
-        BCAsyncServerEngine engine = new BCAsyncServerEngine(monitorListenEndpoint());
+    public IServerCommEngine monitorServerEngine() {
+        BCAsyncServerCommEngine engine = new BCAsyncServerCommEngine(monitorListenEndpoint());
         engine.setMsgEventListener(monitorMsgListener());
         return engine;
     }
@@ -90,8 +90,8 @@ public class BroadcastConfig {
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public IClientEngine broadcastEngine() {
-        return new BroadcastClientEngine(broadcastEndpoints());
+    public ISyncClientCommEngine broadcastEngine() {
+        return new BroadcastSyncClientCommEngine(broadcastEndpoints());
     }
 
     @Bean

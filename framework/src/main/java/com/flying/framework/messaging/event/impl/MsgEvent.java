@@ -8,22 +8,22 @@
 package com.flying.framework.messaging.event.impl;
 
 import com.flying.framework.event.CommonEvent;
-import com.flying.framework.messaging.engine.IEngine;
+import com.flying.framework.messaging.engine.ICommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventInfo;
 
-public class MsgEvent extends CommonEvent<IEngine, IMsgEventInfo> implements IMsgEvent {
+public class MsgEvent extends CommonEvent<ICommEngine, IMsgEventInfo> implements IMsgEvent {
     private static final byte[] emptyData = new byte[0];
 
-    private MsgEvent(int id, IEngine source, IMsgEventInfo info) {
+    private MsgEvent(int id, ICommEngine source, IMsgEventInfo info) {
         super(id, source, info);
     }
 
-    public static MsgEvent newInstance(int id, IEngine source) {
+    public static MsgEvent newInstance(int id, ICommEngine source) {
         return new MsgEvent(id, source, new MsgEventInfo(emptyData));
     }
 
-    public static MsgEvent newInstance(int id, IEngine source, byte[] data) {
+    public static MsgEvent newInstance(int id, ICommEngine source, byte[] data) {
         return new MsgEvent(id, source, new MsgEventInfo(data));
     }
 }

@@ -16,7 +16,7 @@ import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
-import com.flying.framework.messaging.engine.IClientEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class AccountClientService extends BaseUCClientService implements IAccoun
         if (accountCache != null && accountCache.containsKey(id)) return accountCache.get(id);
         // 2. send get message to account server.
         AccountBO accountBO = null;
-        IClientEngine engine = null;
+        ISyncClientCommEngine engine = null;
         try {
             engine = borrowEngine();
             accountBO = msgCodec.getGetAccountByIdReply(Helper.request(engine, getTimeout(), msgCodec.encodeGetAccountByIdRequest(id)));

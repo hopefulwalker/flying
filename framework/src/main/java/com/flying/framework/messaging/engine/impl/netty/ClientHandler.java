@@ -7,10 +7,9 @@
 */
 package com.flying.framework.messaging.engine.impl.netty;
 
-import com.flying.framework.messaging.engine.IAsyncClientEngine;
+import com.flying.framework.messaging.engine.IAsyncClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,9 +19,9 @@ import org.slf4j.LoggerFactory;
 
 public class ClientHandler extends ChannelDuplexHandler {
     private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
-    private IAsyncClientEngine engine;
+    private IAsyncClientCommEngine engine;
 
-    public ClientHandler(IAsyncClientEngine engine) {
+    public ClientHandler(IAsyncClientCommEngine engine) {
         this.engine = engine;
     }
 

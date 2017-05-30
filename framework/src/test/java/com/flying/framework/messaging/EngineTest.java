@@ -9,10 +9,10 @@ package com.flying.framework.messaging;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.IClientEngine;
-import com.flying.framework.messaging.engine.IServerEngine;
-import com.flying.framework.messaging.engine.impl.zmq.AsyncClientEngine;
-import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngine;
+import com.flying.framework.messaging.engine.impl.zmq.AsyncClientCommEngine;
+import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -24,17 +24,17 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class EngineTest {
-    private static IServerEngine serverEngine;
-    private static IClientEngine clientEngine;
+    private static IServerCommEngine serverEngine;
+    private static ISyncClientCommEngine clientEngine;
     private static byte[] data;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        serverEngine = new UCAsyncServerEngine(new Endpoint());
+        serverEngine = new UCAsyncServerCommEngine(new Endpoint());
         serverEngine.setMsgEventListener(event -> new MockMsgEventResult());
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(serverEngine.getListenEndpoint());
-        clientEngine = new AsyncClientEngine(endpoints);
+        clientEngine = new AsyncClientCommEngine(endpoints);
         data = new byte[1];
         data[0] = 66;
     }

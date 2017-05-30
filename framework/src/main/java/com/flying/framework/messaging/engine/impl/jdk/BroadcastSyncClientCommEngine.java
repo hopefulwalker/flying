@@ -7,10 +7,9 @@
 package com.flying.framework.messaging.engine.impl.jdk;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IClientEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +20,13 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BroadcastClientEngine implements IClientEngine {
+public class BroadcastSyncClientCommEngine implements ISyncClientCommEngine {
     public static final int PACKET_SIZE = 512;
-    private static final Logger logger = LoggerFactory.getLogger(BroadcastClientEngine.class);
+    private static final Logger logger = LoggerFactory.getLogger(BroadcastSyncClientCommEngine.class);
     DatagramSocket clientSocket = null;
     private List<IEndpoint> endpoints;
 
-    public BroadcastClientEngine(List<IEndpoint> endpoints) {
+    public BroadcastSyncClientCommEngine(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 
@@ -84,7 +83,7 @@ public class BroadcastClientEngine implements IClientEngine {
             clientSocket = new DatagramSocket();
             StringBuilder sb = new StringBuilder();
             for (IEndpoint endpoint : endpoints) sb.append(endpoint.asString());
-            logger.debug("BroadcastClientEngine: endpoints=" + sb.toString());
+            logger.debug("BroadcastSyncClientCommEngine: endpoints=" + sb.toString());
         } catch (Exception e) {
             logger.error("Exception occurs in starting engine...", e);
         }

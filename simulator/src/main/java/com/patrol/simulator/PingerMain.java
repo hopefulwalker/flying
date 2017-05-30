@@ -9,7 +9,7 @@ package com.patrol.simulator;
 
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IPinger;
+import com.flying.framework.messaging.engine.ICommPinger;
 import com.flying.framework.messaging.engine.impl.zmq.Pinger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class PingerMain {
     public static void main(String args[]) {
         long succeed = 0;
         long failure = 0;
-        IPinger pinger = new Pinger();
+        ICommPinger pinger = new Pinger();
         pinger.start();
         IEndpoint endpoint = new Endpoint("tcp://127.0.0.1:16888");
         for (long i = 0; i < TIMES; i++) {

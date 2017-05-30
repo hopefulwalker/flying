@@ -10,22 +10,21 @@ package com.flying.common.msg.codec;
 import com.flying.common.IReturnCode;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IClientEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 
 
 public class Helper {
-    public static byte[] request(IClientEngine engine, int timeout, byte[] bytes) throws ServiceException {
+    public static byte[] request(ISyncClientCommEngine engine, int timeout, byte[] bytes) throws ServiceException {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, bytes);
         IMsgEvent replyEvent = engine.request(requestEvent, timeout);
         return buildReplyBytes(engine, timeout, replyEvent);
     }
 
-    public static byte[] buildReplyBytes(IClientEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
+    public static byte[] buildReplyBytes(ISyncClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
             case IMsgEvent.ID_REPLY:
                 return replyEvent.getInfo().getByteArray();
@@ -39,13 +38,13 @@ public class Helper {
         }
     }
 
-    public static DirectBuffer request(IClientEngine engine, int timeout, DirectBuffer requestBuffer) throws ServiceException {
+    public static DirectBuffer request(ISyncClientCommEngine engine, int timeout, DirectBuffer requestBuffer) throws ServiceException {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBuffer.byteArray());
         IMsgEvent replyEvent = engine.request(requestEvent, timeout);
         return buildReplyBuffer(engine, timeout, replyEvent);
     }
 
-    private static DirectBuffer buildReplyBuffer(IClientEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
+    private static DirectBuffer buildReplyBuffer(ISyncClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
             case IMsgEvent.ID_REPLY:
                 return new UnsafeBuffer(replyEvent.getInfo().getByteArray());
@@ -59,7 +58,7 @@ public class Helper {
         }
     }
 
-    private static String buildExceptionMessage(IClientEngine engine, int timeout, IMsgEvent replyEvent) {
+    private static String buildExceptionMessage(ISyncClientCommEngine engine, int timeout, IMsgEvent replyEvent) {
         StringBuilder stringBuilder = new StringBuilder("Endpoints:");
         for (IEndpoint endpoint : engine.getEndpoints()) {
             stringBuilder.append("[").append(endpoint.asString()).append("]");
@@ -69,17 +68,17 @@ public class Helper {
         return stringBuilder.toString();
     }
 
-    public static void sendMsg(IClientEngine engine, byte[] bytes) {
+    public static void sendMsg(ISyncClientCommEngine engine, byte[] bytes) {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, bytes);
         engine.sendMsg(requestEvent);
     }
 
-    public static void sendMsg(IClientEngine engine, DirectBuffer requestBuffer) throws ServiceException {
+    public static void sendMsg(ISyncClientCommEngine engine, DirectBuffer requestBuffer) throws ServiceException {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBuffer.byteArray());
         engine.sendMsg(requestEvent);
     }
 
-    public static byte[] recvMsg(IClientEngine engine, int timeout) throws ServiceException {
+    public static byte[] recvMsg(ISyncClientCommEngine engine, int timeout) throws ServiceException {
         IMsgEvent replyEvent = engine.recvMsg(timeout);
         return Helper.buildReplyBytes(engine, timeout, replyEvent);
     }

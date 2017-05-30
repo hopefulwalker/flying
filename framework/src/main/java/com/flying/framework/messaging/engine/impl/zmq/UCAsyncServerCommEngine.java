@@ -8,20 +8,16 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IServerEngine;
-import com.flying.framework.messaging.event.IMsgEventListener;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+public class UCAsyncServerCommEngine extends AbstractAsyncServerCommEngine {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncCommEngine.class);
 
-public class UCAsyncServerEngine extends AbstractAsyncServerEngine {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncEngine.class);
-
-    public UCAsyncServerEngine(IEndpoint listenEndpoint) {
-        super(listenEndpoint);
+    public UCAsyncServerCommEngine(ICommEngineConfig config) {
+        super(config);
     }
 
     @Override

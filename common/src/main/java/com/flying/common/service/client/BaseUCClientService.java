@@ -10,7 +10,7 @@ import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IClientEngine;
+import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.framework.messaging.engine.impl.zmq.PooledClientEngineFactory;
 import com.flying.util.common.Dictionary;
 import org.apache.commons.pool2.ObjectPool;
@@ -32,7 +32,7 @@ public class BaseUCClientService implements Runnable {
     private IEndpointFactory endpointFactory;
     private GenericObjectPoolConfig poolConfig;
     private PooledClientEngineFactory poolFactory;
-    private ObjectPool<IClientEngine> enginePool;
+    private ObjectPool<ISyncClientCommEngine> enginePool;
 
     public BaseUCClientService(String region, short serviceType, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig) {
         this(region, serviceType, endpointFactory, poolConfig, DEFAULT_TIMEOUT);
@@ -55,7 +55,7 @@ public class BaseUCClientService implements Runnable {
             return;
         }
         this.poolFactory = new PooledClientEngineFactory(endpoints);
-        this.enginePool = new GenericObjectPool<IClientEngine>(poolFactory, poolConfig);
+        this.enginePool = new GenericObjectPool<ISyncClientCommEngine>(poolFactory, poolConfig);
         try {
             PoolUtils.prefill(enginePool, poolConfig.getMinIdle());
             //Wait timeout millis for the client engine to finish connect.
@@ -82,14 +82,14 @@ public class BaseUCClientService implements Runnable {
         }
     }
 
-    public IClientEngine borrowEngine() throws Exception {
+    public ISyncClientCommEngine borrowEngine() throws Exception {
         if (enginePool != null)
             return enginePool.borrowObject();
         else
             throw new ServiceException(ServiceException.SERVICE_NOT_READY, getInfo());
     }
 
-    public void returnEngine(IClientEngine engine) throws Exception {
+    public void returnEngine(ISyncClientCommEngine engine) throws Exception {
         enginePool.returnObject(engine);
     }
 

@@ -7,10 +7,10 @@
 package com.flying.framework.messaging;
 
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.IPinger;
-import com.flying.framework.messaging.engine.IServerEngine;
+import com.flying.framework.messaging.engine.ICommPinger;
+import com.flying.framework.messaging.engine.IServerCommEngine;
 import com.flying.framework.messaging.engine.impl.zmq.Pinger;
-import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerEngine;
+import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerCommEngine;
 import org.junit.*;
 
 import java.util.concurrent.ExecutorService;
@@ -21,14 +21,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class PingerTest {
-    private static IServerEngine serverEngine;
-    private static IPinger pinger;
+    private static IServerCommEngine serverEngine;
+    private static ICommPinger pinger;
     private static final int TIMEOUT = 500;
     private static final int CONCURRENT_USERS = 100;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        serverEngine = new UCAsyncServerEngine(new Endpoint());
+        serverEngine = new UCAsyncServerCommEngine(new Endpoint());
         pinger = new Pinger();
     }
 

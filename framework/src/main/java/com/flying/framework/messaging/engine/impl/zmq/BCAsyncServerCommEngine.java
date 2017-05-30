@@ -7,7 +7,7 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IServerEngine;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.google.common.primitives.Ints;
 import org.slf4j.Logger;
@@ -23,12 +23,12 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 
-public class BCAsyncServerEngine extends AbstractAsyncServerEngine {
-    private static final Logger logger = LoggerFactory.getLogger(BCAsyncServerEngine.class);
+public class BCAsyncServerCommEngine extends AbstractAsyncServerCommEngine {
+    private static final Logger logger = LoggerFactory.getLogger(BCAsyncServerCommEngine.class);
     private static final int PACKET_SIZE = 512;
 
-    public BCAsyncServerEngine(IEndpoint listenEndpoint) {
-        super(listenEndpoint);
+    public BCAsyncServerCommEngine(ICommEngineConfig config) {
+        super(config);
     }
 
     @Override

@@ -7,11 +7,10 @@
 */
 package com.flying.framework.messaging.engine.impl.netty;
 
-import com.flying.framework.messaging.engine.IAsyncServerEngine;
+import com.flying.framework.messaging.engine.IAsyncServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
-import com.flying.framework.messaging.event.impl.MsgEventInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,9 +20,9 @@ import org.slf4j.LoggerFactory;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
-    private IAsyncServerEngine engine;
+    private IAsyncServerCommEngine engine;
 
-    public ServerHandler(IAsyncServerEngine engine) {
+    public ServerHandler(IAsyncServerCommEngine engine) {
         this.engine = engine;
     }
 

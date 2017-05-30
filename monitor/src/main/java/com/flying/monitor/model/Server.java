@@ -6,11 +6,11 @@
 */
 package com.flying.monitor.model;
 
-import com.flying.framework.messaging.engine.IServerEngine;
+import com.flying.framework.messaging.engine.IServerCommEngine;
 import com.flying.util.schedule.Scheduler;
 
 public class Server implements IServer {
-    private IServerEngine serverEngine;
+    private IServerCommEngine serverEngine;
     private ServerBO serverBO;
     private Scheduler scheduler;
 
@@ -22,7 +22,7 @@ public class Server implements IServer {
         this.scheduler = scheduler;
     }
 
-    public void setServerEngine(IServerEngine serverEngine) {
+    public void setServerEngine(IServerCommEngine serverEngine) {
         this.serverEngine = serverEngine;
         this.serverBO.setEndpoint(serverEngine.getListenEndpoint().asString());
         this.serverBO.setWorkers(serverEngine.getWorkers());

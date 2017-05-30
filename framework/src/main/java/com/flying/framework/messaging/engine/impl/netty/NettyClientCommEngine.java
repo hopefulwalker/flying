@@ -8,8 +8,8 @@
 package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IAsyncClientEngine;
-import com.flying.framework.messaging.engine.IEngineConfig;
+import com.flying.framework.messaging.engine.IAsyncClientCommEngine;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -29,13 +29,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NettyClientEngine implements IAsyncClientEngine {
-    private static final Logger logger = LoggerFactory.getLogger(NettyClientEngine.class);
+public class NettyClientCommEngine implements IAsyncClientCommEngine {
+    private static final Logger logger = LoggerFactory.getLogger(NettyClientCommEngine.class);
     private ChannelPoolMap<IEndpoint, FixedChannelPool> poolMap;
-    private IEngineConfig config;
+    private ICommEngineConfig config;
     private EventLoopGroup eventLoopGroup;
 
-    public NettyClientEngine(IEngineConfig config) {
+    public NettyClientCommEngine(ICommEngineConfig config) {
+        this.config = config;
+    }
+
+    @Override
+    public void setConfig(ICommEngineConfig config) {
         this.config = config;
     }
 
@@ -44,7 +49,7 @@ public class NettyClientEngine implements IAsyncClientEngine {
         eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class);
-        IAsyncClientEngine self = this;
+        IAsyncClientCommEngine self = this;
         poolMap = new AbstractChannelPoolMap<IEndpoint, FixedChannelPool>() {
             @Override
             protected FixedChannelPool newPool(IEndpoint key) {
@@ -64,7 +69,7 @@ public class NettyClientEngine implements IAsyncClientEngine {
     }
 
     @Override
-    public IEngineConfig getConfig() {
+    public ICommEngineConfig getConfig() {
         return config;
     }
 

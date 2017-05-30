@@ -9,7 +9,7 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IEngine;
+import com.flying.framework.messaging.engine.ICommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
@@ -27,13 +27,13 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Dispatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ZContext context;
-    private IEngine engine;
+    private ICommEngine engine;
     private ZLoop reactor;
     private Map<List<IEndpoint>, ZMQ.Socket> sockets;
     private Map<List<IEndpoint>, List<Server>> activeServers;
     private Map<List<IEndpoint>, Map<String, Server>> allServers;
 
-    Dispatcher(IEngine engine, ZContext context) {
+    Dispatcher(ICommEngine engine, ZContext context) {
         this.engine = engine;
         this.context = context;
         this.reactor = new ZLoop();
