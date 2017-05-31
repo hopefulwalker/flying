@@ -8,19 +8,19 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IAsyncServerCommEngine;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
 import java.util.List;
 
-public abstract class AbstractAsyncServerCommEngine extends AbstractAsyncCommEngine implements IAsyncServerCommEngine, Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncServerCommEngine.class);
+public abstract class AbstractServerCommEngine extends AbstractCommEngine implements IServerCommEngine, Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractServerCommEngine.class);
     private ZMQ.Socket pipe;             //  Pipe through to background
 
-    AbstractAsyncServerCommEngine(ICommEngineConfig config) {
+    AbstractServerCommEngine(ICommEngineConfig config) {
         setConfig(config);
     }
 

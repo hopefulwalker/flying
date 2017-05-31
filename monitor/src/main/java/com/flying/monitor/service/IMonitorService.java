@@ -11,13 +11,13 @@ import com.flying.monitor.model.ServerBO;
 import java.util.List;
 
 public interface IMonitorService {
-    public void register(ServerBO serverBO) throws MonitorServiceException;
+    void register(ServerBO serverBO) throws MonitorServiceException;
 
-    public void unregister(ServerBO serverBO) throws MonitorServiceException;
+    void unregister(ServerBO serverBO) throws MonitorServiceException;
 
-    public List<ServerBO> find(String region, short type) throws MonitorServiceException;
+    List<ServerBO> find(String region, short type) throws MonitorServiceException;
 
-    public List<ServerBO> find(int ttl) throws MonitorServiceException;
+    List<ServerBO> find(int ttl) throws MonitorServiceException;
 
-    public int getNumServerBO() throws MonitorServiceException;
+    int getNumServerBO() throws MonitorServiceException;
 }

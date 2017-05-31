@@ -8,7 +8,7 @@ package com.flying.monitor.service.client;
 
 import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.ServiceException;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import com.flying.monitor.model.ServerBO;
@@ -20,10 +20,10 @@ import java.util.List;
 
 public class BCMonitorClientService implements IMonitorService {
     private static final int DEFAULT_TIMEOUT = 1000;
-    private ISyncClientCommEngine engine;
+    private IClientCommEngine engine;
     private IMonitorMsgCodec msgCodec;
 
-    public BCMonitorClientService(ISyncClientCommEngine engine, IMonitorMsgCodec msgCodec) {
+    public BCMonitorClientService(IClientCommEngine engine, IMonitorMsgCodec msgCodec) {
         this.engine = engine;
         this.msgCodec = msgCodec;
     }

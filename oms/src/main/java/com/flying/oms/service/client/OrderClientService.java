@@ -10,7 +10,7 @@ import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.service.IOrderService;
@@ -35,7 +35,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
 
     @Override
     public OrderBO placeOrder(OrderBO orderBO) throws OrderServiceException {
-        ISyncClientCommEngine engine = null;
+        IClientCommEngine engine = null;
         // send register message to monitor server.
         OrderBO replyOrder;
         try {
@@ -56,7 +56,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
     }
 
     public void sendOrderRequest(OrderBO orderBO) throws OrderServiceException {
-        ISyncClientCommEngine engine = null;
+        IClientCommEngine engine = null;
         // send register message to monitor server.
         OrderBO replyOrder;
         try {
@@ -80,7 +80,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
     }
 
     public OrderBO recvOrderReply(int timeout) throws OrderServiceException {
-        ISyncClientCommEngine engine = null;
+        IClientCommEngine engine = null;
         // send register message to monitor server.
         OrderBO replyOrder = null;
         try {

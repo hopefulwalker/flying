@@ -9,9 +9,8 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IAsyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.zeromq.ZLoop;
@@ -28,10 +27,10 @@ import java.util.List;
  * the other half is a backend "agent" that runs in a background thread. The frontend talks to the backend over an
  * inproc pipe socket.
  */
-public class AsyncClientCommEngine extends AbstractAsyncCommEngine implements IAsyncClientCommEngine, ISyncClientCommEngine {
+public class ClientCommEngine extends AbstractCommEngine implements IClientCommEngine {
     private ZMQ.Socket pipe;             //  Pipe through to background
 
-    public AsyncClientCommEngine(ICommEngineConfig config) {
+    public ClientCommEngine(ICommEngineConfig config) {
         setConfig(config);
     }
 
@@ -42,7 +41,6 @@ public class AsyncClientCommEngine extends AbstractAsyncCommEngine implements IA
 
     @Override
     void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms) {
-        // todo check whether we ping two times.
         ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, froms, ZMQ.PAIR, false, getConfig().getEndpoints(), ZMQ.ROUTER, true);
         dispatcher.addZLoopHandler(froms, requestHandler, null);
         if (getConfig().getMsgEventListener() != null) {

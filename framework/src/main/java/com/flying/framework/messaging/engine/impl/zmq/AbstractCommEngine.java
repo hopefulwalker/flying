@@ -4,7 +4,6 @@
  Date          Who              Version      What
  2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
  2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
-
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -12,7 +11,6 @@ import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.ICommEngine;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
-import com.flying.framework.messaging.event.IMsgEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZContext;
@@ -23,8 +21,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class AbstractAsyncCommEngine implements ICommEngine {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncCommEngine.class);
+public abstract class AbstractCommEngine implements ICommEngine {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCommEngine.class);
 
     private ICommEngineConfig config;
     private boolean running = false;

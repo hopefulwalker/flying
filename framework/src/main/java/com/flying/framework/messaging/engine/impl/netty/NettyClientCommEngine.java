@@ -4,11 +4,12 @@
  Date          Who              Version      What
  2017/4/9      Walker           0.3.0        Created.
                                              Refactor to support multi-communication library, such as netty.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IAsyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import io.netty.bootstrap.Bootstrap;
@@ -29,7 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NettyClientCommEngine implements IAsyncClientCommEngine {
+//todo implement the receive &  request later.
+public class NettyClientCommEngine implements IClientCommEngine {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientCommEngine.class);
     private ChannelPoolMap<IEndpoint, FixedChannelPool> poolMap;
     private ICommEngineConfig config;
@@ -49,7 +51,7 @@ public class NettyClientCommEngine implements IAsyncClientCommEngine {
         eventLoopGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class);
-        IAsyncClientCommEngine self = this;
+        IClientCommEngine self = this;
         poolMap = new AbstractChannelPoolMap<IEndpoint, FixedChannelPool>() {
             @Override
             protected FixedChannelPool newPool(IEndpoint key) {
@@ -89,5 +91,15 @@ public class NettyClientCommEngine implements IAsyncClientCommEngine {
                 pool.release(ch);
             }
         });
+    }
+
+    @Override
+    public IMsgEvent recvMsg(int timeout) {
+        return null;
+    }
+
+    @Override
+    public IMsgEvent request(IMsgEvent msgEvent, int timeout) {
+        return null;
     }
 }

@@ -10,7 +10,7 @@ import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.monitor.model.ServerBO;
 import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
@@ -25,19 +25,19 @@ public class UCMonitorClientService extends BaseUCClientService implements IMoni
     private static final Logger logger = LoggerFactory.getLogger(UCMonitorClientService.class);
     private IMonitorMsgCodec msgCodec = null;
 
-    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IMonitorMsgCodec msgConverter) {
+    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, IMonitorMsgCodec msgCodec) {
         super(region, IServiceType.MONITOR, endpointFactory, poolConfig);
-        this.msgCodec = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
-    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IMonitorMsgCodec msgConverter) {
+    public UCMonitorClientService(String region, IEndpointFactory endpointFactory, GenericObjectPoolConfig poolConfig, int timeout, IMonitorMsgCodec msgCodec) {
         super(region, IServiceType.MONITOR, endpointFactory, poolConfig, timeout);
-        this.msgCodec = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     @Override
     public void register(ServerBO serverBO) throws MonitorServiceException {
-        ISyncClientCommEngine engine = null;
+        IClientCommEngine engine = null;
         // send register message to monitor server.
         try {
             engine = borrowEngine();
@@ -65,7 +65,7 @@ public class UCMonitorClientService extends BaseUCClientService implements IMoni
     @Override
     public List<ServerBO> find(String region, short type) throws MonitorServiceException {
         List<ServerBO> serverBOs = null;
-        ISyncClientCommEngine engine = null;
+        IClientCommEngine engine = null;
         // send find message to account server.
         try {
             engine = borrowEngine();

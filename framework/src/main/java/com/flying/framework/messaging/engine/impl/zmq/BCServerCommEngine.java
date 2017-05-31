@@ -23,11 +23,11 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.DatagramChannel;
 
-public class BCAsyncServerCommEngine extends AbstractAsyncServerCommEngine {
-    private static final Logger logger = LoggerFactory.getLogger(BCAsyncServerCommEngine.class);
+public class BCServerCommEngine extends AbstractServerCommEngine {
+    private static final Logger logger = LoggerFactory.getLogger(BCServerCommEngine.class);
     private static final int PACKET_SIZE = 512;
 
-    public BCAsyncServerCommEngine(ICommEngineConfig config) {
+    public BCServerCommEngine(ICommEngineConfig config) {
         super(config);
     }
 

@@ -10,21 +10,9 @@
  */
 package com.flying.framework.messaging.engine;
 
-import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.event.IMsgEvent;
 
-import java.util.List;
-
-public interface ISyncClientCommEngine extends ICommEngine {
-    /**
-     * @param msgEvent the message that need to be sent out.
-     * @param timeout  it shall wait timeout milliseconds for the reply to come back.
-     *                 If the value of timeout is 0, it shall return immediately.
-     *                 If the value of timeout < 0, it shall use 0 directly.
-     * @return the reply message event, null when the context shut down.
-     */
-    IMsgEvent request(IMsgEvent msgEvent, int timeout);
-
+public interface IClientCommEngine extends ICommEngine {
     /**
      * Send message in asynchronous mode.
      *
@@ -41,4 +29,13 @@ public interface ISyncClientCommEngine extends ICommEngine {
      * @return the reply message event, null when the context shut down.
      */
     IMsgEvent recvMsg(int timeout);
+
+    /**
+     * @param msgEvent the message that need to be sent out.
+     * @param timeout  it shall wait timeout milliseconds for the reply to come back.
+     *                 If the value of timeout is 0, it shall return immediately.
+     *                 If the value of timeout < 0, it shall use 0 directly.
+     * @return the reply message event, null when the context shut down.
+     */
+    IMsgEvent request(IMsgEvent msgEvent, int timeout);
 }

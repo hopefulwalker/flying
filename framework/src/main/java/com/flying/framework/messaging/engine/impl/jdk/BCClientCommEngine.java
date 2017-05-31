@@ -1,14 +1,15 @@
-/**
- * Created by Walker.Zhang on 2015/5/20.
- * Revision History:
- * Date          Who              Version      What
- * 2015/5/20     Walker.Zhang     0.1.0        Created.
- */
+/*
+ Created by Walker.Zhang on 2015/5/20.
+ Revision History:
+ Date          Who              Version      What
+ 2015/5/20     Walker.Zhang     0.1.0        Created.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
+*/
 package com.flying.framework.messaging.engine.impl.jdk;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.slf4j.Logger;
@@ -21,14 +22,15 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BCAsyncClientCommEngine implements ISyncClientCommEngine {
-    public static final int PACKET_SIZE = 512;
-    private static final Logger logger = LoggerFactory.getLogger(BCAsyncClientCommEngine.class);
-    DatagramSocket clientSocket = null;
-    private List<IEndpoint> endpoints;
+public class BCClientCommEngine implements IClientCommEngine {
+    private static final int PACKET_SIZE = 512;
+    private static final Logger logger = LoggerFactory.getLogger(BCClientCommEngine.class);
 
-    public BCAsyncClientCommEngine(List<IEndpoint> endpoints) {
-        this.endpoints = endpoints;
+    private DatagramSocket clientSocket = null;
+    private ICommEngineConfig config;
+
+    public BCClientCommEngine(ICommEngineConfig config) {
+        setConfig(config);
     }
 
     /**
@@ -38,7 +40,7 @@ public class BCAsyncClientCommEngine implements ISyncClientCommEngine {
      */
     @Override
     public void setConfig(ICommEngineConfig config) {
-
+        this.config = config;
     }
 
     /**
@@ -46,7 +48,7 @@ public class BCAsyncClientCommEngine implements ISyncClientCommEngine {
      */
     @Override
     public ICommEngineConfig getConfig() {
-        return null;
+        return config;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class BCAsyncClientCommEngine implements ISyncClientCommEngine {
     @Override
     public void sendMsg(IMsgEvent msgEvent) {
         DatagramPacket packet = new DatagramPacket(msgEvent.getInfo().getByteArray(), msgEvent.getInfo().getByteArray().length);
-        for (IEndpoint endpoint : endpoints) {
+        for (IEndpoint endpoint : config.getEndpoints()) {
             try {
                 packet.setAddress(InetAddress.getByName(endpoint.getAddress()));
                 packet.setPort(endpoint.getPort());
@@ -91,8 +93,8 @@ public class BCAsyncClientCommEngine implements ISyncClientCommEngine {
         try {
             clientSocket = new DatagramSocket();
             StringBuilder sb = new StringBuilder();
-            for (IEndpoint endpoint : endpoints) sb.append(endpoint.asString());
-            logger.debug("BCAsyncClientCommEngine: endpoints=" + sb.toString());
+            for (IEndpoint endpoint : config.getEndpoints()) sb.append(endpoint.asString());
+            logger.debug("BCClientCommEngine: endpoints=" + sb.toString());
         } catch (Exception e) {
             logger.error("Exception occurs in starting engine...", e);
         }

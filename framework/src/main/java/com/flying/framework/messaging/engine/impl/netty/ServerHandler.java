@@ -4,10 +4,11 @@
  Date          Who              Version      What
  2017/4/12     Walker           0.3.0        Created.
                                              Refactor to support multi-communication library, such as netty.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.netty;
 
-import com.flying.framework.messaging.engine.IAsyncServerCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -20,9 +21,9 @@ import org.slf4j.LoggerFactory;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
-    private IAsyncServerCommEngine engine;
+    private IServerCommEngine engine;
 
-    public ServerHandler(IAsyncServerCommEngine engine) {
+    public ServerHandler(IServerCommEngine engine) {
         this.engine = engine;
     }
 

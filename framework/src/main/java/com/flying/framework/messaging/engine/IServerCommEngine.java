@@ -8,5 +8,5 @@
 */
 package com.flying.framework.messaging.engine;
 
-public interface IAsyncServerCommEngine extends ICommEngine {
+public interface IServerCommEngine extends ICommEngine {
 }

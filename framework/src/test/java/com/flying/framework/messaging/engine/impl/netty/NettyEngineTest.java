@@ -8,8 +8,8 @@ package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.IAsyncClientCommEngine;
-import com.flying.framework.messaging.engine.IAsyncServerCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngine;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.impl.CommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
@@ -23,8 +23,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class NettyEngineTest {
-    private static IAsyncClientCommEngine clientEngine;
-    private static IAsyncServerCommEngine serverEngine;
+    private static IClientCommEngine clientEngine;
+    private static IServerCommEngine serverEngine;
     private static byte[] data;
 
     @BeforeClass
@@ -37,6 +37,7 @@ public class NettyEngineTest {
             return null;
         });
         clientEngine = new NettyClientCommEngine(clientConfig);
+
         ICommEngineConfig serverConfig = new CommEngineConfig(endpoints);
         serverConfig.setMsgEventListener(event -> new MockMsgEventResult());
         serverEngine = new NettyServerCommEngine(serverConfig);
@@ -75,7 +76,7 @@ public class NettyEngineTest {
         @Override
         public byte[] getByteArray() {
             byte[] array = new byte[1];
-            array[0] = 65;   // char = 'B'
+            array[0] = 66;   // char = 'B'
             return array;
         }
 

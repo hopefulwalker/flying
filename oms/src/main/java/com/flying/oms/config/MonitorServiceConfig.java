@@ -8,8 +8,10 @@ package com.flying.oms.config;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
-import com.flying.framework.messaging.engine.impl.jdk.BCAsyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.impl.jdk.BCClientCommEngine;
 import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.msg.codec.MonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
@@ -33,14 +35,14 @@ public class MonitorServiceConfig {
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public ISyncClientCommEngine broadcastEngine() {
-        return new BCAsyncClientCommEngine(broadcastEndpoints());
+    public IClientCommEngine broadcastEngine() {
+        return new BCClientCommEngine(clientEngineConfig());
     }
 
     @Bean
-    public List<IEndpoint> broadcastEndpoints() {
+    public ICommEngineConfig clientEngineConfig() {
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(new Endpoint("udp", "255.255.255.255", 51688));
-        return endpoints;
+        return new CommEngineConfig(endpoints);
     }
 }

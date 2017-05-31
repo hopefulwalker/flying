@@ -43,6 +43,7 @@ public class Dispatcher implements Runnable {
     }
 
     void connect(List<IEndpoint> endpoints, int socketType, boolean pingEnabled) {
+        // check whether we connected or now. avoid double counting.
         if (sockets.containsKey(endpoints)) return;
         ZMQ.Socket socket = context.createSocket(socketType);
         if (socketType == ZMQ.ROUTER) socket.setRouterMandatory(true);
@@ -110,12 +111,6 @@ public class Dispatcher implements Runnable {
             logger.warn("Dispatcher: request didn't send! active server size is :" + serverList.size());
         }
     }
-
-//    public void sendMsg(List<IEndpoint> endpoints, MsgEvent msgEvent) {
-//        ZMsg msg = Codec.encodeTransData(msgEvent.getInfo().getByteArray());
-//        sendMsg(endpoints, msg);
-//        msg.destroy();
-//    }
 
     @Override
     public void run() {

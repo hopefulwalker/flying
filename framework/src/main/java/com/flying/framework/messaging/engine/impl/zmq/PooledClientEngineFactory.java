@@ -10,12 +10,12 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.engine.ICommEngineConfig;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-public class PooledClientEngineFactory implements PooledObjectFactory<ISyncClientCommEngine> {
+public class PooledClientEngineFactory implements PooledObjectFactory<IClientCommEngine> {
     private ICommEngineConfig config;
 
     public PooledClientEngineFactory(ICommEngineConfig config) {
@@ -23,28 +23,28 @@ public class PooledClientEngineFactory implements PooledObjectFactory<ISyncClien
     }
 
     @Override
-    public PooledObject<ISyncClientCommEngine> makeObject() throws Exception {
-        ISyncClientCommEngine engine = new AsyncClientCommEngine(config);
+    public PooledObject<IClientCommEngine> makeObject() throws Exception {
+        IClientCommEngine engine = new ClientCommEngine(config);
         engine.start();
         return new DefaultPooledObject<>(engine);
     }
 
     @Override
-    public void destroyObject(PooledObject<ISyncClientCommEngine> pooledObject) throws Exception {
+    public void destroyObject(PooledObject<IClientCommEngine> pooledObject) throws Exception {
         pooledObject.getObject().stop();
     }
 
     @Override
-    public boolean validateObject(PooledObject<ISyncClientCommEngine> pooledObject) {
+    public boolean validateObject(PooledObject<IClientCommEngine> pooledObject) {
         return true;
     }
 
     @Override
-    public void activateObject(PooledObject<ISyncClientCommEngine> pooledObject) throws Exception {
+    public void activateObject(PooledObject<IClientCommEngine> pooledObject) throws Exception {
     }
 
     @Override
-    public void passivateObject(PooledObject<ISyncClientCommEngine> pooledObject) throws Exception {
+    public void passivateObject(PooledObject<IClientCommEngine> pooledObject) throws Exception {
         if (config != pooledObject.getObject().getConfig()) pooledObject.getObject().setConfig(config);
     }
 }

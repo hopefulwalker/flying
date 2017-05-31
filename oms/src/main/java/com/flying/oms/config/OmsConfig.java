@@ -10,8 +10,10 @@ import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.msg.handler.ServiceMsgListener;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.impl.zmq.UCAsyncServerCommEngine;
+import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.impl.zmq.UCServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.monitor.model.IServer;
 import com.flying.monitor.model.Server;
@@ -67,10 +69,7 @@ public class OmsConfig {
 
     @Bean
     public IServerCommEngine orderServerEngine(IMonitorMsgCodec monitorMsgCodec, StateMachinePersister<OrderStates, OrderEvents, OrderStates> stateMachinePersister) {
-        IServerCommEngine engine = new UCAsyncServerCommEngine(omsListenEndpoint());
-        engine.setMsgEventListener(omsMsgListener(monitorMsgCodec, stateMachinePersister));
-        engine.setWorkers(10);
-        return engine;
+        return new UCServerCommEngine(omsServerConfig(monitorMsgCodec, stateMachinePersister));
     }
 
     @Bean
@@ -103,8 +102,11 @@ public class OmsConfig {
     }
 
     @Bean
-    public IEndpoint omsListenEndpoint() {
-        return new Endpoint();
+    public ICommEngineConfig omsServerConfig(IMonitorMsgCodec monitorMsgCodec, StateMachinePersister<OrderStates, OrderEvents, OrderStates> stateMachinePersister) {
+        CommEngineConfig config = new CommEngineConfig(new Endpoint());
+        config.setMsgEventListener(omsMsgListener(monitorMsgCodec, stateMachinePersister));
+        config.setWorkers(10);
+        return config;
     }
 
     @Bean

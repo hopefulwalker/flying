@@ -10,10 +10,12 @@ import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.msg.handler.ServiceMsgListener;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.impl.jdk.BCAsyncClientCommEngine;
-import com.flying.framework.messaging.engine.impl.zmq.BCAsyncServerCommEngine;
+import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.impl.jdk.BCClientCommEngine;
+import com.flying.framework.messaging.engine.impl.zmq.BCServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.monitor.model.IServer;
 import com.flying.monitor.model.Server;
@@ -48,9 +50,14 @@ public class BroadcastConfig {
 
     @Bean
     public IServerCommEngine monitorServerEngine() {
-        BCAsyncServerCommEngine engine = new BCAsyncServerCommEngine(monitorListenEndpoint());
-        engine.setMsgEventListener(monitorMsgListener());
-        return engine;
+        return new BCServerCommEngine(serverEngineConfig());
+    }
+
+    @Bean
+    public ICommEngineConfig serverEngineConfig() {
+        CommEngineConfig config = new CommEngineConfig(new Endpoint("udp", "*", 51688));
+        config.setMsgEventListener(monitorMsgListener());
+        return config;
     }
 
     @Bean
@@ -86,12 +93,12 @@ public class BroadcastConfig {
 
     @Bean
     public IMonitorService bcMonitorClientService() {
-        return new BCMonitorClientService(broadcastEngine(), monitorMsgCodec());
+        return new BCMonitorClientService(clientCommEngine(), monitorMsgCodec());
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public ISyncClientCommEngine broadcastEngine() {
-        return new BCAsyncClientCommEngine(broadcastEndpoints());
+    public IClientCommEngine clientCommEngine() {
+        return new BCClientCommEngine(clientEngineConfig());
     }
 
     @Bean
@@ -100,15 +107,10 @@ public class BroadcastConfig {
     }
 
     @Bean
-    public IEndpoint monitorListenEndpoint() {
-        return new Endpoint("udp", "*", 51688);
-    }
-
-    @Bean
-    public List<IEndpoint> broadcastEndpoints() {
+    public ICommEngineConfig clientEngineConfig() {
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(new Endpoint("udp", "255.255.255.255", 51688));
-        return endpoints;
+        return new CommEngineConfig(endpoints);
     }
 
     @Bean

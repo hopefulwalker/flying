@@ -10,7 +10,7 @@ package com.flying.common.msg.codec;
 import com.flying.common.IReturnCode;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.ISyncClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.agrona.DirectBuffer;
@@ -18,13 +18,13 @@ import org.agrona.concurrent.UnsafeBuffer;
 
 
 public class Helper {
-    public static byte[] request(ISyncClientCommEngine engine, int timeout, byte[] bytes) throws ServiceException {
+    public static byte[] request(IClientCommEngine engine, int timeout, byte[] bytes) throws ServiceException {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, bytes);
         IMsgEvent replyEvent = engine.request(requestEvent, timeout);
         return buildReplyBytes(engine, timeout, replyEvent);
     }
 
-    public static byte[] buildReplyBytes(ISyncClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
+    public static byte[] buildReplyBytes(IClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
             case IMsgEvent.ID_REPLY:
                 return replyEvent.getInfo().getByteArray();
@@ -38,13 +38,13 @@ public class Helper {
         }
     }
 
-    public static DirectBuffer request(ISyncClientCommEngine engine, int timeout, DirectBuffer requestBuffer) throws ServiceException {
+    public static DirectBuffer request(IClientCommEngine engine, int timeout, DirectBuffer requestBuffer) throws ServiceException {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBuffer.byteArray());
         IMsgEvent replyEvent = engine.request(requestEvent, timeout);
         return buildReplyBuffer(engine, timeout, replyEvent);
     }
 
-    private static DirectBuffer buildReplyBuffer(ISyncClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
+    private static DirectBuffer buildReplyBuffer(IClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
             case IMsgEvent.ID_REPLY:
                 return new UnsafeBuffer(replyEvent.getInfo().getByteArray());
@@ -58,9 +58,9 @@ public class Helper {
         }
     }
 
-    private static String buildExceptionMessage(ISyncClientCommEngine engine, int timeout, IMsgEvent replyEvent) {
+    private static String buildExceptionMessage(IClientCommEngine engine, int timeout, IMsgEvent replyEvent) {
         StringBuilder stringBuilder = new StringBuilder("Endpoints:");
-        for (IEndpoint endpoint : engine.getEndpoints()) {
+        for (IEndpoint endpoint : engine.getConfig().getEndpoints()) {
             stringBuilder.append("[").append(endpoint.asString()).append("]");
         }
         stringBuilder.append("Timeout:").append("[").append(timeout).append("]");
@@ -68,17 +68,17 @@ public class Helper {
         return stringBuilder.toString();
     }
 
-    public static void sendMsg(ISyncClientCommEngine engine, byte[] bytes) {
+    public static void sendMsg(IClientCommEngine engine, byte[] bytes) {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, bytes);
         engine.sendMsg(requestEvent);
     }
 
-    public static void sendMsg(ISyncClientCommEngine engine, DirectBuffer requestBuffer) throws ServiceException {
+    public static void sendMsg(IClientCommEngine engine, DirectBuffer requestBuffer) throws ServiceException {
         IMsgEvent requestEvent = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, engine, requestBuffer.byteArray());
         engine.sendMsg(requestEvent);
     }
 
-    public static byte[] recvMsg(ISyncClientCommEngine engine, int timeout) throws ServiceException {
+    public static byte[] recvMsg(IClientCommEngine engine, int timeout) throws ServiceException {
         IMsgEvent replyEvent = engine.recvMsg(timeout);
         return Helper.buildReplyBytes(engine, timeout, replyEvent);
     }

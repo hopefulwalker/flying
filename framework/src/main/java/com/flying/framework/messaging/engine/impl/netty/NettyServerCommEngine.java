@@ -4,11 +4,12 @@
  Date          Who              Version      What
  2017/4/12     Walker           0.3.0        Created.
                                              Refactor to support multi-communication library, such as netty.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.IAsyncServerCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngine;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -20,7 +21,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NettyServerCommEngine implements IAsyncServerCommEngine {
+public class NettyServerCommEngine implements IServerCommEngine {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientCommEngine.class);
     private ICommEngineConfig config;
     private EventLoopGroup acceptorGroup;
@@ -45,7 +46,7 @@ public class NettyServerCommEngine implements IAsyncServerCommEngine {
         acceptorGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        IAsyncServerCommEngine self = this;
+        IServerCommEngine self = this;
         bootstrap.group(acceptorGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {

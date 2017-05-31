@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
-public class UCAsyncServerCommEngine extends AbstractAsyncServerCommEngine {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAsyncCommEngine.class);
+public class UCServerCommEngine extends AbstractServerCommEngine {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCommEngine.class);
 
-    public UCAsyncServerCommEngine(ICommEngineConfig config) {
+    public UCServerCommEngine(ICommEngineConfig config) {
         super(config);
     }
 
