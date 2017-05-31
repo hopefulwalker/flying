@@ -7,6 +7,7 @@
 package com.flying.framework.messaging.engine.impl.jdk;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -20,24 +21,32 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
-public class BroadcastSyncClientCommEngine implements ISyncClientCommEngine {
+public class BCAsyncClientCommEngine implements ISyncClientCommEngine {
     public static final int PACKET_SIZE = 512;
-    private static final Logger logger = LoggerFactory.getLogger(BroadcastSyncClientCommEngine.class);
+    private static final Logger logger = LoggerFactory.getLogger(BCAsyncClientCommEngine.class);
     DatagramSocket clientSocket = null;
     private List<IEndpoint> endpoints;
 
-    public BroadcastSyncClientCommEngine(List<IEndpoint> endpoints) {
+    public BCAsyncClientCommEngine(List<IEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 
+    /**
+     * set config for communication engine.
+     *
+     * @param config to be set.
+     */
     @Override
-    public void setEndpoints(List<IEndpoint> endpoints) {
-        this.endpoints = endpoints;
+    public void setConfig(ICommEngineConfig config) {
+
     }
 
+    /**
+     * @return the config information.
+     */
     @Override
-    public List<IEndpoint> getEndpoints() {
-        return endpoints;
+    public ICommEngineConfig getConfig() {
+        return null;
     }
 
     @Override
@@ -83,7 +92,7 @@ public class BroadcastSyncClientCommEngine implements ISyncClientCommEngine {
             clientSocket = new DatagramSocket();
             StringBuilder sb = new StringBuilder();
             for (IEndpoint endpoint : endpoints) sb.append(endpoint.asString());
-            logger.debug("BroadcastSyncClientCommEngine: endpoints=" + sb.toString());
+            logger.debug("BCAsyncClientCommEngine: endpoints=" + sb.toString());
         } catch (Exception e) {
             logger.error("Exception occurs in starting engine...", e);
         }

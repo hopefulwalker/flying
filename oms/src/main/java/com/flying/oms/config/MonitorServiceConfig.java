@@ -9,7 +9,7 @@ package com.flying.oms.config;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.ISyncClientCommEngine;
-import com.flying.framework.messaging.engine.impl.jdk.BroadcastSyncClientCommEngine;
+import com.flying.framework.messaging.engine.impl.jdk.BCAsyncClientCommEngine;
 import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.msg.codec.MonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
@@ -34,7 +34,7 @@ public class MonitorServiceConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public ISyncClientCommEngine broadcastEngine() {
-        return new BroadcastSyncClientCommEngine(broadcastEndpoints());
+        return new BCAsyncClientCommEngine(broadcastEndpoints());
     }
 
     @Bean

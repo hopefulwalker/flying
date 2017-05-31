@@ -5,42 +5,26 @@
  2015/5/30     Walker.Zhang     0.1.0        Created.
  2015/6/15     Walker.Zhang     0.2.0        Simplify the implementation of setEndpoints because Endpoint overrides hashCode and equals.
  2017/5/1      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
-import com.flying.framework.messaging.endpoint.IEndpoint;
+import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.ISyncClientCommEngine;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-import java.util.List;
-
 public class PooledClientEngineFactory implements PooledObjectFactory<ISyncClientCommEngine> {
-    private List<IEndpoint> endpoints;
+    private ICommEngineConfig config;
 
-    public PooledClientEngineFactory(List<IEndpoint> endpoints) {
-        this.endpoints = endpoints;
-    }
-
-    public List<IEndpoint> getEndpoints() {
-        return endpoints;
-    }
-
-    public void setEndpoints(List<IEndpoint> endpoints) {
-        if (endpoints == null) return;
-        if (this.endpoints == null) this.endpoints = endpoints;
-        for (IEndpoint newEndpoint : endpoints) {
-            if (!this.endpoints.contains(newEndpoint)) {
-                this.endpoints = endpoints;
-                break;
-            }
-        }
+    public PooledClientEngineFactory(ICommEngineConfig config) {
+        this.config = config;
     }
 
     @Override
     public PooledObject<ISyncClientCommEngine> makeObject() throws Exception {
-        ISyncClientCommEngine engine = new AsyncClientCommEngine(endpoints);
+        ISyncClientCommEngine engine = new AsyncClientCommEngine(config);
         engine.start();
         return new DefaultPooledObject<>(engine);
     }
@@ -61,6 +45,6 @@ public class PooledClientEngineFactory implements PooledObjectFactory<ISyncClien
 
     @Override
     public void passivateObject(PooledObject<ISyncClientCommEngine> pooledObject) throws Exception {
-        if (endpoints != pooledObject.getObject().getEndpoints()) pooledObject.getObject().setEndpoints(endpoints);
+        if (config != pooledObject.getObject().getConfig()) pooledObject.getObject().setConfig(config);
     }
 }

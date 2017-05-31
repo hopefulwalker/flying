@@ -3,10 +3,10 @@
  Revision History:
  Date          Who              Version      What
  2017/5/2      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
+ 2017/5/30     Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
-import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.google.common.primitives.Ints;
@@ -35,7 +35,7 @@ public class BCAsyncServerCommEngine extends AbstractAsyncServerCommEngine {
     public void run() {
         try (DatagramChannel front = DatagramChannel.open()) {
             front.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-            front.bind(new InetSocketAddress(getListenEndpoint().getPort()));
+            front.bind(new InetSocketAddress(getConfig().getEndpoints().get(0).getPort()));
             ZMQ.PollItem[] items = {
                     new ZMQ.PollItem(front, ZMQ.Poller.POLLIN),
                     new ZMQ.PollItem(getPipe(), ZMQ.Poller.POLLIN)

@@ -13,7 +13,7 @@ import com.flying.framework.event.IEvent;
 import com.flying.framework.messaging.engine.ICommEngine;
 
 /**
- * This class is for Convenience. we can use IEvent<IServerCommEngine, IMsgEventInfo> directly because the IEvent is a generic
+ * This class is for Convenience. we can use IEvent<ICommEngine, IMsgEventInfo> directly because the IEvent is a generic
  * interface.
  * This class define 3 kinds of message id. currently it used for inside engine.
  */
