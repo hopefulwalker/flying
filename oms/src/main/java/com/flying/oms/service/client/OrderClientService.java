@@ -10,6 +10,7 @@ import com.flying.common.msg.codec.Helper;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
 import com.flying.common.service.client.BaseUCClientService;
+import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
@@ -18,6 +19,8 @@ import com.flying.oms.service.OrderServiceException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class OrderClientService extends BaseUCClientService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderClientService.class);
@@ -34,7 +37,7 @@ public class OrderClientService extends BaseUCClientService implements IOrderSer
     }
 
     @Override
-    public OrderBO placeOrder(OrderBO orderBO) throws OrderServiceException {
+    public OrderBO placeOrder(List<IEndpoint> froms, OrderBO orderBO) throws OrderServiceException {
         IClientCommEngine engine = null;
         // send register message to monitor server.
         OrderBO replyOrder;

@@ -42,7 +42,7 @@ public class OrderRequestHandler implements IMsgHandler {
         OrderBO orderBO = null;
         try {
             orderBO = buildOrderBO(requestDecoder);
-            orderBO = service.placeOrder(orderBO);
+            orderBO = service.placeOrder(event.getInfo().getFroms(), orderBO);
         } catch (OrderServiceException ose) {
             logger.error("Error in placing order", ose);
             retCode = ose.getCode();

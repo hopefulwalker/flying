@@ -6,33 +6,20 @@
 */
 package com.flying.oms.service.server.fsm;
 
-import com.flying.ams.service.AccountServiceException;
-import com.flying.ams.service.IAccountService;
-import com.flying.common.service.ServiceException;
+import com.flying.ams.model.AccountBO;
 import com.flying.framework.fsm.IGuard;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.model.OrderStates;
 
 public class ValidateAccountGuard implements IGuard<OrderBO> {
-    private IAccountService accountService;
+    private AccountAccessor accessor;
 
-    public void setAccountService(IAccountService accountService) {
-        this.accountService = accountService;
+    public void setAccountAccessor(AccountAccessor accessor) {
+        this.accessor = accessor;
     }
 
     @Override
     public boolean evaluate(OrderBO orderBO) {
-        try {
-            if (accountService.isAccountNormal(orderBO.getAcctId())) return true;
-            orderBO.setState(OrderStates.REJECTED);
-            orderBO.setStateEnteredCode(AccountServiceException.ACCOUNT_NOT_NORMAL);
-            orderBO.setUpdateTime(System.currentTimeMillis());
-        } catch (ServiceException se) {
-            orderBO.setState(OrderStates.REJECTED);
-            orderBO.setStateEnteredCode(se.getCode());
-            orderBO.setUpdateTime(System.currentTimeMillis());
-        }
-        return false;
-
+        AccountBO accountBO = accessor.getAccountBO(orderBO.getAcctId());
+        return accountBO == null;
     }
 }

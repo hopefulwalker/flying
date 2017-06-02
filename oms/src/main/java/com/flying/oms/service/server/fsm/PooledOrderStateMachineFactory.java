@@ -6,7 +6,6 @@
 */
 package com.flying.oms.service.server.fsm;
 
-import com.flying.oms.model.OrderEvents;
 import com.flying.oms.model.OrderStates;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;

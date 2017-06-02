@@ -8,16 +8,17 @@ package com.flying.oms.model;
 
 public enum OrderStates {
     CREATED((byte) 1),
-    REJECTED((byte) 2),
-    SENT((byte) 3),
+    CHECKING_ACCOUNT((byte) 2),
+    REJECTED((byte) 3),
+    SENT((byte) 4),
 
-    UNIDENTIFIED((byte) 4),
-    INITIALIZED((byte) 5),
-    CONFIRMED((byte) 6),
-    CANCELLED((byte) 7),
-    FULL_FILLED((byte) 8),
-    PARTIAL_FILLED((byte) 9),
-    PARTIAL_CANCELLED((byte) 10);
+    UNIDENTIFIED((byte) 15),
+    INITIALIZED((byte) 16),
+    CONFIRMED((byte) 17),
+    CANCELLED((byte) 18),
+    FULL_FILLED((byte) 19),
+    PARTIAL_FILLED((byte) 110),
+    PARTIAL_CANCELLED((byte) 111);
 
     private final byte value;
 
@@ -25,34 +26,36 @@ public enum OrderStates {
         this.value = value;
     }
 
-    public byte value() {
-        return value;
-    }
-
     public static OrderStates get(final byte value) {
         switch (value) {
             case 1:
                 return CREATED;
             case 2:
-                return REJECTED;
+                return CHECKING_ACCOUNT;
             case 3:
-                return SENT;
+                return REJECTED;
             case 4:
+                return SENT;
+            case 15:
                 return UNIDENTIFIED;
-            case 5:
+            case 16:
                 return INITIALIZED;
-            case 6:
+            case 17:
                 return CONFIRMED;
-            case 7:
+            case 18:
                 return CANCELLED;
-            case 8:
+            case 19:
                 return FULL_FILLED;
-            case 9:
+            case 110:
                 return PARTIAL_FILLED;
-            case 10:
+            case 111:
                 return PARTIAL_CANCELLED;
         }
         throw new IllegalArgumentException("Unknown OrderStates:" + value);
+    }
+
+    public byte value() {
+        return value;
     }
 }
 

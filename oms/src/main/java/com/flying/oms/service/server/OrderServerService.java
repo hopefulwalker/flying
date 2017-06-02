@@ -6,8 +6,9 @@
 */
 package com.flying.oms.service.server;
 
+import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.model.OrderEvents;
+import com.flying.oms.service.server.fsm.OrderEvents;
 import com.flying.oms.model.OrderStates;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
@@ -21,11 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.persist.StateMachinePersister;
 
+import java.util.List;
 import java.util.Map;
 
 public class OrderServerService implements IOrderService {
     private static Logger logger = LoggerFactory.getLogger(OrderServerService.class);
     private Map<Long, OrderBO> orderCache;
+    private Map<Long, List<IEndpoint>> orderFroms;
     private GenericObjectPoolConfig poolConfig;
     private PooledOrderStateMachineFactory poolFactory;
     private ObjectPool<StateMachine<OrderStates, OrderEvents>> stateMachineObjectPool;
@@ -48,7 +51,9 @@ public class OrderServerService implements IOrderService {
     }
 
     @Override
-    public OrderBO placeOrder(OrderBO orderBO) throws OrderServiceException {
+    public OrderBO placeOrder(List<IEndpoint> froms, OrderBO orderBO) throws OrderServiceException {
+        orderCache.put(orderBO.getOid(), orderBO);
+        orderFroms.put(orderBO.getOid(), froms);
         StateMachine<OrderStates, OrderEvents> machine = null;
         try {
             machine = stateMachineObjectPool.borrowObject();

@@ -209,8 +209,11 @@ public class Dispatcher implements IEventSource, Runnable {
             // handle the message.
             IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, getDispatcher(), decodedMsg.data, getFroms()));
             if (result != null) {
-                int eventID = (result.getTarget() == getFroms()) ? IMsgEvent.ID_REPLY : IMsgEvent.ID_REQUEST;
-                getDispatcher().sendMsg(result.getTarget(), Codec.encode(decodedMsg.others, decodedMsg.address, eventID, result.getBytes()));
+                getDispatcher().sendMsg((result.getTarget() == null) ? getFroms() : result.getTarget(),
+                        Codec.encode(decodedMsg.others,
+                                decodedMsg.address,
+                                (result.getTarget() == getFroms()) ? IMsgEvent.ID_REPLY : IMsgEvent.ID_REQUEST,
+                                result.getBytes()));
             }
         }
     }

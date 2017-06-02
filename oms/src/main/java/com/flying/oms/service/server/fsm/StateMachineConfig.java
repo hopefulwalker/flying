@@ -6,11 +6,11 @@
 */
 package com.flying.oms.service.server.fsm;
 
-import com.flying.ams.service.IAccountService;
+import com.flying.framework.fsm.IAction;
 import com.flying.framework.fsm.IGuard;
+import com.flying.framework.fsm.SpringStateMachineActionLink;
 import com.flying.framework.fsm.SpringStateMachineGuardLink;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.model.OrderEvents;
 import com.flying.oms.model.OrderStates;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +29,7 @@ import java.util.List;
 public class StateMachineConfig {
     @Bean
     @Scope(scopeName = "prototype")
-    public StateMachine<OrderStates, OrderEvents> orderStateMachine(BeanFactory factory, IAccountService accountService) throws Exception {
+    public StateMachine<OrderStates, OrderEvents> orderStateMachine(BeanFactory factory, AccountAccessor accountAccessor) throws Exception {
         StateMachineBuilder.Builder<OrderStates, OrderEvents> builder = StateMachineBuilder.builder();
         builder.configureConfiguration().withConfiguration()
                 .autoStartup(true).machineId(StateMachineConfig.class.getSimpleName()).beanFactory(factory);
@@ -40,28 +40,43 @@ public class StateMachineConfig {
                 .end(OrderStates.REJECTED).end(OrderStates.SENT);
         builder.configureTransitions()
                 .withExternal()
-                .source(OrderStates.CREATED).target(OrderStates.SENT)
-                .event(OrderEvents.OrderRequest).guard(placeOrderGuard(accountService));
+                .source(OrderStates.CREATED).target(OrderStates.CHECKING_ACCOUNT)
+                .event(OrderEvents.OrderRequest).guard(noneAccountGuard(accountAccessor))
+                .action(checkAccountAction(accountAccessor));
+
         return builder.build();
     }
 
     @Bean
-    public SpringStateMachineGuardLink<OrderStates, OrderEvents, OrderBO> placeOrderGuard(IAccountService accountService) {
-        List<IGuard<OrderBO>> guards = new ArrayList<>(2);
-        guards.add(validateAccountGuard(accountService));
-        guards.add(sendOrderAction());
+    public SpringStateMachineGuardLink<OrderStates, OrderEvents, OrderBO> noneAccountGuard(AccountAccessor accountAccessor) {
+        List<IGuard<OrderBO>> guards = new ArrayList<>(1);
+        guards.add(validateAccountGuard(accountAccessor));
         return new SpringStateMachineGuardLink<>(guards);
     }
 
     @Bean
-    public ValidateAccountGuard validateAccountGuard(IAccountService accountService) {
-        ValidateAccountGuard action = new ValidateAccountGuard();
-        action.setAccountService(accountService);
+    public SpringStateMachineActionLink<OrderStates, OrderEvents, OrderBO> checkAccountAction(AccountAccessor accountAccessor) {
+        List<IAction<OrderBO>> actions = new ArrayList<>(1);
+        actions.add(validateAccountAction(accountAccessor));
+        return new SpringStateMachineActionLink<>(actions);
+    }
+
+    @Bean
+    public ValidateAccountAction validateAccountAction(AccountAccessor accessor) {
+        ValidateAccountAction action = new ValidateAccountAction();
+        action.setAccountAccessor(accessor);
         return action;
     }
 
     @Bean
-    public SendOrderGuard sendOrderAction() {
+    public ValidateAccountGuard validateAccountGuard(AccountAccessor accessor) {
+        ValidateAccountGuard action = new ValidateAccountGuard();
+        action.setAccountAccessor(accessor);
+        return action;
+    }
+
+    @Bean
+    public SendOrderGuard sendOrderGuard() {
         return new SendOrderGuard();
     }
 

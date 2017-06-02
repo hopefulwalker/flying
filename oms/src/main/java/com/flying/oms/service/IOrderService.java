@@ -6,8 +6,11 @@
  */
 package com.flying.oms.service;
 
+import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.oms.model.OrderBO;
 
+import java.util.List;
+
 public interface IOrderService {
-    OrderBO placeOrder(OrderBO orderBO) throws OrderServiceException;
+    OrderBO placeOrder(List<IEndpoint> froms, OrderBO orderBO) throws OrderServiceException;
 }

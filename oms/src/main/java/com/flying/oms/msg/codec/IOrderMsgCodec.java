@@ -16,7 +16,7 @@ import com.flying.oms.msg.gen.OrderRequestDecoder;
 
 @DefaultInfo(headerDecoderClass = "com.flying.oms.msg.gen.MessageHeaderDecoder",
         headerEncoderClass = "com.flying.oms.msg.gen.MessageHeaderEncoder",
-        msgTypeClass = "com.flying.oms.model.OrderEvents",
+        msgTypeClass = "com.flying.oms.msg.IOrderMsgType",
         headerCodecPackage = "com.flying.oms.msg.gen",
         bodyCodecPackage = "com.flying.oms.msg.gen",
         msgTypePackage = "com.flying.oms.msg")
@@ -28,7 +28,7 @@ public interface IOrderMsgCodec extends IMsgCodec {
 
     @CodecInfo(type = CodecInfo.ENCODE_MSG,
             bodyEncoderClass = "OrderRequestEncoder")
-   byte[] encodeOrderRequest(@Name("orderBO") @Fields("extNo, acctId, bsSideId, exchId, sectCode, price, qty") OrderBO orderBO);
+    byte[] encodeOrderRequest(@Name("orderBO") @Fields("extNo, acctId, bsSideId, exchId, sectCode, price, qty") OrderBO orderBO);
 
     @CodecInfo(type = CodecInfo.GET_BODY_DECODER,
             bodyDecoderClass = "OrderRequestDecoder")

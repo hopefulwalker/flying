@@ -9,7 +9,6 @@ package com.patrol.simulator;
 import com.flying.common.model.IExchId;
 import com.flying.common.service.IEndpointFactory;
 import com.flying.common.service.IServiceType;
-import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.oms.model.IBsSideId;
 import com.flying.oms.model.OrderBO;
@@ -50,7 +49,7 @@ public class OrderClient {
                 orderBO.setPrice(11.1);
                 orderBO.setQty(i);
                 if (i % 25000 == 0) System.out.println("Before:" + BeanUtils.describe(orderBO));
-                orderBO = orderClientService.placeOrder(orderBO);
+                orderBO = orderClientService.placeOrder(null, orderBO);
 //                System.out.println(System.currentTimeMillis() - start);
                 rvn++;
                 if (i % 25000 == 0) System.out.println("After:" + BeanUtils.describe(orderBO));

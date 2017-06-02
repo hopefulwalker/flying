@@ -10,11 +10,11 @@ import com.flying.ams.model.AccountBO;
 import com.flying.ams.msg.codec.AccountMsgCodec;
 import com.flying.ams.msg.codec.IAccountMsgCodec;
 import com.flying.ams.service.IAccountService;
-import com.flying.ams.service.client.AccountClientService;
 import com.flying.ams.service.server.AccountDBLoader;
 import com.flying.ams.service.server.AccountServerService;
 import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.client.MonitorEndpointFactory;
+import com.flying.oms.service.server.fsm.AccountAccessor;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +24,12 @@ import java.util.Map;
 
 @Configuration
 public class AccountServiceConfig {
+
+    @Bean(initMethod = "init")
+    public AccountAccessor accountAccessor(IMonitorService monitorService) {
+        return new AccountAccessor("SZ", endpointFactory(monitorService), accountMsgCodec());
+    }
+
     @Bean
     public IAccountMsgCodec accountMsgCodec() {
         return new AccountMsgCodec();
