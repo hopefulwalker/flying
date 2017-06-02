@@ -11,9 +11,11 @@ import com.flying.common.msg.handler.ServiceMsgListener;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ClientCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ServerCommEngineConfig;
 import com.flying.framework.messaging.engine.impl.jdk.BCClientCommEngine;
 import com.flying.framework.messaging.engine.impl.zmq.BCServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEventListener;
@@ -54,10 +56,8 @@ public class BroadcastConfig {
     }
 
     @Bean
-    public ICommEngineConfig serverEngineConfig() {
-        CommEngineConfig config = new CommEngineConfig(new Endpoint("udp", "*", 51688));
-        config.setMsgEventListener(monitorMsgListener());
-        return config;
+    public IServerCommEngineConfig serverEngineConfig() {
+        return new ServerCommEngineConfig(new Endpoint("udp", "*", 51688), monitorMsgListener());
     }
 
     @Bean
@@ -107,10 +107,10 @@ public class BroadcastConfig {
     }
 
     @Bean
-    public ICommEngineConfig clientEngineConfig() {
+    public IClientCommEngineConfig clientEngineConfig() {
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(new Endpoint("udp", "255.255.255.255", 51688));
-        return new CommEngineConfig(endpoints);
+        return new ClientCommEngineConfig(endpoints);
     }
 
     @Bean

@@ -4,7 +4,7 @@
  Date          Who              Version      What
  2017/4/26     Walker.Zhang     0.3.3        Created to support zloop.
  2017/5/2      Walker.Zhang     0.3.4        Redefine the message event ID and refactor the engine implementation.
-
+ 2017/6/1      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -33,6 +33,10 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         dispatcher.connect(this.froms, this.fromType, this.pingEnabled);
     }
 
+    public List<IEndpoint> getFroms() {
+        return froms;
+    }
+
     Dispatcher getDispatcher() {
         return this.dispatcher;
     }
@@ -44,10 +48,12 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         Codec.Msg decodedMsg = Codec.decode(msg, socket.getType());
         if (pingEnabled) dispatcher.refreshServer(froms, decodedMsg.address);
         // handle the heart beat message.
-        ZMsg reply = null;
         switch (decodedMsg.eventID) {
             case IMsgEvent.ID_PING:
-                reply = Codec.encodePongMsg(decodedMsg.others, decodedMsg.address);
+                ZMsg reply = Codec.encodePongMsg(decodedMsg.others, decodedMsg.address);
+                reply.send(socket);
+                //todo debug to check if this is useless?
+                reply.destroy();
                 break;
             case IMsgEvent.ID_PONG:
                 break;
@@ -55,7 +61,7 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
             case IMsgEvent.ID_REQUEST:
             case IMsgEvent.ID_REPLY:
             case IMsgEvent.ID_FAILED:
-                reply = handle(decodedMsg, arg);
+                handle(decodedMsg);
                 break;
             case IMsgEvent.ID_TIMEOUT:
                 logger.warn("ID_TIMEOUT should not happen here, please check");
@@ -64,13 +70,12 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
                 logger.warn("Undefined Event" + decodedMsg.eventID);
                 break;
         }
-        if (reply != null) {
-            reply.send(socket);
-            reply.destroy();
-        }
         msg.destroy();
         return 0;
     }
 
-    public abstract ZMsg handle(Codec.Msg decodedMsg, Object arg);
+    /**
+     * @param decodedMsg the decoded Message.
+     */
+    public abstract void handle(Codec.Msg decodedMsg);
 }

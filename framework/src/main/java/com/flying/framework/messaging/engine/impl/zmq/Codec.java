@@ -33,7 +33,7 @@ class Codec {
     }
 
     static ZMsg encode(IMsgEvent event) {
-        return encode(null, null, event.getId(), event.getInfo().getByteArray());
+        return encode(null, null, event.getId(), event.getInfo().getBytes());
     }
 
     static ZMsg encode(ZMsg msg, String address, int eventID, byte[] data) {

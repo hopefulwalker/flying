@@ -8,20 +8,33 @@
 package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IServerCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
+import com.flying.framework.messaging.event.IMsgEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractServerCommEngine extends AbstractCommEngine implements IServerCommEngine, Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractServerCommEngine.class);
     private ZMQ.Socket pipe;             //  Pipe through to background
+    private IServerCommEngineConfig config;
 
-    AbstractServerCommEngine(ICommEngineConfig config) {
+    AbstractServerCommEngine(IServerCommEngineConfig config) {
         setConfig(config);
+    }
+
+    @Override
+    public IServerCommEngineConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public void setConfig(IServerCommEngineConfig config) {
+        this.config = config;
     }
 
     @Override
@@ -32,7 +45,19 @@ public abstract class AbstractServerCommEngine extends AbstractCommEngine implem
 
     @Override
     void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms) {
-        dispatcher.addMsgEventListener(froms, ZMQ.DEALER, false, getConfig().getMsgEventListener());
+        if (config.getServerListener() == null) {
+            logger.error("Server listener is null, please recheck");
+            return;
+        }
+        dispatcher.addMsgEventListener(froms, ZMQ.DEALER, false, config.getServerListener());
+        for (Map.Entry<List<IEndpoint>, IMsgEventListener> entry : config.getClientListeners().entrySet()) {
+            dispatcher.addMsgEventListener(entry.getKey(), ZMQ.ROUTER, true, entry.getValue());
+        }
+    }
+
+    @Override
+    int getWorkers() {
+        return config.getWorkers();
     }
 
     @Override

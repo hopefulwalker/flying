@@ -9,23 +9,17 @@
 package com.flying.framework.messaging.engine.impl;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class CommEngineConfig implements ICommEngineConfig {
+public class ClientCommEngineConfig implements IClientCommEngineConfig {
     private List<IEndpoint> endpoints;
     private int workers = 1;
     private IMsgEventListener msgEventListener;
 
-    public CommEngineConfig(IEndpoint endpoint) {
-        this.endpoints = new ArrayList<>();
-        endpoints.add(endpoint);
-    }
-
-    public CommEngineConfig(List<IEndpoint> endpoints) {
+    public ClientCommEngineConfig(List<IEndpoint> endpoints) {
         setEndpoints(endpoints);
     }
 
@@ -48,18 +42,5 @@ public class CommEngineConfig implements ICommEngineConfig {
     @Override
     public void setMsgEventListener(IMsgEventListener msgEventListener) {
         this.msgEventListener = msgEventListener;
-    }
-
-    @Override
-    public int getWorkers() {
-        return workers;
-    }
-
-    /**
-     * @param workers should > 0, when <=0 do nothing(==1);
-     */
-    @Override
-    public void setWorkers(int workers) {
-        if (workers > 1) this.workers = workers;
     }
 }

@@ -9,16 +9,16 @@
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
-import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 public class PooledClientEngineFactory implements PooledObjectFactory<IClientCommEngine> {
-    private ICommEngineConfig config;
+    private IClientCommEngineConfig config;
 
-    public PooledClientEngineFactory(ICommEngineConfig config) {
+    public PooledClientEngineFactory(IClientCommEngineConfig config) {
         this.config = config;
     }
 

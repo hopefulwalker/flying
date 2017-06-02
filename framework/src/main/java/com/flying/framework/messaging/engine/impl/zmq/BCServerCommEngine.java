@@ -7,7 +7,7 @@
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.google.common.primitives.Ints;
 import org.slf4j.Logger;
@@ -26,8 +26,9 @@ import java.nio.channels.DatagramChannel;
 public class BCServerCommEngine extends AbstractServerCommEngine {
     private static final Logger logger = LoggerFactory.getLogger(BCServerCommEngine.class);
     private static final int PACKET_SIZE = 512;
+    private IServerCommEngineConfig config;
 
-    public BCServerCommEngine(ICommEngineConfig config) {
+    public BCServerCommEngine(IServerCommEngineConfig config) {
         super(config);
     }
 
@@ -35,7 +36,7 @@ public class BCServerCommEngine extends AbstractServerCommEngine {
     public void run() {
         try (DatagramChannel front = DatagramChannel.open()) {
             front.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-            front.bind(new InetSocketAddress(getConfig().getEndpoints().get(0).getPort()));
+            front.bind(new InetSocketAddress(getConfig().getListenEndpoint().getPort()));
             ZMQ.PollItem[] items = {
                     new ZMQ.PollItem(front, ZMQ.Poller.POLLIN),
                     new ZMQ.PollItem(getPipe(), ZMQ.Poller.POLLIN)

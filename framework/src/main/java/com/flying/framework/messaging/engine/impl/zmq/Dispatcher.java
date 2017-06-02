@@ -8,6 +8,7 @@
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
+import com.flying.framework.event.IEventSource;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.ICommEngine;
 import com.flying.framework.messaging.event.IMsgEvent;
@@ -24,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Acting as the dispatcher in reactor pattern.
  */
-public class Dispatcher implements Runnable {
+public class Dispatcher implements IEventSource, Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ZContext context;
     private ICommEngine engine;
@@ -68,7 +69,7 @@ public class Dispatcher implements Runnable {
 
     int addMsgEventListener(List<IEndpoint> froms, int fromType, boolean pingEnabled, IMsgEventListener listener) {
         ZLoop.IZLoopHandler handler = new HandlerAdapter(this, froms, fromType, pingEnabled, listener);
-        return addZLoopHandler(froms, handler, this);
+        return addZLoopHandler(froms, handler, null);
     }
 
     void refreshServer(List<IEndpoint> endpoints, String endpoint) {
@@ -204,13 +205,13 @@ public class Dispatcher implements Runnable {
         }
 
         @Override
-        public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
+        public void handle(Codec.Msg decodedMsg) {
             // handle the message.
-            IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, engine, decodedMsg.data));
-            if (result != null && result.getByteArray() != null) {
-                return Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getByteArray());
+            IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, getDispatcher(), decodedMsg.data, getFroms()));
+            if (result != null) {
+                int eventID = (result.getTarget() == getFroms()) ? IMsgEvent.ID_REPLY : IMsgEvent.ID_REQUEST;
+                getDispatcher().sendMsg(result.getTarget(), Codec.encode(decodedMsg.others, decodedMsg.address, eventID, result.getBytes()));
             }
-            return null;
         }
     }
 

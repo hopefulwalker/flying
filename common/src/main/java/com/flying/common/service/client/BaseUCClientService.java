@@ -12,7 +12,7 @@ import com.flying.common.service.IServiceType;
 import com.flying.common.service.ServiceException;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
-import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ClientCommEngineConfig;
 import com.flying.framework.messaging.engine.impl.zmq.PooledClientEngineFactory;
 import com.flying.util.common.Dictionary;
 import org.apache.commons.pool2.ObjectPool;
@@ -56,7 +56,7 @@ public class BaseUCClientService {
             logger.warn("Could not get endpoints:" + getInfo());
             return;
         }
-        this.poolFactory = new PooledClientEngineFactory(new CommEngineConfig(endpoints));
+        this.poolFactory = new PooledClientEngineFactory(new ClientCommEngineConfig(endpoints));
         this.enginePool = new GenericObjectPool<>(poolFactory, poolConfig);
         try {
             PoolUtils.prefill(enginePool, poolConfig.getMinIdle());

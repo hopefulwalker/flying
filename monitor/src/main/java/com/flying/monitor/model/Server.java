@@ -24,7 +24,7 @@ public class Server implements IServer {
 
     public void setServerEngine(IServerCommEngine serverEngine) {
         this.serverEngine = serverEngine;
-        this.serverBO.setEndpoint(serverEngine.getConfig().getEndpoints().get(0).asString());
+        this.serverBO.setEndpoint(serverEngine.getConfig().getListenEndpoint().asString());
         this.serverBO.setWorkers(serverEngine.getConfig().getWorkers());
     }
 

@@ -7,17 +7,16 @@
 package com.flying.framework.messaging.event;
 
 import com.flying.framework.event.IEventResult;
+import com.flying.framework.messaging.endpoint.IEndpoint;
+
+import java.util.List;
 
 public interface IMsgEventResult extends IEventResult {
+    List<IEndpoint> getTarget();
+
     /**
      * @return the reply information for the request. it has no use if the required flag is false, It's a suggestion
      * to return null when replyRequired is false.
      */
-    public byte[] getByteArray();
-
-    /**
-     * @return false when the request doesn't need to reply, or the reply will sent back through the listener(used it
-     * when processed in asynchronous mode)
-     */
-    public boolean isReplyRequired();
+    byte[] getBytes();
 }

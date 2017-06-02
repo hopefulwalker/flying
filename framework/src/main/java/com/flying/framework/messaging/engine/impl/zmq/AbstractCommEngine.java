@@ -10,7 +10,6 @@ package com.flying.framework.messaging.engine.impl.zmq;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.ICommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZContext;
@@ -23,27 +22,15 @@ import java.util.concurrent.Executors;
 
 public abstract class AbstractCommEngine implements ICommEngine {
     private static final Logger logger = LoggerFactory.getLogger(AbstractCommEngine.class);
-
-    private ICommEngineConfig config;
     private boolean running = false;
     private ZContext context;
     private ExecutorService threadPool;
 
     @Override
-    public void setConfig(ICommEngineConfig config) {
-        this.config = config;
-    }
-
-    @Override
-    public ICommEngineConfig getConfig() {
-        return config;
-    }
-
-    @Override
     public void start() {
         if (!running) {
             // prepare thread pool.
-            threadPool = Executors.newFixedThreadPool(config.getWorkers());
+            threadPool = Executors.newFixedThreadPool(getWorkers());
             context = new ZContext();
             initialize(setupMsgPipe(getPipeSocketType()));
             running = true;
@@ -71,7 +58,7 @@ public abstract class AbstractCommEngine implements ICommEngine {
         ZMQ.Socket pipe = context.createSocket(socketType);
         IEndpoint endpoint = new Endpoint("inproc://" + System.nanoTime());
         pipe.bind(endpoint.asString());
-        for (int i = 0; i < config.getWorkers(); i++) {
+        for (int i = 0; i < getWorkers(); i++) {
             Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
             List<IEndpoint> froms = new ArrayList<>(1);
             froms.add(endpoint);
@@ -86,4 +73,6 @@ public abstract class AbstractCommEngine implements ICommEngine {
     abstract void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms);
 
     abstract int getPipeSocketType();
+
+    abstract int getWorkers();
 }

@@ -8,11 +8,10 @@ package com.flying.oms.config;
 
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.msg.handler.ServiceMsgListener;
-import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ServerCommEngineConfig;
 import com.flying.framework.messaging.engine.impl.zmq.UCServerCommEngine;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.monitor.model.IServer;
@@ -22,14 +21,14 @@ import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.client.ServerReporter;
 import com.flying.oms.model.OrderBO;
+import com.flying.oms.model.OrderEvents;
+import com.flying.oms.model.OrderStates;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.msg.codec.OrderMsgCodec;
 import com.flying.oms.msg.handler.OrderRequestHandler;
 import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.server.OrderServerService;
 import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
-import com.flying.oms.model.OrderEvents;
-import com.flying.oms.model.OrderStates;
 import com.flying.oms.service.server.fsm.StateMachineConfig;
 import com.flying.util.schedule.Scheduler;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -102,9 +101,8 @@ public class OmsConfig {
     }
 
     @Bean
-    public ICommEngineConfig omsServerConfig(IMonitorMsgCodec monitorMsgCodec, StateMachinePersister<OrderStates, OrderEvents, OrderStates> stateMachinePersister) {
-        CommEngineConfig config = new CommEngineConfig(new Endpoint());
-        config.setMsgEventListener(omsMsgListener(monitorMsgCodec, stateMachinePersister));
+    public IServerCommEngineConfig omsServerConfig(IMonitorMsgCodec monitorMsgCodec, StateMachinePersister<OrderStates, OrderEvents, OrderStates> stateMachinePersister) {
+        ServerCommEngineConfig config = new ServerCommEngineConfig(new Endpoint(), omsMsgListener(monitorMsgCodec, stateMachinePersister));
         config.setWorkers(10);
         return config;
     }

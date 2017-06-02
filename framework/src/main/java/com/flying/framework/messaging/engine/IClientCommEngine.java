@@ -13,6 +13,11 @@ package com.flying.framework.messaging.engine;
 import com.flying.framework.messaging.event.IMsgEvent;
 
 public interface IClientCommEngine extends ICommEngine {
+
+    IClientCommEngineConfig getConfig();
+
+    void setConfig(IClientCommEngineConfig config);
+
     /**
      * Send message in asynchronous mode.
      *

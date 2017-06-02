@@ -8,8 +8,8 @@
 package com.flying.framework.messaging.engine.impl.jdk;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.slf4j.Logger;
@@ -20,17 +20,24 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.List;
 
 public class BCClientCommEngine implements IClientCommEngine {
     private static final int PACKET_SIZE = 512;
     private static final Logger logger = LoggerFactory.getLogger(BCClientCommEngine.class);
 
     private DatagramSocket clientSocket = null;
-    private ICommEngineConfig config;
+    private IClientCommEngineConfig config;
 
-    public BCClientCommEngine(ICommEngineConfig config) {
+    public BCClientCommEngine(IClientCommEngineConfig config) {
         setConfig(config);
+    }
+
+    /**
+     * @return the config information.
+     */
+    @Override
+    public IClientCommEngineConfig getConfig() {
+        return config;
     }
 
     /**
@@ -39,16 +46,8 @@ public class BCClientCommEngine implements IClientCommEngine {
      * @param config to be set.
      */
     @Override
-    public void setConfig(ICommEngineConfig config) {
+    public void setConfig(IClientCommEngineConfig config) {
         this.config = config;
-    }
-
-    /**
-     * @return the config information.
-     */
-    @Override
-    public ICommEngineConfig getConfig() {
-        return config;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class BCClientCommEngine implements IClientCommEngine {
 
     @Override
     public void sendMsg(IMsgEvent msgEvent) {
-        DatagramPacket packet = new DatagramPacket(msgEvent.getInfo().getByteArray(), msgEvent.getInfo().getByteArray().length);
+        DatagramPacket packet = new DatagramPacket(msgEvent.getInfo().getBytes(), msgEvent.getInfo().getBytes().length);
         for (IEndpoint endpoint : config.getEndpoints()) {
             try {
                 packet.setAddress(InetAddress.getByName(endpoint.getAddress()));

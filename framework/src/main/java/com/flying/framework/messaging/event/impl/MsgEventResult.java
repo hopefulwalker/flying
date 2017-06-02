@@ -6,24 +6,35 @@
  */
 package com.flying.framework.messaging.event.impl;
 
+import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.event.IMsgEventResult;
 
+import java.util.List;
+
 public class MsgEventResult implements IMsgEventResult {
-    private byte[] resultBytes;
-    private boolean replyRequired;
+    List<IEndpoint> target;
+    private byte[] bytes;
 
-    public MsgEventResult(byte[] bytes) {
-        this.replyRequired = (bytes != null);
-        this.resultBytes = bytes;
+    public MsgEventResult(List<IEndpoint> target, byte[] bytes) {
+        this.target = target;
+        this.bytes = bytes;
     }
 
     @Override
-    public byte[] getByteArray() {
-        return resultBytes;
+    public List<IEndpoint> getTarget() {
+        return target;
+    }
+
+    public void setTarget(List<IEndpoint> target) {
+        this.target = target;
     }
 
     @Override
-    public boolean isReplyRequired() {
-        return replyRequired;
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 }

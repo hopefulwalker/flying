@@ -13,9 +13,9 @@
         <constructor-arg name="config" ref="serverEngineConfig"/>
     </bean>
 
-    <bean id="serverEngineConfig" class="com.flying.framework.messaging.engine.impl.CommEngineConfig">
+    <bean id="serverEngineConfig" class="com.flying.framework.messaging.engine.impl.ClientCommEngineConfig">
         <constructor-arg name="endpoint" ref="listenEndpoint"/>
-        <property name="msgEventListener" ref="amsMsgListener"/>
+        <property name="serverListener" ref="amsMsgListener"/>
         <property name="workers" value="5"/>
     </bean>
 
@@ -52,7 +52,7 @@
                 </entry>
             </map>
         </constructor-arg>
-        <constructor-arg name="msgConverter" ref="accountMsgCodec"/>
+        <constructor-arg name="msgCodec" ref="accountMsgCodec"/>
     </bean>
     <bean id="bcMonitorClientService" class="com.flying.monitor.service.client.BCMonitorClientService">
         <constructor-arg name="engine" ref="broadcastEngine"/>
@@ -61,14 +61,14 @@
     <!--<bean id="ucMonitorClientService" class="com.flying.monitor.service.client.UCMonitorClientService" init-method="init">-->
     <!--<constructor-arg name="endpoints" ref="cntMonitorEndpoints"/>-->
     <!--<constructor-arg name="enginePool" ref="cntMonitorEnginePool"/>-->
-    <!--<constructor-arg name="msgConverter" ref="monitorMsgConverter"/>-->
+    <!--<constructor-arg name="msgCodec" ref="monitorMsgConverter"/>-->
     <!--</bean>-->
 
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BCClientCommEngine"
           init-method="start" destroy-method="stop">
         <constructor-arg name="config" ref="monitorClientConfig"/>
     </bean>
-    <bean id="monitorClientConfig" class="com.flying.framework.messaging.engine.impl.CommEngineConfig">
+    <bean id="monitorClientConfig" class="com.flying.framework.messaging.engine.impl.ClientCommEngineConfig">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="monitorMsgCodec" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>

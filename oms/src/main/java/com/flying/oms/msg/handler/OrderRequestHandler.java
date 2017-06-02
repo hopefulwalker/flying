@@ -9,6 +9,9 @@ package com.flying.oms.msg.handler;
 
 import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
+import com.flying.framework.messaging.event.IMsgEvent;
+import com.flying.framework.messaging.event.IMsgEventResult;
+import com.flying.framework.messaging.event.impl.MsgEventResult;
 import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderStates;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
@@ -32,8 +35,9 @@ public class OrderRequestHandler implements IMsgHandler {
     }
 
     @Override
-    public byte[] handle(byte[] msg) {
-        OrderRequestDecoder requestDecoder = msgCodec.getOrderRequestDecoder(msg);
+    public IMsgEventResult handle(IMsgEvent event) {
+        MsgEventResult result = new MsgEventResult(null, null);
+        OrderRequestDecoder requestDecoder = msgCodec.getOrderRequestDecoder(event.getInfo().getBytes());
         int retCode = IReturnCode.SUCCESS;
         OrderBO orderBO = null;
         try {
@@ -44,8 +48,9 @@ public class OrderRequestHandler implements IMsgHandler {
             retCode = ose.getCode();
         }
         if (retCode == IReturnCode.SUCCESS) retCode = orderBO.getStateEnteredCode();
+        result.setBytes(msgCodec.encodeOrderReply(retCode, orderBO));
         // end of to do
-        return msgCodec.encodeOrderReply(retCode, orderBO);
+        return result;
     }
 
     private OrderBO buildOrderBO(OrderRequestDecoder requestDecoder) {

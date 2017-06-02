@@ -13,6 +13,9 @@ import com.flying.ams.service.IAccountService;
 import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.service.ServiceException;
+import com.flying.framework.messaging.event.IMsgEvent;
+import com.flying.framework.messaging.event.IMsgEventResult;
+import com.flying.framework.messaging.event.impl.MsgEventResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +30,8 @@ public class GetAcctByIdHandler implements IMsgHandler {
     }
 
     @Override
-    public byte[] handle(byte[] msg) {
-        GetAccountByIdRequestDecoder request = msgCodec.getGetAccountByIdRequestDecoder(msg);
+    public IMsgEventResult handle(IMsgEvent event) {
+        GetAccountByIdRequestDecoder request = msgCodec.getGetAccountByIdRequestDecoder(event.getInfo().getBytes());
         int retCode = IReturnCode.SUCCESS;
         AccountBO acctBO = null;
         try {
@@ -37,7 +40,6 @@ public class GetAcctByIdHandler implements IMsgHandler {
             logger.error("Exception in getting account bo", se);
             retCode = se.getCode();
         }
-        return msgCodec.encodeGetAccountByIdReply(retCode, acctBO);
+        return new MsgEventResult(event.getInfo().getFroms(), msgCodec.encodeGetAccountByIdReply(retCode, acctBO));
     }
-
 }

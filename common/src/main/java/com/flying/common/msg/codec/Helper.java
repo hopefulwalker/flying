@@ -27,7 +27,7 @@ public class Helper {
     public static byte[] buildReplyBytes(IClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
             case IMsgEvent.ID_REPLY:
-                return replyEvent.getInfo().getByteArray();
+                return replyEvent.getInfo().getBytes();
             case IMsgEvent.ID_TIMEOUT:
                 throw new ServiceException(IReturnCode.TIMEOUT, buildExceptionMessage(engine, timeout, replyEvent));
             case IMsgEvent.ID_FAILED:
@@ -47,7 +47,7 @@ public class Helper {
     private static DirectBuffer buildReplyBuffer(IClientCommEngine engine, int timeout, IMsgEvent replyEvent) throws ServiceException {
         switch (replyEvent.getId()) {
             case IMsgEvent.ID_REPLY:
-                return new UnsafeBuffer(replyEvent.getInfo().getByteArray());
+                return new UnsafeBuffer(replyEvent.getInfo().getBytes());
             case IMsgEvent.ID_TIMEOUT:
                 throw new ServiceException(IReturnCode.TIMEOUT, buildExceptionMessage(engine, timeout, replyEvent));
             case IMsgEvent.ID_FAILED:

@@ -10,7 +10,7 @@ package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -23,22 +23,22 @@ import org.slf4j.LoggerFactory;
 
 public class NettyServerCommEngine implements IServerCommEngine {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientCommEngine.class);
-    private ICommEngineConfig config;
+    private IServerCommEngineConfig config;
     private EventLoopGroup acceptorGroup;
     private EventLoopGroup workerGroup;
 
-    public NettyServerCommEngine(ICommEngineConfig config) {
+    public NettyServerCommEngine(IServerCommEngineConfig config) {
         this.config = config;
     }
 
     @Override
-    public void setConfig(ICommEngineConfig config) {
-        this.config = config;
-    }
-
-    @Override
-    public ICommEngineConfig getConfig() {
+    public IServerCommEngineConfig getConfig() {
         return config;
+    }
+
+    @Override
+    public void setConfig(IServerCommEngineConfig config) {
+        this.config = config;
     }
 
     @Override
@@ -56,9 +56,8 @@ public class NettyServerCommEngine implements IServerCommEngine {
                         p.addLast(new ServerHandler(self));
                     }
                 });
-        for (IEndpoint endpoint : config.getEndpoints()) {
-            bootstrap.bind(endpoint.getAddress(), endpoint.getPort());
-        }
+        IEndpoint endpoint = config.getListenEndpoint();
+        bootstrap.bind(endpoint.getAddress(), endpoint.getPort());
     }
 
     @Override

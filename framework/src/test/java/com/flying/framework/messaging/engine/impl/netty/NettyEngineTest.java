@@ -9,9 +9,11 @@ package com.flying.framework.messaging.engine.impl.netty;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
-import com.flying.framework.messaging.engine.impl.CommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ClientCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ServerCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
@@ -29,17 +31,17 @@ public class NettyEngineTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        IEndpoint endpoint = new Endpoint("tcp", "127.0.0.1", 8181);
         List<IEndpoint> endpoints = new ArrayList<>();
-        endpoints.add(new Endpoint("tcp", "127.0.0.1", 8181));
-        ICommEngineConfig clientConfig = new CommEngineConfig(endpoints);
+        endpoints.add(endpoint);
+        IClientCommEngineConfig clientConfig = new ClientCommEngineConfig(endpoints);
         clientConfig.setMsgEventListener(event -> {
-            assertEquals(66, event.getInfo().getByteArray()[0]);
+            assertEquals(66, event.getInfo().getBytes()[0]);
             return null;
         });
         clientEngine = new NettyClientCommEngine(clientConfig);
 
-        ICommEngineConfig serverConfig = new CommEngineConfig(endpoints);
-        serverConfig.setMsgEventListener(event -> new MockMsgEventResult());
+        IServerCommEngineConfig serverConfig = new ServerCommEngineConfig(endpoint, event -> new MockMsgEventResult());
         serverEngine = new NettyServerCommEngine(serverConfig);
         data = new byte[1];
         data[0] = 66;
@@ -66,7 +68,7 @@ public class NettyEngineTest {
         IMsgEvent request = MsgEvent.newInstance(IMsgEvent.ID_REQUEST, clientEngine, data);
         clientEngine.sendMsg(request);
         try {
-            Thread.sleep(5000); // wait for the server to stop.
+            Thread.sleep(1000); // wait for the server to stop.
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -74,15 +76,15 @@ public class NettyEngineTest {
 
     private static class MockMsgEventResult implements IMsgEventResult {
         @Override
-        public byte[] getByteArray() {
-            byte[] array = new byte[1];
-            array[0] = 66;   // char = 'B'
-            return array;
+        public List<IEndpoint> getTarget() {
+            return null;
         }
 
         @Override
-        public boolean isReplyRequired() {
-            return true;
+        public byte[] getBytes() {
+            byte[] array = new byte[1];
+            array[0] = 66;   // char = 'B'
+            return array;
         }
     }
 }

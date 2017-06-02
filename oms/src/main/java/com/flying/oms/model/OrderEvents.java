@@ -25,7 +25,7 @@ public enum OrderEvents {
             case 1:
                 return OrderRequest;
             case 2:
-                return OrderRequest;
+                return OrderReply;
         }
         throw new IllegalArgumentException("Unknown OrderEvents:" + value);
     }

@@ -6,12 +6,11 @@
 */
 package com.flying.oms.service.server;
 
-import com.flying.framework.event.IEventSource;
 import com.flying.oms.model.OrderBO;
-import com.flying.oms.service.IOrderService;
-import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.model.OrderEvents;
 import com.flying.oms.model.OrderStates;
+import com.flying.oms.service.IOrderService;
+import com.flying.oms.service.OrderServiceException;
 import com.flying.oms.service.server.fsm.PooledOrderStateMachineFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PoolUtils;
@@ -24,17 +23,13 @@ import org.springframework.statemachine.persist.StateMachinePersister;
 
 import java.util.Map;
 
-public class OrderServerService implements IOrderService, IEventSource {
+public class OrderServerService implements IOrderService {
     private static Logger logger = LoggerFactory.getLogger(OrderServerService.class);
     private Map<Long, OrderBO> orderCache;
     private GenericObjectPoolConfig poolConfig;
     private PooledOrderStateMachineFactory poolFactory;
     private ObjectPool<StateMachine<OrderStates, OrderEvents>> stateMachineObjectPool;
     private StateMachinePersister<OrderStates, OrderEvents, OrderStates> statesStateMachinePersister;
-
-    public void setStatesStateMachinePersister(StateMachinePersister<OrderStates, OrderEvents, OrderStates> statesStateMachinePersister) {
-        this.statesStateMachinePersister = statesStateMachinePersister;
-    }
 
     public OrderServerService(PooledOrderStateMachineFactory poolFactory, GenericObjectPoolConfig poolConfig, Map<Long, OrderBO> orderCache) {
         this.poolFactory = poolFactory;
@@ -48,12 +43,16 @@ public class OrderServerService implements IOrderService, IEventSource {
         }
     }
 
+    public void setStatesStateMachinePersister(StateMachinePersister<OrderStates, OrderEvents, OrderStates> statesStateMachinePersister) {
+        this.statesStateMachinePersister = statesStateMachinePersister;
+    }
+
     @Override
     public OrderBO placeOrder(OrderBO orderBO) throws OrderServiceException {
         StateMachine<OrderStates, OrderEvents> machine = null;
         try {
             machine = stateMachineObjectPool.borrowObject();
-            statesStateMachinePersister.restore(machine, OrderStates.values()[orderBO.getState().ordinal()]);
+            statesStateMachinePersister.restore(machine, orderBO.getState());
             machine.getExtendedState().getVariables().put(OrderBO.class.getName(), orderBO);
             machine.sendEvent(OrderEvents.OrderRequest);
         } catch (Exception e) {

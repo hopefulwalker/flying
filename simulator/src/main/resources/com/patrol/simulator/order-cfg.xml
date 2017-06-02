@@ -25,7 +25,7 @@
     <bean id="broadcastEngine" class="com.flying.framework.messaging.engine.impl.jdk.BCClientCommEngine" init-method="start" destroy-method="stop">
         <constructor-arg name="config" ref="monitorClientConfig"/>
     </bean>
-    <bean id="monitorClientConfig" class="com.flying.framework.messaging.engine.impl.CommEngineConfig">
+    <bean id="monitorClientConfig" class="com.flying.framework.messaging.engine.impl.ClientCommEngineConfig">
         <constructor-arg name="endpoints" ref="broadcastEndpoints"/>
     </bean>
     <bean id="monitorMsgBuilder" class="com.flying.monitor.msg.codec.MonitorMsgCodec"/>

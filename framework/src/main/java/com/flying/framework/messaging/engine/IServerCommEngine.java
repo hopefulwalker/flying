@@ -9,4 +9,7 @@
 package com.flying.framework.messaging.engine;
 
 public interface IServerCommEngine extends ICommEngine {
+    IServerCommEngineConfig getConfig();
+
+    void setConfig(IServerCommEngineConfig config);
 }

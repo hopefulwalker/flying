@@ -10,7 +10,7 @@ package com.flying.framework.messaging.engine.impl.netty;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -34,15 +34,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class NettyClientCommEngine implements IClientCommEngine {
     private static final Logger logger = LoggerFactory.getLogger(NettyClientCommEngine.class);
     private ChannelPoolMap<IEndpoint, FixedChannelPool> poolMap;
-    private ICommEngineConfig config;
+    private IClientCommEngineConfig config;
     private EventLoopGroup eventLoopGroup;
 
-    public NettyClientCommEngine(ICommEngineConfig config) {
-        this.config = config;
-    }
-
-    @Override
-    public void setConfig(ICommEngineConfig config) {
+    public NettyClientCommEngine(IClientCommEngineConfig config) {
         this.config = config;
     }
 
@@ -71,8 +66,13 @@ public class NettyClientCommEngine implements IClientCommEngine {
     }
 
     @Override
-    public ICommEngineConfig getConfig() {
+    public IClientCommEngineConfig getConfig() {
         return config;
+    }
+
+    @Override
+    public void setConfig(IClientCommEngineConfig config) {
+        this.config = config;
     }
 
     @Override
@@ -84,8 +84,8 @@ public class NettyClientCommEngine implements IClientCommEngine {
             if (f.isSuccess()) {
                 Channel ch = f.getNow();
                 // Do somethings
-                ByteBuf msg = Unpooled.buffer(msgEvent.getInfo().getByteArray().length);
-                msg.writeBytes(msgEvent.getInfo().getByteArray());
+                ByteBuf msg = Unpooled.buffer(msgEvent.getInfo().getBytes().length);
+                msg.writeBytes(msgEvent.getInfo().getBytes());
                 ch.writeAndFlush(msg);
                 // Release back to pool
                 pool.release(ch);

@@ -10,7 +10,7 @@ package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.zeromq.ZLoop;
@@ -29,9 +29,24 @@ import java.util.List;
  */
 public class ClientCommEngine extends AbstractCommEngine implements IClientCommEngine {
     private ZMQ.Socket pipe;             //  Pipe through to background
+    private IClientCommEngineConfig config;
 
-    public ClientCommEngine(ICommEngineConfig config) {
-        setConfig(config);
+    public ClientCommEngine(IClientCommEngineConfig config) {
+        this.config = config;
+    }
+
+    public IClientCommEngineConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public void setConfig(IClientCommEngineConfig config) {
+        this.config = config;
+    }
+
+    @Override
+    int getWorkers() {
+        return 1;
     }
 
     @Override
@@ -41,13 +56,13 @@ public class ClientCommEngine extends AbstractCommEngine implements IClientCommE
 
     @Override
     void setupDispatcherHandler(Dispatcher dispatcher, List<IEndpoint> froms) {
-        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, froms, ZMQ.PAIR, false, getConfig().getEndpoints(), ZMQ.ROUTER, true);
+        ZLoop.IZLoopHandler requestHandler = new RouteHandler(dispatcher, froms, ZMQ.PAIR, false, config.getEndpoints(), ZMQ.ROUTER, true);
         dispatcher.addZLoopHandler(froms, requestHandler, null);
-        if (getConfig().getMsgEventListener() != null) {
-            dispatcher.addMsgEventListener(getConfig().getEndpoints(), ZMQ.ROUTER, true, getConfig().getMsgEventListener());
+        if (config.getMsgEventListener() != null) {
+            dispatcher.addMsgEventListener(config.getEndpoints(), ZMQ.ROUTER, true, config.getMsgEventListener());
         } else {
-            ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, getConfig().getEndpoints(), ZMQ.ROUTER, true, froms, ZMQ.PAIR, false);
-            dispatcher.addZLoopHandler(getConfig().getEndpoints(), replyHandler, froms);
+            ZLoop.IZLoopHandler replyHandler = new RouteHandler(dispatcher, config.getEndpoints(), ZMQ.ROUTER, true, froms, ZMQ.PAIR, false);
+            dispatcher.addZLoopHandler(config.getEndpoints(), replyHandler, froms);
         }
     }
 
@@ -159,9 +174,8 @@ public class ClientCommEngine extends AbstractCommEngine implements IClientCommE
         }
 
         @Override
-        public ZMsg handle(Codec.Msg decodedMsg, Object arg) {
+        public void handle(Codec.Msg decodedMsg) {
             getDispatcher().sendMsg(tos, Codec.encode(decodedMsg.others, decodedMsg.address, decodedMsg.eventID, decodedMsg.data));
-            return null;
         }
     }
 }

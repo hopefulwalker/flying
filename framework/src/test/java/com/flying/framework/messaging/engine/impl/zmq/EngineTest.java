@@ -9,14 +9,13 @@ package com.flying.framework.messaging.engine.impl.zmq;
 
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
-import com.flying.framework.messaging.engine.IServerCommEngine;
-import com.flying.framework.messaging.engine.ICommEngineConfig;
 import com.flying.framework.messaging.engine.IClientCommEngine;
-import com.flying.framework.messaging.engine.impl.CommEngineConfig;
-import com.flying.framework.messaging.engine.impl.zmq.ClientCommEngine;
-import com.flying.framework.messaging.engine.impl.zmq.UCServerCommEngine;
+import com.flying.framework.messaging.engine.IClientCommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngine;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ClientCommEngineConfig;
+import com.flying.framework.messaging.engine.impl.ServerCommEngineConfig;
 import com.flying.framework.messaging.event.IMsgEvent;
-import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.framework.messaging.event.impl.MsgEvent;
 import org.junit.*;
@@ -34,12 +33,11 @@ public class EngineTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         IEndpoint serverEndpoint = new Endpoint();
-        ICommEngineConfig serverConfig = new CommEngineConfig(serverEndpoint);
-        serverConfig.setMsgEventListener(event -> new MockMsgEventResult());
+        IServerCommEngineConfig serverConfig = new ServerCommEngineConfig(serverEndpoint, event -> new MockMsgEventResult());
         serverEngine = new UCServerCommEngine(serverConfig);
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(serverEndpoint);
-        ICommEngineConfig clientConfig = new CommEngineConfig(endpoints);
+        IClientCommEngineConfig clientConfig = new ClientCommEngineConfig(endpoints);
         clientEngine = new ClientCommEngine(clientConfig);
         data = new byte[1];
         data[0] = 66;
@@ -105,14 +103,14 @@ public class EngineTest {
         clientEngine.sendMsg(request);
         IMsgEvent reply = clientEngine.recvMsg(1000);
         Assert.assertEquals(IMsgEvent.ID_REPLY, reply.getId());
-        Assert.assertEquals(66, reply.getInfo().getByteArray()[0]);
+        Assert.assertEquals(66, reply.getInfo().getBytes()[0]);
     }
 
     @Test
     public void testSendMsgWithListener() {
         clientEngine.stop();
         clientEngine.getConfig().setMsgEventListener(event -> {
-            assertEquals(66, event.getInfo().getByteArray()[0]);
+            assertEquals(66, event.getInfo().getBytes()[0]);
             return null;
         });
         clientEngine.start();
@@ -139,7 +137,7 @@ public class EngineTest {
         }
         IMsgEvent reply = clientEngine.request(request, 100);
         Assert.assertEquals(IMsgEvent.ID_REPLY, reply.getId());
-        Assert.assertEquals(66, reply.getInfo().getByteArray()[0]);
+        Assert.assertEquals(66, reply.getInfo().getBytes()[0]);
     }
 
     @Test
@@ -169,15 +167,15 @@ public class EngineTest {
 
     private static class MockMsgEventResult implements IMsgEventResult {
         @Override
-        public byte[] getByteArray() {
-            byte[] array = new byte[1];
-            array[0] = 66;   // char = 'B'
-            return array;
+        public List<IEndpoint> getTarget() {
+            return null;
         }
 
         @Override
-        public boolean isReplyRequired() {
-            return true;
+        public byte[] getBytes() {
+            byte[] array = new byte[1];
+            array[0] = 66;   // char = 'B'
+            return array;
         }
     }
 }

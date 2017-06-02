@@ -7,6 +7,8 @@
 package com.flying.monitor.msg.handler;
 
 import com.flying.common.msg.handler.IMsgHandler;
+import com.flying.framework.messaging.event.IMsgEvent;
+import com.flying.framework.messaging.event.IMsgEventResult;
 import com.flying.monitor.model.ServerBO;
 import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.msg.gen.ServerRegistryRequestDecoder;
@@ -25,9 +27,10 @@ public class ServerRegistryRequestHandler implements IMsgHandler {
         this.msgCodec = msgCodec;
     }
 
-    public byte[] handle(byte[] msg) {
+    @Override
+    public IMsgEventResult handle(IMsgEvent event) {
         try {
-            ServerRegistryRequestDecoder request = msgCodec.getServerRegistryRequestDecoder(msg);
+            ServerRegistryRequestDecoder request = msgCodec.getServerRegistryRequestDecoder(event.getInfo().getBytes());
             ServerBO serviceBO = new ServerBO(request.uuid(), request.region(),
                     request.serviceType(), request.name(), request.endpoint(),
                     request.workers(), request.stateId(), request.reportTime());

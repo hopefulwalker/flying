@@ -10,14 +10,14 @@
 package com.flying.framework.messaging.event;
 
 import com.flying.framework.event.IEvent;
-import com.flying.framework.messaging.engine.ICommEngine;
+import com.flying.framework.event.IEventSource;
 
 /**
  * This class is for Convenience. we can use IEvent<ICommEngine, IMsgEventInfo> directly because the IEvent is a generic
  * interface.
  * This class define 3 kinds of message id. currently it used for inside engine.
  */
-public interface IMsgEvent extends IEvent<ICommEngine, IMsgEventInfo> {
+public interface IMsgEvent extends IEvent<IEventSource, IMsgEventInfo> {
     // control command
     int ID_PING = 1;                   // heart beat event ping.
     int ID_PONG = 11;                  // heart beat event pong.

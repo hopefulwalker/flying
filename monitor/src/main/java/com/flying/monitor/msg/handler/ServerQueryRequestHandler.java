@@ -9,6 +9,9 @@ package com.flying.monitor.msg.handler;
 import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.common.service.ServiceException;
+import com.flying.framework.messaging.event.IMsgEvent;
+import com.flying.framework.messaging.event.IMsgEventResult;
+import com.flying.framework.messaging.event.impl.MsgEventResult;
 import com.flying.monitor.model.ServerBO;
 import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.msg.gen.ServerQueryRequestDecoder;
@@ -39,5 +42,19 @@ public class ServerQueryRequestHandler implements IMsgHandler {
             retCode = se.getCode();
         }
         return msgCodec.encodeServerQueryReply(retCode, serverBOs);
+    }
+
+    @Override
+    public IMsgEventResult handle(IMsgEvent event) {
+        ServerQueryRequestDecoder request = msgCodec.getServerQueryRequestDecoder(event.getInfo().getBytes());
+        int retCode = IReturnCode.SUCCESS;
+        List<ServerBO> serverBOs = null;
+        try {
+            serverBOs = service.find(request.region(), request.serviceType());
+        } catch (ServiceException se) {
+            logger.error("Error in finding serverBO", se);
+            retCode = se.getCode();
+        }
+        return new MsgEventResult(event.getInfo().getFroms(), msgCodec.encodeServerQueryReply(retCode, serverBOs));
     }
 }

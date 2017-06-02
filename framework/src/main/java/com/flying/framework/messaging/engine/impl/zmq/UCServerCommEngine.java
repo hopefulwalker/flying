@@ -8,7 +8,7 @@
 
 package com.flying.framework.messaging.engine.impl.zmq;
 
-import com.flying.framework.messaging.engine.ICommEngineConfig;
+import com.flying.framework.messaging.engine.IServerCommEngineConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
@@ -16,7 +16,7 @@ import org.zeromq.ZMQ;
 public class UCServerCommEngine extends AbstractServerCommEngine {
     private static final Logger logger = LoggerFactory.getLogger(AbstractCommEngine.class);
 
-    public UCServerCommEngine(ICommEngineConfig config) {
+    public UCServerCommEngine(IServerCommEngineConfig config) {
         super(config);
     }
 
@@ -25,8 +25,8 @@ public class UCServerCommEngine extends AbstractServerCommEngine {
         try {
             ZMQ.Socket frontend = getContext().createSocket(ZMQ.ROUTER);
             // charset == UTF-8
-            frontend.setIdentity(getConfig().getEndpoints().get(0).asString().getBytes("UTF-8"));
-            frontend.bind(getConfig().getEndpoints().get(0).asString());
+            frontend.setIdentity(getConfig().getListenEndpoint().asString().getBytes("UTF-8"));
+            frontend.bind(getConfig().getListenEndpoint().asString());
             ZMQ.proxy(frontend, getPipe(), null);
         } catch (Exception e) {
             logger.error("ZMQ Service wrong exit, stop engine now", e);

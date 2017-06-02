@@ -11,18 +11,6 @@ import com.flying.framework.event.IEventSource;
 
 public interface ICommEngine extends IEventSource {
     /**
-     * set config for communication engine.
-     *
-     * @param config to be set.
-     */
-    void setConfig(ICommEngineConfig config);
-
-    /**
-     * @return the config information.
-     */
-    ICommEngineConfig getConfig();
-
-    /**
      * start the engine
      */
     void start();

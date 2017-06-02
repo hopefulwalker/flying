@@ -11,9 +11,8 @@ import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.event.IMsgEventListener;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
-public interface ICommEngineConfig {
+public interface IClientCommEngineConfig {
     List<IEndpoint> getEndpoints();
 
     void setEndpoints(List<IEndpoint> endpoints);
@@ -21,8 +20,4 @@ public interface ICommEngineConfig {
     IMsgEventListener getMsgEventListener();
 
     void setMsgEventListener(IMsgEventListener msgEventListener);
-
-    int getWorkers();
-
-    void setWorkers(int workers);
 }

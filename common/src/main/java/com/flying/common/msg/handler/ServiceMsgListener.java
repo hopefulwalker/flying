@@ -10,17 +10,16 @@ import com.flying.common.msg.codec.IMsgCodec;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventListener;
 import com.flying.framework.messaging.event.IMsgEventResult;
-import com.flying.framework.messaging.event.impl.MsgEventResult;
 
 import java.util.Map;
 
 public class ServiceMsgListener implements IMsgEventListener {
     private Map<Short, IMsgHandler> handlers;
-    private IMsgCodec msgConverter;
+    private IMsgCodec msgCodec;
 
-    public ServiceMsgListener(Map<Short, IMsgHandler> handlers, IMsgCodec msgConverter) {
+    public ServiceMsgListener(Map<Short, IMsgHandler> handlers, IMsgCodec msgCodec) {
         this.handlers = handlers;
-        this.msgConverter = msgConverter;
+        this.msgCodec = msgCodec;
     }
 
     public IMsgHandler getHandler(short msgType) {
@@ -30,13 +29,9 @@ public class ServiceMsgListener implements IMsgEventListener {
     @Override
     public IMsgEventResult onEvent(IMsgEvent event) {
         IMsgEventResult result = null;
-        byte[] msg = event.getInfo().getByteArray();
-        IMsgHandler handler = getHandler(msgConverter.getMsgType(msg));
+        IMsgHandler handler = getHandler(msgCodec.getMsgType(event.getInfo().getBytes()));
         if (handler != null) {
-            byte[] reply = handler.handle(msg);
-            if (reply != null) {
-                result = new MsgEventResult(reply);
-            }
+            result = handler.handle(event);
         }
         return result;
     }
