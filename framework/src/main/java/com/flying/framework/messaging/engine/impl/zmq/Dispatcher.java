@@ -5,6 +5,7 @@
  2017/4/25     Walker.Zhang     0.3.3        Created to support zloop.
  2017/5/1      Walker.Zhang     0.3.4        redefine the message event id and log zmq error using error code.
  2017/5/13     Walker.Zhang     0.3.5        remove log information when there is no reply message.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.messaging.engine.impl.zmq;
 
@@ -28,14 +29,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Dispatcher implements IEventSource, Runnable {
     private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ZContext context;
-    private ICommEngine engine;
     private ZLoop reactor;
     private Map<List<IEndpoint>, ZMQ.Socket> sockets;
     private Map<List<IEndpoint>, List<Server>> activeServers;
     private Map<List<IEndpoint>, Map<String, Server>> allServers;
 
-    Dispatcher(ICommEngine engine, ZContext context) {
-        this.engine = engine;
+    Dispatcher(ZContext context) {
         this.context = context;
         this.reactor = new ZLoop();
         this.sockets = new HashMap<>();
@@ -109,7 +108,7 @@ public class Dispatcher implements IEventSource, Runnable {
             }
         }
         if (!reqSent) {
-            logger.warn("Dispatcher: request didn't send! active server size is :" + serverList.size());
+            logger.error("Dispatcher: request didn't send! active server size is :" + serverList.size());
         }
     }
 
@@ -145,7 +144,7 @@ public class Dispatcher implements IEventSource, Runnable {
                     iterator.remove();
                     activeServers.get(allEntry.getKey()).remove(server);
                     sockets.get(allEntry.getKey()).disconnect(server.endpoint);
-                    logger.info("Dispatcher: disconnect from expired server:" + entry.getValue().endpoint);
+                    logger.warn("Dispatcher: disconnect from expired server:" + entry.getValue().endpoint);
                 } else {
                     if (System.currentTimeMillis() > server.pingAt) {
                         server.ping(sockets.get(allEntry.getKey()));
@@ -208,12 +207,13 @@ public class Dispatcher implements IEventSource, Runnable {
         public void handle(Codec.Msg decodedMsg) {
             // handle the message.
             IMsgEventResult result = listener.onEvent(MsgEvent.newInstance(decodedMsg.eventID, getDispatcher(), decodedMsg.data, getFroms()));
-            if (result != null) {
-                getDispatcher().sendMsg((result.getTarget() == null) ? getFroms() : result.getTarget(),
-                        Codec.encode(decodedMsg.others,
-                                decodedMsg.address,
-                                (result.getTarget() == getFroms()) ? IMsgEvent.ID_REPLY : IMsgEvent.ID_REQUEST,
-                                result.getBytes()));
+            if (result == null) return;
+
+            List<IEndpoint> tos = result.getTarget();
+            if (tos == null || tos == getFroms()) {
+                getDispatcher().sendMsg(getFroms(), Codec.encode(decodedMsg.others, decodedMsg.address, IMsgEvent.ID_REPLY, result.getBytes()));
+            } else {
+                getDispatcher().sendMsg(tos, Codec.encode(decodedMsg.others, null, IMsgEvent.ID_REPLY, result.getBytes()));
             }
         }
     }

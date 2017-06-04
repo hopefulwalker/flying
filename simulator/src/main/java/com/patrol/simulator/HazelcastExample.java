@@ -1,9 +1,10 @@
-/**
- * Created by Walker.Zhang on 2015/7/22.
- * Revision History:
- * Date          Who              Version      What
- * 2015/7/22     Walker.Zhang     0.1.0        Created.
- */
+/*
+ Created by Walker.Zhang on 2015/7/22.
+ Revision History:
+ Date          Who              Version      What
+ 2015/7/22     Walker.Zhang     0.1.0        Created.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
+*/
 package com.patrol.simulator;
 
 import com.flying.common.model.IExchId;
@@ -23,7 +24,7 @@ public class HazelcastExample {
         Thread.sleep(1000);
 
         MapConfig mapConfig = new MapConfig();
-        mapConfig.setName( "orderBOs" ).setInMemoryFormat(InMemoryFormat.OBJECT);
+        mapConfig.setName("orderBOs").setInMemoryFormat(InMemoryFormat.OBJECT);
 
 
         Map<Long, OrderBO> orderBOs = hz.getMap("orderBOs");

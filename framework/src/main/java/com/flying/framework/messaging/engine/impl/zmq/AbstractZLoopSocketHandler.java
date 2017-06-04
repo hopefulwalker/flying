@@ -50,10 +50,9 @@ public abstract class AbstractZLoopSocketHandler implements ZLoop.IZLoopHandler 
         // handle the heart beat message.
         switch (decodedMsg.eventID) {
             case IMsgEvent.ID_PING:
+                // no need to destroy reply because of the implementation mechanism(using the same address of msg)
                 ZMsg reply = Codec.encodePongMsg(decodedMsg.others, decodedMsg.address);
                 reply.send(socket);
-                //todo debug to check if this is useless?
-                reply.destroy();
                 break;
             case IMsgEvent.ID_PONG:
                 break;

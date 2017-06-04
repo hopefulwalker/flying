@@ -4,10 +4,12 @@
  Date          Who              Version      What
  2015/5/26     Walker.Zhang     0.1.0        Created.
  2017/4/18     Walker.Zhang     0.3.2        Refactor to support SBE 1.6.2.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.ams.msg.codec;
 
 import com.flying.ams.model.AccountBO;
+import com.flying.ams.msg.gen.GetAccountByIdReplyDecoder;
 import com.flying.ams.msg.gen.GetAccountByIdRequestDecoder;
 import com.flying.ams.service.AccountServiceException;
 import com.flying.common.msg.codec.IMsgCodec;
@@ -30,7 +32,7 @@ public interface IAccountMsgCodec extends IMsgCodec {
 
     @CodecInfo(type = CodecInfo.ENCODE_MSG,
             bodyEncoderClass = "GetAccountByIdRequestEncoder")
-    byte[] encodeGetAccountByIdRequest(@Name("aid") @Fields long aid);
+    byte[] encodeGetAccountByIdRequest(@Name("requestNo") @Fields long requestNo, @Name("aid") @Fields long aid);
 
     @CodecInfo(type = CodecInfo.GET_BODY_DECODER,
             bodyDecoderClass = "GetAccountByIdRequestDecoder")
@@ -38,10 +40,15 @@ public interface IAccountMsgCodec extends IMsgCodec {
 
     @CodecInfo(type = CodecInfo.ENCODE_MSG,
             bodyEncoderClass = "GetAccountByIdReplyEncoder")
-    byte[] encodeGetAccountByIdReply(@Name("retCode") @Fields int retCode,
+    byte[] encodeGetAccountByIdReply(@Name("requestNo") @Fields long requestNo,
+                                     @Name("retCode") @Fields int retCode,
                                      @Name("accountBO") @Fields AccountBO accountBO);
 
     @CodecInfo(type = CodecInfo.DECODE_MSG,
             bodyDecoderClass = "GetAccountByIdReplyDecoder")
-    AccountBO getGetAccountByIdReply(@Name("bytes") byte[] bytes) throws AccountServiceException;
+    AccountBO getGetAccountByIdReply(@Name("bytes") byte[] bytes);
+
+    @CodecInfo(type = CodecInfo.GET_BODY_DECODER,
+            bodyDecoderClass = "GetAccountByIdReplyDecoder")
+    GetAccountByIdReplyDecoder getGetAccountByIdReplyDecoder(@Name("msg") byte[] msg);
 }

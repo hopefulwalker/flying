@@ -59,7 +59,7 @@ public abstract class AbstractCommEngine implements ICommEngine {
         IEndpoint endpoint = new Endpoint("inproc://" + System.nanoTime());
         pipe.bind(endpoint.asString());
         for (int i = 0; i < getWorkers(); i++) {
-            Dispatcher dispatcher = new Dispatcher(this, ZContext.shadow(context));
+            Dispatcher dispatcher = new Dispatcher(ZContext.shadow(context));
             List<IEndpoint> froms = new ArrayList<>(1);
             froms.add(endpoint);
             setupDispatcherHandler(dispatcher, froms);

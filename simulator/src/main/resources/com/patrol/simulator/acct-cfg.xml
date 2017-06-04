@@ -3,10 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="endpointFactory" class="com.flying.monitor.service.client.MonitorEndpointFactory">
-        <constructor-arg name="service" ref="monitorService"/>
+    <bean id="endpointFactory" class="com.flying.monitor.processor.client.MonitorEndpointFactory">
+        <constructor-arg name="processor" ref="monitorService"/>
     </bean>
-    <bean id="accountService" class="com.flying.ams.service.client.AccountClientService" init-method="init"
+    <bean id="accountService" class="com.flying.ams.processor.client.AccountClientService" init-method="init"
           destroy-method="close">
         <constructor-arg name="region" value="SZ"/>
         <constructor-arg name="endpointFactory" ref="endpointFactory"/>
@@ -20,7 +20,7 @@
         <property name="minIdle" value="1"/>
     </bean>
 
-    <bean id="monitorService" class="com.flying.monitor.service.client.BCMonitorClientService">
+    <bean id="monitorService" class="com.flying.monitor.processor.client.BCMonitorClientService">
         <constructor-arg name="engine" ref="broadcastEngine"/>
         <constructor-arg name="msgCodec" ref="monitorMsgBuilder"/>
     </bean>

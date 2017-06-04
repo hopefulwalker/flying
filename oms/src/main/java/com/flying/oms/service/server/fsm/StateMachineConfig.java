@@ -3,33 +3,41 @@
  Revision History:
  Date          Who              Version      What
  2015/5/18     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
+                                             Add external bean as private final field to simplify the config code.
 */
 package com.flying.oms.service.server.fsm;
 
-import com.flying.framework.fsm.IAction;
-import com.flying.framework.fsm.IGuard;
-import com.flying.framework.fsm.SpringStateMachineActionLink;
-import com.flying.framework.fsm.SpringStateMachineGuardLink;
-import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderStates;
+import com.flying.oms.service.server.AccountCenter;
+import com.flying.oms.service.server.OrderCenter;
+import com.flying.oms.service.server.fsm.action.SendOrderAction;
+import com.flying.oms.service.server.fsm.action.ValidateAccountAction;
+import com.flying.oms.service.server.fsm.event.OrderEvents;
+import com.flying.oms.service.server.fsm.guard.AccountNormalGuard;
+import com.flying.oms.service.server.fsm.guard.NoneAccountGuard;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineBuilder;
-import org.springframework.statemachine.persist.DefaultStateMachinePersister;
-import org.springframework.statemachine.persist.StateMachinePersister;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 @Configuration
 public class StateMachineConfig {
+    private final AccountCenter accountCenter;
+    private final OrderCenter orderCenter;
+
+    public StateMachineConfig(AccountCenter accountCenter, OrderCenter orderCenter) {
+        this.accountCenter = accountCenter;
+        this.orderCenter = orderCenter;
+    }
+
     @Bean
     @Scope(scopeName = "prototype")
-    public StateMachine<OrderStates, OrderEvents> orderStateMachine(BeanFactory factory, AccountAccessor accountAccessor) throws Exception {
+    public StateMachine<OrderStates, OrderEvents> orderStateMachine(BeanFactory factory) throws Exception {
         StateMachineBuilder.Builder<OrderStates, OrderEvents> builder = StateMachineBuilder.builder();
         builder.configureConfiguration().withConfiguration()
                 .autoStartup(true).machineId(StateMachineConfig.class.getSimpleName()).beanFactory(factory);
@@ -41,47 +49,33 @@ public class StateMachineConfig {
         builder.configureTransitions()
                 .withExternal()
                 .source(OrderStates.CREATED).target(OrderStates.CHECKING_ACCOUNT)
-                .event(OrderEvents.OrderRequest).guard(noneAccountGuard(accountAccessor))
-                .action(checkAccountAction(accountAccessor));
-
+                .event(OrderEvents.OrderRequest).guard(noneAccountGuard())
+                .action(validateAccountAction())
+                .and()
+                .withExternal()
+                .source(OrderStates.CHECKING_ACCOUNT).target(OrderStates.SENT)
+                .event(OrderEvents.GetAccountByIdReply).guard(accountNormalGuard())
+                .action(sendOrderAction());
         return builder.build();
     }
 
     @Bean
-    public SpringStateMachineGuardLink<OrderStates, OrderEvents, OrderBO> noneAccountGuard(AccountAccessor accountAccessor) {
-        List<IGuard<OrderBO>> guards = new ArrayList<>(1);
-        guards.add(validateAccountGuard(accountAccessor));
-        return new SpringStateMachineGuardLink<>(guards);
+    public NoneAccountGuard noneAccountGuard() {
+        return new NoneAccountGuard(accountCenter);
     }
 
     @Bean
-    public SpringStateMachineActionLink<OrderStates, OrderEvents, OrderBO> checkAccountAction(AccountAccessor accountAccessor) {
-        List<IAction<OrderBO>> actions = new ArrayList<>(1);
-        actions.add(validateAccountAction(accountAccessor));
-        return new SpringStateMachineActionLink<>(actions);
+    public AccountNormalGuard accountNormalGuard() {
+        return new AccountNormalGuard(accountCenter);
     }
 
     @Bean
-    public ValidateAccountAction validateAccountAction(AccountAccessor accessor) {
-        ValidateAccountAction action = new ValidateAccountAction();
-        action.setAccountAccessor(accessor);
-        return action;
+    public ValidateAccountAction validateAccountAction() {
+        return new ValidateAccountAction(accountCenter);
     }
 
     @Bean
-    public ValidateAccountGuard validateAccountGuard(AccountAccessor accessor) {
-        ValidateAccountGuard action = new ValidateAccountGuard();
-        action.setAccountAccessor(accessor);
-        return action;
-    }
-
-    @Bean
-    public SendOrderGuard sendOrderGuard() {
-        return new SendOrderGuard();
-    }
-
-    @Bean
-    public StateMachinePersister<OrderStates, OrderEvents, OrderStates> stateMachinePersister() {
-        return new DefaultStateMachinePersister<>(new InMemoryStateMachinePersist());
+    public SendOrderAction sendOrderAction() {
+        return new SendOrderAction(orderCenter);
     }
 }

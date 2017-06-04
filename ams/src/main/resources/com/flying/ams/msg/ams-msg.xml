@@ -38,15 +38,17 @@
     </types>
     <sbe:message name="GetAccountByIdRequest" id="1" description="Description of a request to query account">
         <field name="aid" id="1" type="LongId"/>
+        <field name="requestNo" id="2" type="LongId"/>
     </sbe:message>
     <sbe:message name="GetAccountByIdReply" id="2" description="Description of a reply for OpenAcctRequest">
-        <field name="retCode" id="1" type="RetCode"/>
-        <field name="aid" id="2" type="LongId"/>
-        <field name="type" id="3" type="Type"/>
-        <field name="custId" id="4" type="LongId"/>
-        <field name="parentId" id="5" type="LongId"/>
-        <field name="statusId" id="6" type="ByteId"/>
-        <field name="createTime" id="7" type="Time"/>
-        <field name="updateTime" id="8" type="Time"/>
+        <field name="requestNo" id="1" type="LongId"/>
+        <field name="retCode" id="2" type="RetCode"/>
+        <field name="aid" id="3" type="LongId"/>
+        <field name="type" id="4" type="Type"/>
+        <field name="custId" id="5" type="LongId"/>
+        <field name="parentId" id="6" type="LongId"/>
+        <field name="statusId" id="7" type="ByteId"/>
+        <field name="createTime" id="8" type="Time"/>
+        <field name="updateTime" id="9" type="Time"/>
     </sbe:message>
 </sbe:messageSchema>

@@ -3,9 +3,11 @@
  Revision History:
  Date          Who              Version      What
  2015/5/20     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.oms.config;
 
+import com.flying.common.service.IEndpointFactory;
 import com.flying.framework.messaging.endpoint.IEndpoint;
 import com.flying.framework.messaging.endpoint.impl.Endpoint;
 import com.flying.framework.messaging.engine.IClientCommEngine;
@@ -16,6 +18,7 @@ import com.flying.monitor.msg.codec.IMonitorMsgCodec;
 import com.flying.monitor.msg.codec.MonitorMsgCodec;
 import com.flying.monitor.service.IMonitorService;
 import com.flying.monitor.service.client.BCMonitorClientService;
+import com.flying.monitor.service.client.MonitorEndpointFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class MonitorServiceConfig {
+public class MonitorConfig {
     @Bean
     public IMonitorMsgCodec monitorMsgCodec() {
         return new MonitorMsgCodec();
@@ -44,5 +47,10 @@ public class MonitorServiceConfig {
         List<IEndpoint> endpoints = new ArrayList<>();
         endpoints.add(new Endpoint("udp", "255.255.255.255", 51688));
         return new ClientCommEngineConfig(endpoints);
+    }
+
+    @Bean
+    public IEndpointFactory endpointFactory(IMonitorService monitorService) {
+        return new MonitorEndpointFactory(monitorService);
     }
 }

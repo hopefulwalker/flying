@@ -1,9 +1,10 @@
-/**
- * Created by Walker.Zhang on 2015/5/28.
- * Revision History:
- * Date          Who              Version      What
- * 2015/5/28     Walker.Zhang     0.1.0        Created.
- */
+/*
+ Created by Walker.Zhang on 2015/5/28.
+ Revision History:
+ Date          Who              Version      What
+ 2015/5/28     Walker.Zhang     0.1.0        Created.
+ 2017/6/2      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
+*/
 package com.flying.oms.msg.codec;
 
 import com.flying.common.msg.codec.IMsgCodec;
@@ -37,6 +38,10 @@ public interface IOrderMsgCodec extends IMsgCodec {
     @CodecInfo(type = CodecInfo.ENCODE_MSG,
             bodyEncoderClass = "OrderReplyEncoder")
     public byte[] encodeOrderReply(@Name("retCode") @Fields int retCode, @Name("orderBO") @Fields OrderBO orderBO);
+
+    @CodecInfo(type = CodecInfo.ENCODE_MSG,
+            bodyEncoderClass = "OrderReplyEncoder")
+    public byte[] encodeOrderReply(@Name("retCode") @Fields int retCode);
 
     @CodecInfo(type = CodecInfo.DECODE_MSG,
             bodyDecoderClass = "OrderReplyDecoder")

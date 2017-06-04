@@ -2,8 +2,9 @@
  Created by Walker.Zhang on 2015/3/16.
  Revision History:
  Date          Who              Version      What
- 2015/3/16     Walker.Zhang     0.1.0        Created. 
- */
+ 2015/3/16     Walker.Zhang     0.1.0        Created.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
+*/
 package com.patrol.simulator;
 
 import com.flying.common.IReturnCode;
@@ -29,6 +30,9 @@ public class AsyncOrderClient {
     private final static String ENDPOINT_FACTORY = "endpointFactory";
     private final static String ORDER_SERVICE = "orderService";
     private final static String CFG_FILE = "com/patrol/simulator/order-cfg.xml";
+//    private final static long NUMBER_OF_REQUEST = 1;
+//    private final static long NUMBER_OF_REQUEST = 20;
+//    private final static long NUMBER_OF_REQUEST = 5000;
     private final static long NUMBER_OF_REQUEST = Long.MAX_VALUE;
 
     public static void main(String args[]) {
@@ -47,7 +51,7 @@ public class AsyncOrderClient {
         long responseTime;
         long startTime = System.currentTimeMillis();
         for (long i = 0; i < NUMBER_OF_REQUEST || requests.size() > 0; ) {
-            if ((i < NUMBER_OF_REQUEST) && (i - rvn < 10)) {
+            if ((i < NUMBER_OF_REQUEST) && (i - rvn < 1000)) {
                 try {
                     orderBO = new OrderBO();
                     orderBO.setExtNo(i);
@@ -89,7 +93,7 @@ public class AsyncOrderClient {
                 }
             }
             try {
-                if (rvn % 10000 == 1) {
+                if (rvn % 100000 == 1) {
                     long totaltime = (System.currentTimeMillis() - startTime);
                     System.out.println("send:" + i);
                     System.out.println("rvn:" + rvn);

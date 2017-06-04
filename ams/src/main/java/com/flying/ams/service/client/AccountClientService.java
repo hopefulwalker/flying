@@ -1,10 +1,11 @@
-/**
- * Created by Walker.Zhang on 2015/4/6.
- * Revision History:
- * Date          Who              Version      What
- * 2015/4/6      Walker.Zhang     0.1.0        Created.
- * 2015/5/27     Walker.Zhang     0.1.1        Refactor to support msg codec. don't use proxy any more.
- */
+/*
+ Created by Walker.Zhang on 2015/4/6.
+ Revision History:
+ Date          Who              Version      What
+ 2015/4/6      Walker.Zhang     0.1.0        Created.
+ 2015/5/27     Walker.Zhang     0.1.1        Refactor to support msg codec. don't use proxy any more.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
+*/
 package com.flying.ams.service.client;
 
 import com.flying.ams.model.AccountBO;
@@ -61,7 +62,7 @@ public class AccountClientService extends BaseUCClientService implements IAccoun
         IClientCommEngine engine = null;
         try {
             engine = borrowEngine();
-            accountBO = msgCodec.getGetAccountByIdReply(Helper.request(engine, getTimeout(), msgCodec.encodeGetAccountByIdRequest(id)));
+            accountBO = msgCodec.getGetAccountByIdReply(Helper.request(engine, getTimeout(), msgCodec.encodeGetAccountByIdRequest(id, id)));
         } catch (AccountServiceException ase) {
             throw ase;
         } catch (Exception e) {

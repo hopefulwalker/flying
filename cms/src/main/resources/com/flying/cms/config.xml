@@ -17,7 +17,7 @@
     <bean id="omsMsgListener" class="com.flying.oms.msg.handler.OrderMsgListener"/>
     <bean id="omsListenEndpoint" class="com.flying.framework.messaging.endpoint.impl.Endpoint"/>
 
-    <bean id="reporter" class="com.flying.monitor.service.client.ServerReporter">
+    <bean id="reporter" class="com.flying.monitor.processor.client.ServerReporter">
         <property name="server" ref="omsServer"/>
         <property name="endpoints" ref="cntMonitorEndpoints"/>
         <property name="enginePool" ref="cntMonitorEnginePool"/>

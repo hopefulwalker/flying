@@ -1,8 +1,9 @@
-/**
- * Created by Walker.Zhang on 2015/4/6.
- * Revision History:
- * Date          Who              Version      What
- * 2015/4/6     Walker.Zhang     0.1.0        Created.
+/*
+ Created by Walker.Zhang on 2015/4/6.
+ Revision History:
+ Date          Who              Version      What
+ 2015/4/6      Walker.Zhang     0.1.0        Created.
+ 2017/6/2      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
  */
 package com.patrol.simulator;
 
@@ -49,7 +50,7 @@ public class OrderClient {
                 orderBO.setPrice(11.1);
                 orderBO.setQty(i);
                 if (i % 25000 == 0) System.out.println("Before:" + BeanUtils.describe(orderBO));
-                orderBO = orderClientService.placeOrder(null, orderBO);
+                orderBO = orderClientService.placeOrder(orderBO);
 //                System.out.println(System.currentTimeMillis() - start);
                 rvn++;
                 if (i % 25000 == 0) System.out.println("After:" + BeanUtils.describe(orderBO));

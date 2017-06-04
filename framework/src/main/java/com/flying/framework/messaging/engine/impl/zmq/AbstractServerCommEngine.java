@@ -50,8 +50,10 @@ public abstract class AbstractServerCommEngine extends AbstractCommEngine implem
             return;
         }
         dispatcher.addMsgEventListener(froms, ZMQ.DEALER, false, config.getServerListener());
-        for (Map.Entry<List<IEndpoint>, IMsgEventListener> entry : config.getClientListeners().entrySet()) {
-            dispatcher.addMsgEventListener(entry.getKey(), ZMQ.ROUTER, true, entry.getValue());
+        if (config.getClientListeners() != null) {
+            for (Map.Entry<List<IEndpoint>, IMsgEventListener> entry : config.getClientListeners().entrySet()) {
+                dispatcher.addMsgEventListener(entry.getKey(), ZMQ.ROUTER, true, entry.getValue());
+            }
         }
     }
 

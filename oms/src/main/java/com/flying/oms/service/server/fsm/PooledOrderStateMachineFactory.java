@@ -3,10 +3,12 @@
  Revision History:
  Date          Who              Version      What
  2015/5/20     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.oms.service.server.fsm;
 
 import com.flying.oms.model.OrderStates;
+import com.flying.oms.service.server.fsm.event.OrderEvents;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -20,9 +22,9 @@ public class PooledOrderStateMachineFactory implements PooledObjectFactory<State
 
     @Override
     public PooledObject<StateMachine<OrderStates, OrderEvents>> makeObject() throws Exception {
-        StateMachine<OrderStates, OrderEvents> engine = (StateMachine<OrderStates, OrderEvents>) context.getBean("orderStateMachine");
-        engine.start();
-        return new DefaultPooledObject<>(engine);
+        StateMachine<OrderStates, OrderEvents> machine = (StateMachine<OrderStates, OrderEvents>) context.getBean("orderStateMachine");
+        machine.start();
+        return new DefaultPooledObject<>(machine);
     }
 
     @Override
@@ -42,7 +44,6 @@ public class PooledOrderStateMachineFactory implements PooledObjectFactory<State
     @Override
     public void passivateObject(PooledObject<StateMachine<OrderStates, OrderEvents>> pooledObject) throws Exception {
     }
-
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

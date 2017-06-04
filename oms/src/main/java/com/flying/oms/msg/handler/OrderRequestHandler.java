@@ -2,12 +2,12 @@
  File: OrderRequestHandler.java
  Originally written by Walker.
  Rivision History:
- Date         Who     Version  What
- 2014.12.21   walker  0.1.0    Create this file.
+ Date          Who              Version      What
+ 2014.12.21    walker           0.1.0        Create this file.
+ 2017/6/2      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
  */
 package com.flying.oms.msg.handler;
 
-import com.flying.common.IReturnCode;
 import com.flying.common.msg.handler.IMsgHandler;
 import com.flying.framework.messaging.event.IMsgEvent;
 import com.flying.framework.messaging.event.IMsgEventResult;
@@ -16,8 +16,9 @@ import com.flying.oms.model.OrderBO;
 import com.flying.oms.model.OrderStates;
 import com.flying.oms.msg.codec.IOrderMsgCodec;
 import com.flying.oms.msg.gen.OrderRequestDecoder;
-import com.flying.oms.service.IOrderService;
 import com.flying.oms.service.OrderServiceException;
+import com.flying.oms.service.server.OrderCenter;
+import com.flying.oms.service.server.OrderServerService;
 import com.flying.util.math.IntegerUtils;
 import com.flying.util.uk.UKGeneratorFactory;
 import org.slf4j.Logger;
@@ -26,30 +27,25 @@ import org.slf4j.LoggerFactory;
 
 public class OrderRequestHandler implements IMsgHandler {
     private static final Logger logger = LoggerFactory.getLogger(OrderRequestHandler.class);
-    private IOrderService service;
+    private OrderServerService serverService;
     private IOrderMsgCodec msgCodec;
 
-    public OrderRequestHandler(IOrderService service, IOrderMsgCodec msgCodec) {
-        this.service = service;
+    public OrderRequestHandler(OrderServerService serverService, IOrderMsgCodec msgCodec) {
+        this.serverService = serverService;
         this.msgCodec = msgCodec;
     }
 
     @Override
     public IMsgEventResult handle(IMsgEvent event) {
-        MsgEventResult result = new MsgEventResult(null, null);
+        IMsgEventResult result;
         OrderRequestDecoder requestDecoder = msgCodec.getOrderRequestDecoder(event.getInfo().getBytes());
-        int retCode = IReturnCode.SUCCESS;
-        OrderBO orderBO = null;
         try {
-            orderBO = buildOrderBO(requestDecoder);
-            orderBO = service.placeOrder(event.getInfo().getFroms(), orderBO);
+            OrderBO orderBO = buildOrderBO(requestDecoder);
+            result = serverService.placeOrder(event.getInfo().getFroms(), orderBO);
         } catch (OrderServiceException ose) {
             logger.error("Error in placing order", ose);
-            retCode = ose.getCode();
+            result = new MsgEventResult(event.getInfo().getFroms(), msgCodec.encodeOrderReply(ose.getCode()));
         }
-        if (retCode == IReturnCode.SUCCESS) retCode = orderBO.getStateEnteredCode();
-        result.setBytes(msgCodec.encodeOrderReply(retCode, orderBO));
-        // end of to do
         return result;
     }
 

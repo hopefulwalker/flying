@@ -3,6 +3,7 @@
  Revision History:
  Date          Who              Version      What
  2015/5/19     Walker.Zhang     0.3.6        Revamp the order state machine based on spring-state machine.
+ 2017/6/4      Walker.Zhang     0.3.7        Rebuild the asynchronous communication engine.
 */
 package com.flying.framework.fsm;
 
@@ -10,9 +11,7 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SpringStateMachineActionLink<S, E, V> implements Action<S, E> {
     private Class<V> varClass;
