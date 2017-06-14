@@ -1,20 +1,14 @@
 package com.flying.ams.model.dao.jdbi;
 
-import static org.junit.Assert.*;
-
-import java.util.Date;
-
 import com.flying.ams.model.IAcctStatusId;
 import com.flying.ams.model.IAcctType;
+import com.flying.util.db.DataContext;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.skife.jdbi.v2.DBI;
 
-import com.flying.util.db.DataContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class AccountDAOTest {
     AccountDAO dao = null;

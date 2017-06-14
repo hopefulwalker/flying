@@ -1,14 +1,17 @@
-/**
- * Created by Walker.Zhang on 2015/2/17.
- * Revision History:
- * Date          Who              Version      What
- * 2015/2/17     Walker.Zhang     0.1.0        Created.
- * 2015/6/15     Walker.Zhang     0.2.0        Add support linux platform.
- *                                             1. change the way to get local address
- *                                             2. Add local variable to store local ip4's int and string.
- */
+/*
+ Created by Walker.Zhang on 2015/2/17.
+ Revision History:
+ Date          Who              Version      What
+ 2015/2/17     Walker.Zhang     0.1.0        Created.
+ 2015/6/15     Walker.Zhang     0.2.0        Add support linux platform.
+                                             1. change the way to get local address
+                                             2. Add local variable to store local ip4's int and string.
+ 2017/6/2      Walker.Zhang     0.3.7        Refactor for controlling the ip.
+*/
 package com.flying.util.net;
 
+import com.flying.util.cfg.DynamicConfiguration;
+import com.flying.util.cfg.PropertiesFileConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +24,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * utilities for communication.
  */
 public final class CommUtils {
-    public static final int DOWN_PORT = 5001;
-    public static final int UP_PORT = 65536;
+    public static final String DEFAULT_CFG_FILE_NAME = "commutils";
     private static final Logger logger = LoggerFactory.getLogger(CommUtils.class);
     private static int ip4int;
     private static String ip4String = null;
+    private static CommUtilsProperties properties = new CommUtilsProperties(new PropertiesFileConfiguration(DEFAULT_CFG_FILE_NAME));
 
     static {
         InetAddress address = getLocalIp4Address();
@@ -48,10 +51,11 @@ public final class CommUtils {
             InetAddress ip = null;
             while (nis.hasMoreElements()) {
                 NetworkInterface ni = nis.nextElement();
+                if (ignoreInterface(ni)) continue;
                 Enumeration<InetAddress> addresses = ni.getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     ip = addresses.nextElement();
-                    if (ip != null && ip instanceof Inet4Address && !ip.isLoopbackAddress()) return ip;
+                    if (!ignoreAddress(ip)) return ip;
                 }
             }
             logger.warn("No non-loopback address, return the loop back address");
@@ -88,7 +92,7 @@ public final class CommUtils {
     // Port related functions
     public static int getAvailablePort() {
         do {
-            int port = ThreadLocalRandom.current().nextInt(DOWN_PORT, UP_PORT);
+            int port = ThreadLocalRandom.current().nextInt(properties.getDownPort(), properties.getUpPort());
             if (isAvailable(port)) return port;
         }
         while (true);
@@ -109,5 +113,24 @@ public final class CommUtils {
         Socket s = new Socket();
         s.bind(new InetSocketAddress(host, port));
         s.close();
+    }
+
+    private static boolean ignoreAddress(InetAddress address) {
+        if (!(address instanceof Inet4Address) || address.isLoopbackAddress()) return true;
+        for (String regex : properties.getPreferredNetworks()) {
+            String hostAddress = address.getHostAddress();
+            if (!hostAddress.matches(regex) && !hostAddress.startsWith(regex)) return true;
+        }
+        return false;
+    }
+
+    private static boolean ignoreInterface(NetworkInterface ni) throws SocketException {
+        if (!ni.isUp() || ni.isLoopback() || ni.isPointToPoint() || ni.isVirtual()) return true;
+        for (String regex : properties.getIgnoredInterfaces()) {
+            if (ni.getDisplayName().matches(regex)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
